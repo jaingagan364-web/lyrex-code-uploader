@@ -321,7 +321,7 @@ export default function LyrexLandingPage() {
               </div>
             </motion.div>
 
-            <motion.div {...fadeUp} transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}>
+            <motion.div {...fadeUp} transition={{ duration: 0.8, ease: "easeOut" as const, delay: 0.1 }}>
               <Card className="relative overflow-hidden p-5 sm:p-7 lg:p-8">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.14),_transparent_30%)]" />
                 <div className="relative z-10">
