@@ -843,5 +843,4 @@ export default function LyrexLandingPage() {
     </div>
   );
 }
-```
 
