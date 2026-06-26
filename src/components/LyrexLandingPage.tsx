@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -12,14 +12,11 @@ import {
   Bot,
   MessageSquareMore,
   LayoutGrid,
-  Users,
   Headphones,
   ChevronRight,
   Zap,
-  PhoneOff,
-  CalendarCheck,
-  Timer,
-  XCircle,
+  Lock,
+  MapPin,
 } from "lucide-react";
 
 const fadeUp = {
@@ -51,23 +48,23 @@ const features = [
     description: "Customers hear a friendly, professional voice — not a robotic menu.",
   },
   {
-    icon: Sparkles,
-    title: "Captures Every Lead",
-    description: "Turns missed calls into booked appointments. Your chairs stay full.",
+    icon: MessageSquareMore,
+    title: "Answers Customer Questions",
+    description: "Hours, pricing, directions, services — handled instantly and accurately.",
   },
   {
     icon: Bot,
-    title: "Knows Your Business",
-    description: "Trained on your services, prices, stylists, and hours from day one.",
+    title: "Trained On Your Shop",
+    description: "Knows your services, stylists, prices, and policies from day one.",
   },
 ];
 
 const steps = [
-  "Customer Calls",
-  "AI Answers Instantly",
-  "AI Checks Availability",
-  "Appointment Gets Booked",
-  "Booking Appears On Your Calendar",
+  { title: "Customer Calls", description: "Your existing number rings — no new hardware." },
+  { title: "AI Answers Instantly", description: "Picked up in under a second with a friendly greeting." },
+  { title: "AI Checks Availability", description: "Pulls live openings from your Google Calendar." },
+  { title: "Appointment Booked", description: "Customer is confirmed on the call." },
+  { title: "Syncs To Your Calendar", description: "Booking appears in your calendar instantly." },
 ];
 
 const pricing = [
@@ -83,13 +80,14 @@ const pricing = [
       "Up to 100 calls / month",
       "Email Support",
     ],
+    cta: "Start Saving Bookings",
     highlight: false,
   },
   {
     name: "Growth",
     price: "$79",
     period: "/month",
-    description: "The most popular choice — 24/7 coverage with room to grow.",
+    description: "Full 24/7 coverage with the capacity most shops need to never miss a booking again.",
     features: [
       "Everything in Starter",
       "24/7 Call Handling",
@@ -98,8 +96,9 @@ const pricing = [
       "SMS Booking Confirmations",
       "Priority Support",
     ],
+    cta: "Get My AI Receptionist",
     highlight: true,
-    badge: "Most Popular",
+    badge: "Best Value",
   },
   {
     name: "Premium",
@@ -114,73 +113,8 @@ const pricing = [
       "Dedicated Onboarding Specialist",
       "Priority Feature Requests",
     ],
+    cta: "Get My AI Receptionist",
     highlight: false,
-  },
-];
-
-const whyChooseItems = [
-  {
-    icon: PhoneOff,
-    title: "Never miss a call",
-    description: "Every customer call is answered instantly.",
-  },
-  {
-    icon: CalendarCheck,
-    title: "Books appointments automatically",
-    description: "Appointments are scheduled directly into your calendar.",
-  },
-  {
-    icon: Clock3,
-    title: "Works 24/7",
-    description: "Your AI receptionist never takes breaks or misses calls.",
-  },
-  {
-    icon: CalendarDays,
-    title: "Google Calendar Sync",
-    description: "Real-time availability with zero double bookings.",
-  },
-  {
-    icon: Timer,
-    title: "Setup in under 24 hours",
-    description: "Fast onboarding with no technical work required.",
-  },
-  {
-    icon: XCircle,
-    title: "No contracts",
-    description: "Cancel anytime with simple monthly pricing.",
-  },
-];
-
-const trustItems = [
-  {
-    icon: PhoneCall,
-    title: "Never Miss Another Booking",
-    description: "Every ring is answered — even if five customers call at once.",
-  },
-  {
-    icon: Clock3,
-    title: "Available 24/7",
-    description: "Late nights, lunch breaks, Sundays — Lyrex is always on.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Consistent Customer Experience",
-    description: "Polite and professional on every single call.",
-  },
-  {
-    icon: CalendarDays,
-    title: "Real-Time Calendar Integration",
-    description: "Books directly into Google Calendar. No double-bookings.",
-  },
-  {
-    icon: Zap,
-    title: "Fast Setup",
-    description: "Live in under 24 hours. No tech skills or hardware needed.",
-  },
-  {
-    icon: MessageSquareMore,
-    title: "Handles Customer Questions",
-    description: "Hours, pricing, directions — answered instantly.",
   },
 ];
 
@@ -211,6 +145,20 @@ const faqs = [
   },
 ];
 
+const heroTrust = [
+  "Live in under 24 hours",
+  "Google Calendar Sync",
+  "No Contracts",
+  "Human-like AI Receptionist",
+];
+
+const chatScript: { role: "ai" | "customer"; text: string }[] = [
+  { role: "customer", text: "Hi, I'd like a haircut tomorrow afternoon." },
+  { role: "ai", text: "Absolutely! I have 3:30 PM available with Marcus. Would that work?" },
+  { role: "customer", text: "Perfect." },
+  { role: "ai", text: "Great — you're booked for 3:30 PM tomorrow. You'll get a confirmation text shortly." },
+];
+
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
   <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium tracking-[0.24em] text-white/70 uppercase backdrop-blur">
     <span className="h-1.5 w-1.5 rounded-full bg-white" />
@@ -234,13 +182,66 @@ function Card({
   );
 }
 
-const scrollToForm = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+const scrollTo = (id: string) => (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
   e.preventDefault();
-  const element = document.getElementById("request-demo");
+  const element = document.getElementById(id);
   if (element) {
     element.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 };
+
+const scrollToForm = scrollTo("request-demo");
+const scrollToPricing = scrollTo("pricing");
+
+function HeroChat() {
+  const [visible, setVisible] = useState(1);
+
+  useEffect(() => {
+    if (visible >= chatScript.length) return;
+    const t = setTimeout(() => setVisible((v) => v + 1), 1400);
+    return () => clearTimeout(t);
+  }, [visible]);
+
+  // restart loop
+  useEffect(() => {
+    if (visible === chatScript.length) {
+      const t = setTimeout(() => setVisible(1), 4500);
+      return () => clearTimeout(t);
+    }
+  }, [visible]);
+
+  return (
+    <div className="mt-8 space-y-3">
+      {chatScript.slice(0, visible).map((msg, i) => (
+        <motion.div
+          key={`${visible}-${i}`}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className={
+            msg.role === "ai"
+              ? "max-w-[82%] rounded-3xl rounded-tl-md border border-white/10 bg-white/7 p-4 text-sm text-white/88"
+              : "ml-auto max-w-[82%] rounded-3xl rounded-tr-md border border-white/10 bg-white/12 p-4 text-sm text-white/85"
+          }
+        >
+          <div className="mb-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/40">
+            {msg.role === "ai" ? "Lyrex AI" : "Customer"}
+          </div>
+          {msg.text}
+        </motion.div>
+      ))}
+      {visible === chatScript.length && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="ml-auto inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300"
+        >
+          <CheckCircle2 className="h-3.5 w-3.5" /> Booked & synced to Google Calendar
+        </motion.div>
+      )}
+    </div>
+  );
+}
 
 export default function LyrexLandingPage() {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
@@ -258,15 +259,9 @@ export default function LyrexLandingPage() {
     };
 
     try {
-      // ============================================================
-      // IMPORTANT: Replace 'YOUR_FORM_ID' with your actual Formspree form ID
-      // Example: https://formspree.io/f/xyzabcde -> use 'xyzabcde'
-      // ============================================================
       const response = await fetch("https://formspree.io/f/YOUR_FORM_ID", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
@@ -303,6 +298,7 @@ export default function LyrexLandingPage() {
           </div>
 
           <nav className="hidden items-center gap-8 text-sm text-white/70 md:flex">
+            <a href="#demo" className="transition hover:text-white">Demo</a>
             <a href="#features" className="transition hover:text-white">Features</a>
             <a href="#pricing" className="transition hover:text-white">Pricing</a>
             <a href="#faq" className="transition hover:text-white">FAQ</a>
@@ -310,7 +306,7 @@ export default function LyrexLandingPage() {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={scrollToForm}
+              onClick={scrollToPricing}
               className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:scale-[1.02]"
             >
               Get Started <ArrowRight className="h-4 w-4" />
@@ -326,15 +322,15 @@ export default function LyrexLandingPage() {
             <motion.div {...fadeUp}>
               <SectionLabel>AI Receptionists for US Salons & Barber Shops</SectionLabel>
               <h1 className="mt-6 max-w-3xl text-5xl font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl">
-                Stop Losing Bookings to Missed Calls.
+                Book Every Client. Even The Ones You Miss.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75 sm:text-xl">
-                Lyrex answers every call, books appointments into your calendar, and handles customer questions — 24/7. Your chairs stay full, even when you can't get to the phone.
+                Lyrex is a human-like AI receptionist that answers every call, books appointments straight into your Google Calendar, and turns missed calls into paying clients — 24/7.
               </p>
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <button
-                  onClick={scrollToForm}
+                  onClick={scrollToPricing}
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02]"
                 >
                   Get Started <ArrowRight className="h-4 w-4" />
@@ -347,17 +343,15 @@ export default function LyrexLandingPage() {
                 </button>
               </div>
 
-              <div className="mt-10 flex flex-wrap gap-3 text-sm text-white/65">
-                {["Live in under 24 hours", "Google Calendar sync", "Cancel anytime"].map(
-                  (item) => (
-                    <div
-                      key={item}
-                      className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2"
-                    >
-                      <CheckCircle2 className="h-4 w-4" /> {item}
-                    </div>
-                  )
-                )}
+              <div className="mt-8 grid grid-cols-2 gap-2 text-sm text-white/70 sm:flex sm:flex-wrap sm:gap-3">
+                {heroTrust.map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5"
+                  >
+                    <CheckCircle2 className="h-4 w-4 text-emerald-300/90" /> {item}
+                  </div>
+                ))}
               </div>
             </motion.div>
 
@@ -371,26 +365,17 @@ export default function LyrexLandingPage() {
                         <Headphones className="h-6 w-6" />
                       </div>
                       <div>
-                        <div className="text-sm text-white/50">Live receptionist</div>
-                        <div className="text-lg font-semibold">Lyrex AI is active</div>
+                        <div className="text-sm text-white/50">Live call · Elite Fade Barbershop</div>
+                        <div className="text-lg font-semibold">Lyrex AI is on the line</div>
                       </div>
                     </div>
-                    <div className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300">
-                      Online
+                    <div className="flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300">
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+                      Live
                     </div>
                   </div>
 
-                  <div className="mt-8 space-y-4">
-                    <div className="max-w-[82%] rounded-3xl rounded-tl-md border border-white/10 bg-white/7 p-4 text-sm text-white/88">
-                      Thanks for calling. How can I help you today?
-                    </div>
-                    <div className="ml-auto max-w-[82%] rounded-3xl rounded-tr-md border border-white/10 bg-white/12 p-4 text-sm text-white/85">
-                      Can I get an appointment tomorrow afternoon?
-                    </div>
-                    <div className="max-w-[82%] rounded-3xl rounded-tl-md border border-white/10 bg-white/7 p-4 text-sm text-white/88">
-                      I have 3:30 PM open. Want me to book it for you?
-                    </div>
-                  </div>
+                  <HeroChat />
 
                   <div className="mt-8 grid gap-4 sm:grid-cols-3">
                     {[
@@ -410,41 +395,7 @@ export default function LyrexLandingPage() {
           </div>
         </section>
 
-        {/* WHY SALONS CHOOSE LYREX */}
-        <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-          <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
-            <SectionLabel>Why Salons Choose Lyrex</SectionLabel>
-            <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
-              Built for shops that can't afford to miss another call.
-            </h2>
-            <p className="mt-4 text-white/65 leading-7">
-              Every missed call is a booking that goes to your competitor. Lyrex makes sure that never happens.
-            </p>
-          </motion.div>
-
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {whyChooseItems.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <motion.div
-                  key={item.title}
-                  {...fadeUp}
-                  transition={{ duration: 0.65, delay: index * 0.05 }}
-                >
-                  <Card className="h-full p-6 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.055]">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/8">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <h3 className="mt-5 text-xl font-semibold">{item.title}</h3>
-                    <p className="mt-3 leading-7 text-white/60">{item.description}</p>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* FEATURES */}
+        {/* FEATURES (single, consolidated) */}
         <section id="features" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <motion.div {...fadeUp} className="max-w-2xl">
             <SectionLabel>Features</SectionLabel>
@@ -452,7 +403,7 @@ export default function LyrexLandingPage() {
               Everything a busy shop needs to turn calls into bookings.
             </h2>
             <p className="mt-4 text-white/60">
-              Built specifically for US salons and barber shops that want to capture every opportunity.
+              One smart receptionist that handles your phones, your calendar, and your customers — built specifically for US salons and barber shops.
             </p>
           </motion.div>
 
@@ -476,6 +427,29 @@ export default function LyrexLandingPage() {
               );
             })}
           </div>
+
+          {/* Trust strip */}
+          <motion.div
+            {...fadeUp}
+            className="mt-10 grid gap-3 rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {[
+              { icon: Lock, text: "Secure booking process" },
+              { icon: ShieldCheck, text: "No long-term contracts" },
+              { icon: Zap, text: "Fast 24-hour onboarding" },
+              { icon: MapPin, text: "Built for US salons & barbers" },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.text} className="flex items-center gap-3 text-sm text-white/75">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  {item.text}
+                </div>
+              );
+            })}
+          </motion.div>
         </section>
 
         {/* HOW IT WORKS */}
@@ -485,104 +459,36 @@ export default function LyrexLandingPage() {
             <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
               From ringing phone to booked appointment in seconds.
             </h2>
+            <p className="mt-4 text-white/60">
+              Five simple steps. No new hardware, no apps for your customers to download.
+            </p>
           </motion.div>
 
-          <div className="mt-10 grid gap-5 lg:grid-cols-5">
-            {steps.map((step, index) => (
-              <motion.div key={step} {...fadeUp} transition={{ duration: 0.65, delay: index * 0.05 }}>
-                <Card className="relative h-full p-5">
-                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-black">
-                    <span className="text-sm font-bold">0{index + 1}</span>
-                  </div>
-                  <div className="text-base font-medium text-white/88">{step}</div>
-                  {index < steps.length - 1 && (
-                    <ChevronRight className="absolute right-[-14px] top-1/2 hidden h-5 w-5 -translate-y-1/2 text-white/20 lg:block" />
-                  )}
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </section>
+          <div className="relative mt-12">
+            {/* Connector line for desktop */}
+            <div className="pointer-events-none absolute left-0 right-0 top-[34px] hidden h-px bg-gradient-to-r from-transparent via-white/15 to-transparent lg:block" />
 
-        {/* WHO WE SERVE */}
-        <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-          <div className="grid gap-6 lg:grid-cols-2">
-            <motion.div {...fadeUp}>
-              <Card className="h-full p-7 sm:p-8">
-                <SectionLabel>Who We Serve</SectionLabel>
-                <h2 className="mt-5 text-3xl font-semibold tracking-tight">
-                  Built for US salons and barber shops.
-                </h2>
-                <div className="mt-7 space-y-4">
-                  {[
-                    { icon: Users, text: "Hair Salons" },
-                    { icon: Users, text: "Barber Shops" },
-                  ].map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <div
-                        key={item.text}
-                        className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4"
-                      >
-                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10">
-                          <Icon className="h-5 w-5" />
-                        </div>
-                        <div className="text-lg font-medium">{item.text}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </Card>
-            </motion.div>
-
-            <motion.div {...fadeUp} transition={{ duration: 0.75, delay: 0.06 }}>
-              <Card className="h-full p-7 sm:p-8">
-                <SectionLabel>The Cost of a Missed Call</SectionLabel>
-                <h2 className="mt-5 text-3xl font-semibold tracking-tight">
-                  Every missed call is a booking your competitor takes.
-                </h2>
-                <p className="mt-4 leading-7 text-white/65">
-                  The average salon misses 30% of incoming calls. At an average ticket of $45, that's thousands in lost revenue every month — and loyal customers who book elsewhere.
-                </p>
-                <button
-                  onClick={scrollToForm}
-                  className="mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02]"
-                >
-                  Get Started <ArrowRight className="h-4 w-4" />
-                </button>
-              </Card>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* TRUST */}
-        <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-          <motion.div {...fadeUp} className="max-w-2xl">
-            <SectionLabel>Why Shop Owners Trust Lyrex</SectionLabel>
-            <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
-              Reliable, professional, and always on.
-            </h2>
-          </motion.div>
-
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {trustItems.map((item, index) => {
-              const Icon = item.icon;
-              return (
+            <div className="relative grid gap-6 lg:grid-cols-5 lg:gap-4">
+              {steps.map((step, index) => (
                 <motion.div
-                  key={item.title}
+                  key={step.title}
                   {...fadeUp}
-                  transition={{ duration: 0.65, delay: index * 0.05 }}
+                  transition={{ duration: 0.65, delay: index * 0.08 }}
+                  className="relative"
                 >
-                  <Card className="h-full p-6">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/8">
-                      <Icon className="h-5 w-5" />
+                  <div className="flex flex-col items-start">
+                    <div className="relative z-10 flex h-[68px] w-[68px] items-center justify-center rounded-2xl border border-white/15 bg-[#0a0a0a] shadow-[0_10px_40px_rgba(255,255,255,0.06)]">
+                      <span className="text-lg font-bold tracking-tight">0{index + 1}</span>
                     </div>
-                    <h3 className="mt-5 text-xl font-semibold">{item.title}</h3>
-                    <p className="mt-3 leading-7 text-white/60">{item.description}</p>
-                  </Card>
+                    <h3 className="mt-5 text-base font-semibold text-white/90">{step.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-white/55">{step.description}</p>
+                  </div>
+                  {index < steps.length - 1 && (
+                    <ChevronRight className="absolute right-[-12px] top-[22px] hidden h-6 w-6 text-white/30 lg:block" />
+                  )}
                 </motion.div>
-              );
-            })}
+              ))}
+            </div>
           </div>
         </section>
 
@@ -594,26 +500,27 @@ export default function LyrexLandingPage() {
               Simple monthly pricing. Cancel anytime.
             </h2>
             <p className="mt-4 text-white/65">
-              Most shops recover their plan cost with just 1–2 saved bookings per month. No contracts. No setup fees.
+              Most shops cover their plan with just 1–2 saved bookings per month. No contracts. No setup fees.
             </p>
           </motion.div>
 
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+          <div className="mt-14 grid gap-6 lg:grid-cols-3 lg:items-stretch">
             {pricing.map((plan, index) => (
               <motion.div
                 key={plan.name}
                 {...fadeUp}
                 transition={{ duration: 0.7, delay: index * 0.05 }}
+                className={plan.highlight ? "lg:-mt-4" : ""}
               >
                 <Card
                   className={`relative flex h-full flex-col p-7 sm:p-8 ${
                     plan.highlight
-                      ? "border-white/30 bg-white/[0.07] shadow-[0_30px_120px_rgba(255,255,255,0.08)]"
+                      ? "border-white/30 bg-white/[0.07] shadow-[0_30px_120px_rgba(255,255,255,0.1)] ring-1 ring-white/15"
                       : ""
                   }`}
                 >
                   {plan.badge && (
-                    <div className="absolute right-6 top-6 rounded-full border border-white/15 bg-white px-3 py-1 text-xs font-semibold text-black">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-black shadow-lg shadow-white/10">
                       {plan.badge}
                     </div>
                   )}
@@ -622,37 +529,46 @@ export default function LyrexLandingPage() {
                     <div className="text-5xl font-semibold tracking-tight">{plan.price}</div>
                     <div className="pb-2 text-white/55">{plan.period}</div>
                   </div>
-                  <p className="mt-4 text-white/60">{plan.description}</p>
-                  <div className="mt-7 space-y-3">
+                  <p className="mt-4 leading-6 text-white/60">{plan.description}</p>
+                  <div className="mt-7 space-y-3.5">
                     {plan.features.map((item) => (
-                      <div key={item} className="flex items-start gap-3 text-sm text-white/80">
-                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+                      <div key={item} className="flex items-start gap-3 text-sm text-white/85">
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300/90" />
                         <span>{item}</span>
                       </div>
                     ))}
                   </div>
-                  <button
-                    onClick={scrollToForm}
-                    className={`mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-sm font-semibold transition ${
-                      plan.highlight
-                        ? "bg-white text-black hover:scale-[1.01]"
-                        : "border border-white/12 bg-white/5 text-white hover:border-white/25 hover:bg-white/[0.08]"
-                    }`}
-                  >
-                    Get Started <ArrowRight className="h-4 w-4" />
-                  </button>
+                  <div className="mt-auto pt-8">
+                    <button
+                      onClick={scrollToForm}
+                      className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-sm font-semibold transition ${
+                        plan.highlight
+                          ? "bg-white text-black hover:scale-[1.01]"
+                          : "border border-white/12 bg-white/5 text-white hover:border-white/25 hover:bg-white/[0.08]"
+                      }`}
+                    >
+                      {plan.cta} <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
                 </Card>
               </motion.div>
             ))}
           </div>
 
-          <div className="mt-10 text-center text-sm text-white/55">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-white/55">
+            <span className="inline-flex items-center gap-2"><Lock className="h-4 w-4" /> Secure checkout</span>
+            <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Cancel anytime</span>
+            <span className="inline-flex items-center gap-2"><Zap className="h-4 w-4" /> Live in 24 hours</span>
+          </div>
+
+          <div className="mt-6 text-center text-sm text-white/55">
             Not sure which plan? <button onClick={scrollToForm} className="text-white underline-offset-4 hover:underline">Book a demo</button> and we'll recommend the right fit.
           </div>
         </section>
 
         {/* DEMO REQUEST FORM */}
-        <section id="request-demo" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <section id="demo" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <div id="request-demo" />
           <motion.div {...fadeUp}>
             <Card className="relative overflow-hidden p-8 sm:p-10 lg:p-12">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.14),_transparent_30%)]" />
@@ -660,27 +576,35 @@ export default function LyrexLandingPage() {
                 <div>
                   <SectionLabel>Book Demo</SectionLabel>
                   <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
-                    See Lyrex In Action
+                    See Lyrex Live On A Real Call.
                   </h2>
                   <p className="mt-4 max-w-2xl text-white/65 leading-7">
-                    Request a demo and we'll show you exactly how Lyrex answers calls, books appointments, and handles customer questions for your business.
+                    A 15-minute call where you hear exactly how Lyrex would sound answering your shop's phone.
                   </p>
 
-                  <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                  <div className="mt-8 space-y-3">
                     {[
-                      "Live walkthrough of your setup",
-                      "Hear the AI handle real calls",
-                      "See bookings appear in Google Calendar",
-                      "No pressure, no contracts",
+                      "Live AI phone demo",
+                      "Hear real customer conversations",
+                      "See Google Calendar booking in real-time",
+                      "Ask questions live",
+                      "No obligation, no pressure",
                     ].map((item) => (
                       <div
                         key={item}
-                        className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white/80"
+                        className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-white/85"
                       >
-                        <CheckCircle2 className="h-4 w-4 shrink-0" />
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-400/15">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+                        </div>
                         <span className="text-sm">{item}</span>
                       </div>
                     ))}
+                  </div>
+
+                  <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-white/45">
+                    <span className="inline-flex items-center gap-1.5"><Lock className="h-3.5 w-3.5" /> Your info stays private</span>
+                    <span className="inline-flex items-center gap-1.5"><Clock3 className="h-3.5 w-3.5" /> 15 minutes</span>
                   </div>
                 </div>
 
@@ -764,7 +688,7 @@ export default function LyrexLandingPage() {
                         disabled={formStatus === "submitting"}
                         className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.01] disabled:opacity-70 disabled:cursor-not-allowed"
                       >
-                        {formStatus === "submitting" ? "Submitting..." : "Book Demo"}
+                        {formStatus === "submitting" ? "Submitting..." : "Book My Demo"}
                         {formStatus !== "submitting" && <ArrowRight className="h-4 w-4" />}
                       </button>
 
@@ -812,7 +736,7 @@ export default function LyrexLandingPage() {
             <Card className="relative overflow-hidden p-8 sm:p-10 lg:p-12">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.14),_transparent_30%)]" />
               <div className="relative z-10 text-center">
-                <SectionLabel>Get Started Today</SectionLabel>
+                <SectionLabel>Start Today</SectionLabel>
                 <h2 className="mx-auto mt-5 max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
                   Your next missed call could be your next best client.
                 </h2>
@@ -822,16 +746,16 @@ export default function LyrexLandingPage() {
 
                 <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                   <button
-                    onClick={scrollToForm}
+                    onClick={scrollToPricing}
                     className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02]"
                   >
-                    Get Started <ArrowRight className="h-4 w-4" />
+                    Get My AI Receptionist <ArrowRight className="h-4 w-4" />
                   </button>
                   <button
                     onClick={scrollToForm}
                     className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08]"
                   >
-                    Book Demo
+                    See Lyrex Live
                   </button>
                 </div>
               </div>
