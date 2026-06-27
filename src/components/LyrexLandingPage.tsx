@@ -338,24 +338,24 @@ export default function LyrexLandingPage() {
             <motion.div {...fadeUp}>
               <SectionLabel>AI Receptionists for US Salons & Barber Shops</SectionLabel>
               <h1 className="mt-6 max-w-3xl text-5xl font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl">
-                Book Every Client. Even The Ones You Miss.
+                Never Miss Another Booking.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75 sm:text-xl">
-                Lyrex is a human-like AI receptionist that answers every call, books appointments straight into your Google Calendar, and turns missed calls into paying clients — 24/7.
+                Lyrex is a human-like AI receptionist that answers every call, books appointments directly into your Google Calendar, and turns missed calls into paying clients—24/7.
               </p>
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <button
-                  onClick={scrollToPricing}
+                  onClick={scrollToForm}
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02]"
                 >
-                  Get Started <ArrowRight className="h-4 w-4" />
+                  Get My AI Receptionist <ArrowRight className="h-4 w-4" />
                 </button>
                 <button
-                  onClick={scrollToForm}
+                  onClick={scrollTo("demo")}
                   className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08]"
                 >
-                  Book Demo
+                  See Lyrex Live
                 </button>
               </div>
 
