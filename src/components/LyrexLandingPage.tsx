@@ -781,8 +781,8 @@ export default function LyrexLandingPage() {
       </main>
 
       <footer className="border-t border-white/5 bg-black/40">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-          <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="grid gap-10 md:grid-cols-3">
             <div>
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/10">
@@ -790,14 +790,38 @@ export default function LyrexLandingPage() {
                 </div>
                 <div className="text-xl font-semibold">Lyrex</div>
               </div>
-              <div className="mt-3 text-white/55">
-                AI Receptionists for US Salons & Barber Shops
-              </div>
+              <p className="mt-3 text-sm text-white/55">
+                AI Receptionists for US Salons &amp; Barber Shops.
+              </p>
+              <p className="mt-2 text-sm text-white/45">
+                Built for salons &amp; barber shops across the United States.
+              </p>
             </div>
-            <div className="text-sm text-white/45">
-              <div>Email: <a href="mailto:LyrexAI@gmail.com" className="text-white/70 hover:text-white">LyrexAI@gmail.com</a></div>
-              <div className="mt-2">© 2026 Lyrex. All Rights Reserved.</div>
+
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Explore</div>
+              <ul className="mt-4 space-y-2 text-sm text-white/70">
+                <li><a href="#pricing" onClick={scrollTo("pricing")} className="hover:text-white">Pricing</a></li>
+                <li><a href="#demo" onClick={scrollTo("demo")} className="hover:text-white">Demo</a></li>
+                <li><a href="#faq" onClick={scrollTo("faq")} className="hover:text-white">FAQ</a></li>
+              </ul>
             </div>
+
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Contact</div>
+              <ul className="mt-4 space-y-2 text-sm text-white/70">
+                <li>
+                  Email:{" "}
+                  <a href="mailto:LyrexAI@gmail.com" className="text-white/90 hover:text-white">
+                    LyrexAI@gmail.com
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-10 border-t border-white/5 pt-6 text-center text-xs text-white/40">
+            © 2026 Lyrex. All Rights Reserved.
           </div>
         </div>
       </footer>
