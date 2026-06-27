@@ -249,30 +249,44 @@ export default function LyrexLandingPage() {
 
   const handleRequestDemo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setFormStatus("submitting");
+    if (formStatus === "submitting") return;
 
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      name: String(formData.get("name") || "").trim(),
-      business: String(formData.get("business") || "").trim(),
-      email: String(formData.get("email") || "").trim(),
-      phone: String(formData.get("phone") || "").trim(),
-    };
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const name = String(formData.get("name") || "").trim();
+    const business = String(formData.get("business") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const phone = String(formData.get("phone") || "").trim();
+
+    if (!name || !business || !email || !phone) {
+      setFormStatus("error");
+      setFormError("Please fill in all fields before submitting.");
+      return;
+    }
+
+    setFormStatus("submitting");
+    setFormError(null);
 
     try {
-      const response = await fetch("https://formspree.io/f/YOUR_FORM_ID", {
+      const response = await fetch("https://formspree.io/f/mzdlrbbr", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ name, business, email, phone }),
       });
 
       if (response.ok) {
         setFormStatus("success");
-        (e.target as HTMLFormElement).reset();
+        form.reset();
       } else {
+        const payload = await response.json().catch(() => null);
+        const message =
+          (payload && Array.isArray(payload.errors) && payload.errors[0]?.message) ||
+          "We couldn't submit your request. Please try again or email LyrexAI@gmail.com.";
+        setFormError(message);
         setFormStatus("error");
       }
     } catch {
+      setFormError("Network error. Please check your connection and try again.");
       setFormStatus("error");
     }
   };
