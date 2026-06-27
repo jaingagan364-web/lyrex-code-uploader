@@ -762,13 +762,13 @@ export default function LyrexLandingPage() {
 
                 <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                   <button
-                    onClick={scrollToPricing}
+                    onClick={scrollToForm}
                     className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02]"
                   >
                     Get My AI Receptionist <ArrowRight className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={scrollToForm}
+                    onClick={scrollTo("demo")}
                     className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08]"
                   >
                     See Lyrex Live
