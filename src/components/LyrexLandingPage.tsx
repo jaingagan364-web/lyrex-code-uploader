@@ -322,10 +322,10 @@ export default function LyrexLandingPage() {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={scrollToPricing}
+              onClick={scrollToForm}
               className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:scale-[1.02]"
             >
-              Get Started <ArrowRight className="h-4 w-4" />
+              Get My AI Receptionist <ArrowRight className="h-4 w-4" />
             </button>
           </div>
         </div>
