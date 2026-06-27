@@ -150,6 +150,7 @@ const heroTrust = [
   "Google Calendar Sync",
   "No Contracts",
   "Human-like AI Receptionist",
+  "No new hardware required",
 ];
 
 const chatScript: { role: "ai" | "customer"; text: string }[] = [
@@ -245,33 +246,48 @@ function HeroChat() {
 
 export default function LyrexLandingPage() {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [formError, setFormError] = useState<string | null>(null);
 
   const handleRequestDemo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setFormStatus("submitting");
+    if (formStatus === "submitting") return;
 
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      name: String(formData.get("name") || "").trim(),
-      business: String(formData.get("business") || "").trim(),
-      email: String(formData.get("email") || "").trim(),
-      phone: String(formData.get("phone") || "").trim(),
-    };
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const name = String(formData.get("name") || "").trim();
+    const business = String(formData.get("business") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const phone = String(formData.get("phone") || "").trim();
+
+    if (!name || !business || !email || !phone) {
+      setFormStatus("error");
+      setFormError("Please fill in all fields before submitting.");
+      return;
+    }
+
+    setFormStatus("submitting");
+    setFormError(null);
 
     try {
-      const response = await fetch("https://formspree.io/f/YOUR_FORM_ID", {
+      const response = await fetch("https://formspree.io/f/mzdlrbbr", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ name, business, email, phone }),
       });
 
       if (response.ok) {
         setFormStatus("success");
-        (e.target as HTMLFormElement).reset();
+        form.reset();
       } else {
+        const payload = await response.json().catch(() => null);
+        const message =
+          (payload && Array.isArray(payload.errors) && payload.errors[0]?.message) ||
+          "We couldn't submit your request. Please try again or email LyrexAI@gmail.com.";
+        setFormError(message);
         setFormStatus("error");
       }
     } catch {
+      setFormError("Network error. Please check your connection and try again.");
       setFormStatus("error");
     }
   };
@@ -306,10 +322,10 @@ export default function LyrexLandingPage() {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={scrollToPricing}
+              onClick={scrollToForm}
               className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:scale-[1.02]"
             >
-              Get Started <ArrowRight className="h-4 w-4" />
+              Get My AI Receptionist <ArrowRight className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -322,24 +338,24 @@ export default function LyrexLandingPage() {
             <motion.div {...fadeUp}>
               <SectionLabel>AI Receptionists for US Salons & Barber Shops</SectionLabel>
               <h1 className="mt-6 max-w-3xl text-5xl font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl">
-                Book Every Client. Even The Ones You Miss.
+                Never Miss Another Booking.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75 sm:text-xl">
-                Lyrex is a human-like AI receptionist that answers every call, books appointments straight into your Google Calendar, and turns missed calls into paying clients — 24/7.
+                Lyrex is a human-like AI receptionist that answers every call, books appointments directly into your Google Calendar, and turns missed calls into paying clients—24/7.
               </p>
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <button
-                  onClick={scrollToPricing}
+                  onClick={scrollToForm}
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02]"
                 >
-                  Get Started <ArrowRight className="h-4 w-4" />
+                  Get My AI Receptionist <ArrowRight className="h-4 w-4" />
                 </button>
                 <button
-                  onClick={scrollToForm}
+                  onClick={scrollTo("demo")}
                   className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08]"
                 >
-                  Book Demo
+                  See Lyrex Live
                 </button>
               </div>
 
@@ -614,9 +630,9 @@ export default function LyrexLandingPage() {
                       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-400/20">
                         <CheckCircle2 className="h-8 w-8 text-emerald-400" />
                       </div>
-                      <h3 className="mt-6 text-xl font-semibold">Demo Requested</h3>
+                      <h3 className="mt-6 text-xl font-semibold">Thank you!</h3>
                       <p className="mt-3 text-white/65">
-                        We'll reach out within 1 business day to schedule your demo.
+                        Your demo request has been received. We'll contact you within one business day.
                       </p>
                       <button
                         onClick={() => setFormStatus("idle")}
@@ -626,10 +642,10 @@ export default function LyrexLandingPage() {
                       </button>
                     </div>
                   ) : (
-                    <form onSubmit={handleRequestDemo} className="space-y-4">
-                      {formStatus === "error" && (
+                    <form onSubmit={handleRequestDemo} noValidate className="space-y-4">
+                      {formStatus === "error" && formError && (
                         <div className="rounded-2xl border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-300">
-                          Something went wrong. Please try again or email us directly at LyrexAI@gmail.com
+                          {formError}
                         </div>
                       )}
 
@@ -746,13 +762,13 @@ export default function LyrexLandingPage() {
 
                 <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                   <button
-                    onClick={scrollToPricing}
+                    onClick={scrollToForm}
                     className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02]"
                   >
                     Get My AI Receptionist <ArrowRight className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={scrollToForm}
+                    onClick={scrollTo("demo")}
                     className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08]"
                   >
                     See Lyrex Live
@@ -765,8 +781,8 @@ export default function LyrexLandingPage() {
       </main>
 
       <footer className="border-t border-white/5 bg-black/40">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-          <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="grid gap-10 md:grid-cols-3">
             <div>
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/10">
@@ -774,14 +790,38 @@ export default function LyrexLandingPage() {
                 </div>
                 <div className="text-xl font-semibold">Lyrex</div>
               </div>
-              <div className="mt-3 text-white/55">
-                AI Receptionists for US Salons & Barber Shops
-              </div>
+              <p className="mt-3 text-sm text-white/55">
+                AI Receptionists for US Salons &amp; Barber Shops.
+              </p>
+              <p className="mt-2 text-sm text-white/45">
+                Built for salons &amp; barber shops across the United States.
+              </p>
             </div>
-            <div className="text-sm text-white/45">
-              <div>Email: <a href="mailto:LyrexAI@gmail.com" className="text-white/70 hover:text-white">LyrexAI@gmail.com</a></div>
-              <div className="mt-2">© 2026 Lyrex. All Rights Reserved.</div>
+
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Explore</div>
+              <ul className="mt-4 space-y-2 text-sm text-white/70">
+                <li><a href="#pricing" onClick={scrollTo("pricing")} className="hover:text-white">Pricing</a></li>
+                <li><a href="#demo" onClick={scrollTo("demo")} className="hover:text-white">Demo</a></li>
+                <li><a href="#faq" onClick={scrollTo("faq")} className="hover:text-white">FAQ</a></li>
+              </ul>
             </div>
+
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Contact</div>
+              <ul className="mt-4 space-y-2 text-sm text-white/70">
+                <li>
+                  Email:{" "}
+                  <a href="mailto:LyrexAI@gmail.com" className="text-white/90 hover:text-white">
+                    LyrexAI@gmail.com
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-10 border-t border-white/5 pt-6 text-center text-xs text-white/40">
+            © 2026 Lyrex. All Rights Reserved.
           </div>
         </div>
       </footer>
