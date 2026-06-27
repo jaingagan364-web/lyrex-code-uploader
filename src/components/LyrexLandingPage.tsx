@@ -246,6 +246,7 @@ function HeroChat() {
 
 export default function LyrexLandingPage() {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [formError, setFormError] = useState<string | null>(null);
 
   const handleRequestDemo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
