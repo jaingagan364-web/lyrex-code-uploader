@@ -150,6 +150,7 @@ const heroTrust = [
   "Google Calendar Sync",
   "No Contracts",
   "Human-like AI Receptionist",
+  "No new hardware required",
 ];
 
 const chatScript: { role: "ai" | "customer"; text: string }[] = [
