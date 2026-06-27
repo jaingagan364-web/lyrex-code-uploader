@@ -630,9 +630,9 @@ export default function LyrexLandingPage() {
                       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-400/20">
                         <CheckCircle2 className="h-8 w-8 text-emerald-400" />
                       </div>
-                      <h3 className="mt-6 text-xl font-semibold">Demo Requested</h3>
+                      <h3 className="mt-6 text-xl font-semibold">Thank you!</h3>
                       <p className="mt-3 text-white/65">
-                        We'll reach out within 1 business day to schedule your demo.
+                        Your demo request has been received. We'll contact you within one business day.
                       </p>
                       <button
                         onClick={() => setFormStatus("idle")}
@@ -642,10 +642,10 @@ export default function LyrexLandingPage() {
                       </button>
                     </div>
                   ) : (
-                    <form onSubmit={handleRequestDemo} className="space-y-4">
-                      {formStatus === "error" && (
+                    <form onSubmit={handleRequestDemo} noValidate className="space-y-4">
+                      {formStatus === "error" && formError && (
                         <div className="rounded-2xl border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-300">
-                          Something went wrong. Please try again or email us directly at LyrexAI@gmail.com
+                          {formError}
                         </div>
                       )}
 
