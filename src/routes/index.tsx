@@ -1,16 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import LyrexLandingPage from "@/components/LyrexLandingPage";
+import FebilyLandingPage from "@/components/FebilyLandingPage";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Lyrex — AI Receptionists for Salons & Barber Shops" },
+      { title: "Febily — AI Receptionists for Salons & Barber Shops" },
       {
         name: "description",
         content:
-          "Lyrex AI receptionists answer calls, schedule appointments, and support your customers 24/7.",
+          "Febily AI receptionists answer calls, schedule appointments, and support your customers 24/7.",
       },
-      { property: "og:title", content: "Lyrex — AI Receptionists" },
+      { property: "og:title", content: "Febily — AI Receptionists" },
       {
         property: "og:description",
         content:
@@ -18,5 +18,5 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  component: LyrexLandingPage,
+  component: FebilyLandingPage,
 });

@@ -77,14 +77,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Febily — AI Receptionists for Salons & Barber Shops" },
+      { name: "description", content: "Febily AI receptionists answer calls, schedule appointments, and support your customers 24/7." },
+      { name: "author", content: "Febily" },
+      { property: "og:title", content: "Febily — AI Receptionists" },
+      { property: "og:description", content: "24/7 AI receptionists that answer calls and book appointments for salons and barber shops." },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Febily" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {

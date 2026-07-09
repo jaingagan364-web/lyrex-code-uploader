@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   CalendarDays,
@@ -18,6 +19,7 @@ import {
   Lock,
   MapPin,
 } from "lucide-react";
+import FebilyAudioPlayer from "@/components/FebilyAudioPlayer";
 
 const fadeUp = {
   initial: { opacity: 0, y: 28 },
@@ -35,7 +37,7 @@ const features = [
   {
     icon: CalendarDays,
     title: "Automatic Booking",
-    description: "Lyrex schedules, reschedules, and confirms appointments without lifting a finger.",
+    description: "Febily schedules, reschedules, and confirms appointments without lifting a finger.",
   },
   {
     icon: LayoutGrid,
@@ -77,10 +79,10 @@ const pricing = [
       "AI Receptionist (business hours)",
       "Automatic Appointment Booking",
       "Google Calendar Integration",
-      "Up to 100 calls / month",
+      "Up to 150 AI minutes per month",
       "Email Support",
     ],
-    cta: "Start Saving Bookings",
+    cta: "Get Started",
     highlight: false,
   },
   {
@@ -91,12 +93,12 @@ const pricing = [
     features: [
       "Everything in Starter",
       "24/7 Call Handling",
-      "Up to 500 calls / month",
+      "Up to 600 AI minutes per month",
       "Custom Services, Prices & Stylists",
       "SMS Booking Confirmations",
       "Priority Support",
     ],
-    cta: "Get My AI Receptionist",
+    cta: "Get Started",
     highlight: true,
     badge: "Best Value",
   },
@@ -107,13 +109,13 @@ const pricing = [
     description: "For multi-chair shops and multi-location brands.",
     features: [
       "Everything in Growth",
-      "Unlimited Calls",
+      "Up to 1200 AI minutes per month",
       "Multi-Location Support",
       "Fully Custom AI Voice & Script",
       "Dedicated Onboarding Specialist",
       "Priority Feature Requests",
     ],
-    cta: "Get My AI Receptionist",
+    cta: "Get Started",
     highlight: false,
   },
 ];
@@ -121,15 +123,15 @@ const pricing = [
 const faqs = [
   {
     q: "Does the AI really answer calls 24/7?",
-    a: "Yes. Lyrex picks up every call instantly, day or night, including weekends and holidays.",
+    a: "Yes. Febily picks up every call instantly, day or night, including weekends and holidays.",
   },
   {
     q: "Will it book directly into my calendar?",
-    a: "Yes. Lyrex integrates with Google Calendar and books appointments based on your real-time availability.",
+    a: "Yes. Febily integrates with Google Calendar and books appointments based on your real-time availability.",
   },
   {
     q: "Is this built for US salons and barber shops?",
-    a: "Yes. Lyrex is designed specifically for US-based salons and barber shops with US phone numbers and English-speaking AI.",
+    a: "Yes. Febily is designed specifically for US-based salons and barber shops with US phone numbers and English-speaking AI.",
   },
   {
     q: "How long does setup take?",
@@ -137,7 +139,7 @@ const faqs = [
   },
   {
     q: "What if the AI can't answer something?",
-    a: "Lyrex takes a message and forwards it to you by email or SMS — so you never lose the lead.",
+    a: "Febily takes a message and forwards it to you by email or SMS — so you never lose the lead.",
   },
   {
     q: "Can I cancel anytime?",
@@ -192,7 +194,6 @@ const scrollTo = (id: string) => (e: React.MouseEvent<HTMLAnchorElement | HTMLBu
 };
 
 const scrollToForm = scrollTo("request-demo");
-const scrollToPricing = scrollTo("pricing");
 
 function HeroChat() {
   const [visible, setVisible] = useState(1);
@@ -203,7 +204,6 @@ function HeroChat() {
     return () => clearTimeout(t);
   }, [visible]);
 
-  // restart loop
   useEffect(() => {
     if (visible === chatScript.length) {
       const t = setTimeout(() => setVisible(1), 4500);
@@ -226,7 +226,7 @@ function HeroChat() {
           }
         >
           <div className="mb-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/40">
-            {msg.role === "ai" ? "Lyrex AI" : "Customer"}
+            {msg.role === "ai" ? "Febily AI" : "Customer"}
           </div>
           {msg.text}
         </motion.div>
@@ -244,7 +244,7 @@ function HeroChat() {
   );
 }
 
-export default function LyrexLandingPage() {
+export default function FebilyLandingPage() {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -282,7 +282,7 @@ export default function LyrexLandingPage() {
         const payload = await response.json().catch(() => null);
         const message =
           (payload && Array.isArray(payload.errors) && payload.errors[0]?.message) ||
-          "We couldn't submit your request. Please try again or email LyrexAI@gmail.com.";
+          "We couldn't submit your request. Please try again or email FebilyAI@gmail.com.";
         setFormError(message);
         setFormStatus("error");
       }
@@ -308,7 +308,7 @@ export default function LyrexLandingPage() {
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-lg font-semibold tracking-wide">Lyrex</div>
+              <div className="text-lg font-semibold tracking-wide">Febily</div>
               <div className="text-xs text-white/45">AI Receptionists</div>
             </div>
           </div>
@@ -325,7 +325,7 @@ export default function LyrexLandingPage() {
               onClick={scrollToForm}
               className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:scale-[1.02]"
             >
-              Get My AI Receptionist <ArrowRight className="h-4 w-4" />
+              Get Started <ArrowRight className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -341,7 +341,7 @@ export default function LyrexLandingPage() {
                 Never Miss Another Booking.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75 sm:text-xl">
-                Lyrex is a human-like AI receptionist that answers every call, books appointments directly into your Google Calendar, and turns missed calls into paying clients—24/7.
+                Febily is a human-like AI receptionist that answers every call, books appointments directly into your Google Calendar, and turns missed calls into paying clients—24/7.
               </p>
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -355,7 +355,7 @@ export default function LyrexLandingPage() {
                   onClick={scrollTo("demo")}
                   className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08]"
                 >
-                  See Lyrex Live
+                  Hear Febily Live
                 </button>
               </div>
 
@@ -382,7 +382,7 @@ export default function LyrexLandingPage() {
                       </div>
                       <div>
                         <div className="text-sm text-white/50">Live call · Elite Fade Barbershop</div>
-                        <div className="text-lg font-semibold">Lyrex AI is on the line</div>
+                        <div className="text-lg font-semibold">Febily AI is on the line</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300">
@@ -411,7 +411,27 @@ export default function LyrexLandingPage() {
           </div>
         </section>
 
-        {/* FEATURES (single, consolidated) */}
+        {/* AUDIO DEMO */}
+        <section id="demo" className="mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8">
+          <motion.div {...fadeUp} className="text-center">
+            <SectionLabel>Live Sample</SectionLabel>
+            <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+              Hear Febily in Action
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-white/65 leading-7">
+              Listen to a real AI receptionist answering a customer call and booking an appointment automatically.
+            </p>
+          </motion.div>
+
+          <motion.div {...fadeUp} transition={{ duration: 0.8, ease: "easeOut" as const, delay: 0.1 }} className="mt-10">
+            <FebilyAudioPlayer />
+            <p className="mt-5 text-center text-sm text-white/55">
+              This is a real AI conversation powered by Febily's AI receptionist.
+            </p>
+          </motion.div>
+        </section>
+
+        {/* FEATURES */}
         <section id="features" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <motion.div {...fadeUp} className="max-w-2xl">
             <SectionLabel>Features</SectionLabel>
@@ -444,7 +464,6 @@ export default function LyrexLandingPage() {
             })}
           </div>
 
-          {/* Trust strip */}
           <motion.div
             {...fadeUp}
             className="mt-10 grid gap-3 rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:grid-cols-2 lg:grid-cols-4"
@@ -481,7 +500,6 @@ export default function LyrexLandingPage() {
           </motion.div>
 
           <div className="relative mt-12">
-            {/* Connector line for desktop */}
             <div className="pointer-events-none absolute left-0 right-0 top-[34px] hidden h-px bg-gradient-to-r from-transparent via-white/15 to-transparent lg:block" />
 
             <div className="relative grid gap-6 lg:grid-cols-5 lg:gap-4">
@@ -556,7 +574,6 @@ export default function LyrexLandingPage() {
                   </div>
                   <div className="mt-auto pt-8">
                     <button
-                      onClick={scrollToForm}
                       className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-sm font-semibold transition ${
                         plan.highlight
                           ? "bg-white text-black hover:scale-[1.01]"
@@ -583,8 +600,7 @@ export default function LyrexLandingPage() {
         </section>
 
         {/* DEMO REQUEST FORM */}
-        <section id="demo" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-          <div id="request-demo" />
+        <section id="request-demo" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <motion.div {...fadeUp}>
             <Card className="relative overflow-hidden p-8 sm:p-10 lg:p-12">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.14),_transparent_30%)]" />
@@ -592,10 +608,10 @@ export default function LyrexLandingPage() {
                 <div>
                   <SectionLabel>Book Demo</SectionLabel>
                   <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
-                    See Lyrex Live On A Real Call.
+                    See Febily Live On A Real Call.
                   </h2>
                   <p className="mt-4 max-w-2xl text-white/65 leading-7">
-                    A 15-minute call where you hear exactly how Lyrex would sound answering your shop's phone.
+                    A 15-minute call where you hear exactly how Febily would sound answering your shop's phone.
                   </p>
 
                   <div className="mt-8 space-y-3">
@@ -757,7 +773,7 @@ export default function LyrexLandingPage() {
                   Your next missed call could be your next best client.
                 </h2>
                 <p className="mx-auto mt-4 max-w-2xl leading-7 text-white/65">
-                  Set up Lyrex in under 24 hours and never miss another booking.
+                  Set up Febily in under 24 hours and never miss another booking.
                 </p>
 
                 <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -771,7 +787,7 @@ export default function LyrexLandingPage() {
                     onClick={scrollTo("demo")}
                     className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08]"
                   >
-                    See Lyrex Live
+                    Hear Febily Live
                   </button>
                 </div>
               </div>
@@ -782,13 +798,13 @@ export default function LyrexLandingPage() {
 
       <footer className="border-t border-white/5 bg-black/40">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="grid gap-10 md:grid-cols-3">
+          <div className="grid gap-10 md:grid-cols-4">
             <div>
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/10">
                   <Sparkles className="h-4 w-4" />
                 </div>
-                <div className="text-xl font-semibold">Lyrex</div>
+                <div className="text-xl font-semibold">Febily</div>
               </div>
               <p className="mt-3 text-sm text-white/55">
                 AI Receptionists for US Salons &amp; Barber Shops.
@@ -808,12 +824,21 @@ export default function LyrexLandingPage() {
             </div>
 
             <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Legal</div>
+              <ul className="mt-4 space-y-2 text-sm text-white/70">
+                <li><Link to="/privacy" className="hover:text-white">Privacy Policy</Link></li>
+                <li><Link to="/terms" className="hover:text-white">Terms of Service</Link></li>
+                <li><Link to="/refund" className="hover:text-white">Refund Policy</Link></li>
+              </ul>
+            </div>
+
+            <div>
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Contact</div>
               <ul className="mt-4 space-y-2 text-sm text-white/70">
                 <li>
                   Email:{" "}
-                  <a href="mailto:LyrexAI@gmail.com" className="text-white/90 hover:text-white">
-                    LyrexAI@gmail.com
+                  <a href="mailto:FebilyAI@gmail.com" className="text-white/90 hover:text-white">
+                    FebilyAI@gmail.com
                   </a>
                 </li>
               </ul>
@@ -821,7 +846,7 @@ export default function LyrexLandingPage() {
           </div>
 
           <div className="mt-10 border-t border-white/5 pt-6 text-center text-xs text-white/40">
-            © 2026 Lyrex. All Rights Reserved.
+            © 2026 Febily. All Rights Reserved.
           </div>
         </div>
       </footer>
