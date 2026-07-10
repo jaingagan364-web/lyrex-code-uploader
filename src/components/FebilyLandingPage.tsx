@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
@@ -196,6 +196,7 @@ const scrollToForm = scrollTo("request-demo");
 
 function HeroChat() {
   const [visible, setVisible] = useState(1);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (visible >= chatScript.length) return;
@@ -210,35 +211,50 @@ function HeroChat() {
     }
   }, [visible]);
 
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  }, [visible]);
+
   return (
-    <div className="mt-8 space-y-3">
-      {chatScript.slice(0, visible).map((msg, i) => (
-        <motion.div
-          key={`${visible}-${i}`}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35 }}
-          className={
-            msg.role === "ai"
-              ? "max-w-[82%] rounded-3xl rounded-tl-md border border-white/10 bg-white/7 p-4 text-sm text-white/88"
-              : "ml-auto max-w-[82%] rounded-3xl rounded-tr-md border border-white/10 bg-white/12 p-4 text-sm text-white/85"
-          }
-        >
-          <div className="mb-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/40">
-            {msg.role === "ai" ? "Febily AI" : "Customer"}
-          </div>
-          {msg.text}
-        </motion.div>
-      ))}
-      {visible === chatScript.length && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="ml-auto inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300"
-        >
-          <CheckCircle2 className="h-3.5 w-3.5" /> Booked & synced to Google Calendar
-        </motion.div>
-      )}
+    <div
+      ref={scrollRef}
+      className="mt-8 h-[340px] space-y-3 overflow-y-auto pr-1 [scrollbar-width:thin] [-ms-overflow-style:none] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/10"
+    >
+      <AnimatePresence initial={false}>
+        {chatScript.slice(0, visible).map((msg, i) => (
+          <motion.div
+            key={`${visible}-${i}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            className={
+              msg.role === "ai"
+                ? "max-w-[82%] rounded-3xl rounded-tl-md border border-white/10 bg-white/7 p-4 text-sm text-white/88"
+                : "ml-auto max-w-[82%] rounded-3xl rounded-tr-md border border-white/10 bg-white/12 p-4 text-sm text-white/85"
+            }
+          >
+            <div className="mb-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/40">
+              {msg.role === "ai" ? "Febily AI" : "Customer"}
+            </div>
+            {msg.text}
+          </motion.div>
+        ))}
+        {visible === chatScript.length && (
+          <motion.div
+            key="booked"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35 }}
+            className="ml-auto inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300"
+          >
+            <CheckCircle2 className="h-3.5 w-3.5" /> Booked & synced to Google Calendar
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -354,7 +370,7 @@ export default function FebilyLandingPage() {
                   onClick={scrollTo("demo")}
                   className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08]"
                 >
-                  Hear Febily Live
+                  Hear AI Demo
                 </button>
               </div>
 

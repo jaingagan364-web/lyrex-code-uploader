@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Play, Pause, Volume2 } from "lucide-react";
-import audioAsset from "@/assets/febily-demo.mp3.asset.json";
+
+const AUDIO_SRC = "/febily-demo.mp3";
 
 function formatTime(seconds: number) {
   if (!isFinite(seconds) || seconds < 0) return "0:00";
@@ -15,33 +16,50 @@ export default function FebilyAudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [current, setCurrent] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isReady, setIsReady] = useState(false);
+  const durationFixedRef = useRef(false);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    let durationFixed = false;
 
-    const onTime = () => setCurrent(audio.currentTime);
-    const onLoaded = () => {
+    const commitDuration = () => {
       const d = audio.duration;
       if (isFinite(d) && d > 0) {
         setDuration(d);
-      } else if (!durationFixed) {
-        // Some MP3s (VBR / missing headers) report Infinity/NaN duration.
-        // Force the browser to compute it by seeking to the end.
-        durationFixed = true;
-        const onSeeked = () => {
-          audio.currentTime = 0;
-          setCurrent(0);
-          audio.removeEventListener("seeked", onSeeked);
-        };
-        audio.addEventListener("seeked", onSeeked);
+        setIsReady(true);
+        return true;
+      }
+      return false;
+    };
+
+    const forceDuration = () => {
+      if (durationFixedRef.current) return;
+      durationFixedRef.current = true;
+      const onSeeked = () => {
+        audio.removeEventListener("seeked", onSeeked);
         try {
-          audio.currentTime = 1e9;
+          audio.currentTime = 0;
         } catch {
           /* noop */
         }
+        setCurrent(0);
+        commitDuration();
+      };
+      audio.addEventListener("seeked", onSeeked);
+      try {
+        audio.currentTime = 1e9;
+      } catch {
+        /* noop */
       }
+    };
+
+    const onTime = () => setCurrent(audio.currentTime);
+    const onLoaded = () => {
+      if (!commitDuration()) forceDuration();
+    };
+    const onCanPlay = () => {
+      commitDuration();
     };
     const onEnd = () => {
       setIsPlaying(false);
@@ -49,27 +67,48 @@ export default function FebilyAudioPlayer() {
         setCurrent(audio.duration);
       }
     };
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+
     audio.addEventListener("timeupdate", onTime);
     audio.addEventListener("loadedmetadata", onLoaded);
     audio.addEventListener("durationchange", onLoaded);
+    audio.addEventListener("canplay", onCanPlay);
+    audio.addEventListener("canplaythrough", onCanPlay);
     audio.addEventListener("ended", onEnd);
+    audio.addEventListener("play", onPlay);
+    audio.addEventListener("pause", onPause);
+
+    // Trigger metadata load explicitly (helps some production browsers/CDNs)
+    try {
+      audio.load();
+    } catch {
+      /* noop */
+    }
+
     return () => {
       audio.removeEventListener("timeupdate", onTime);
       audio.removeEventListener("loadedmetadata", onLoaded);
       audio.removeEventListener("durationchange", onLoaded);
+      audio.removeEventListener("canplay", onCanPlay);
+      audio.removeEventListener("canplaythrough", onCanPlay);
       audio.removeEventListener("ended", onEnd);
+      audio.removeEventListener("play", onPlay);
+      audio.removeEventListener("pause", onPause);
     };
   }, []);
 
-  const toggle = () => {
+  const toggle = async () => {
     const audio = audioRef.current;
     if (!audio) return;
     if (audio.paused) {
-      audio.play();
-      setIsPlaying(true);
+      try {
+        await audio.play();
+      } catch {
+        setIsPlaying(false);
+      }
     } else {
       audio.pause();
-      setIsPlaying(false);
     }
   };
 
@@ -79,15 +118,26 @@ export default function FebilyAudioPlayer() {
     if (!el || !audio || !duration) return;
     const rect = el.getBoundingClientRect();
     const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-    audio.currentTime = ratio * duration;
-    setCurrent(audio.currentTime);
+    const target = ratio * duration;
+    try {
+      audio.currentTime = target;
+      setCurrent(target);
+    } catch {
+      /* noop */
+    }
   };
 
-  const progressPct = duration ? (current / duration) * 100 : 0;
+  const progressPct = duration ? Math.min(100, (current / duration) * 100) : 0;
 
   return (
     <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:p-8">
-      <audio ref={audioRef} src={audioAsset.url} preload="metadata" />
+      <audio
+        ref={audioRef}
+        src={AUDIO_SRC}
+        preload="metadata"
+        playsInline
+        crossOrigin="anonymous"
+      />
 
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -128,7 +178,7 @@ export default function FebilyAudioPlayer() {
             className="group relative h-2 cursor-pointer rounded-full bg-white/10"
           >
             <div
-              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-white/90 to-white"
+              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-white/90 to-white transition-[width] duration-150 ease-linear"
               style={{ width: `${progressPct}%` }}
             />
             <div
@@ -138,7 +188,7 @@ export default function FebilyAudioPlayer() {
           </div>
           <div className="mt-2 flex items-center justify-between text-xs font-medium tabular-nums text-white/60">
             <span>{formatTime(current)}</span>
-            <span>{formatTime(duration)}</span>
+            <span>{isReady ? formatTime(duration) : "--:--"}</span>
           </div>
         </div>
       </div>
