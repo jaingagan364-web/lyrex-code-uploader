@@ -5,7 +5,6 @@ import {
   ArrowRight,
   CalendarDays,
   CheckCircle2,
-  Clock3,
   Mic,
   PhoneCall,
   Sparkles,
