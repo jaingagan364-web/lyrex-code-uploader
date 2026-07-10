@@ -282,7 +282,7 @@ export default function FebilyLandingPage() {
         const payload = await response.json().catch(() => null);
         const message =
           (payload && Array.isArray(payload.errors) && payload.errors[0]?.message) ||
-          "We couldn't submit your request. Please try again or email FebilyAI@gmail.com.";
+          "We couldn't submit your request. Please try again or email febilysupport@gmail.com.";
         setFormError(message);
         setFormStatus("error");
       }
@@ -837,8 +837,8 @@ export default function FebilyLandingPage() {
               <ul className="mt-4 space-y-2 text-sm text-white/70">
                 <li>
                   Email:{" "}
-                  <a href="mailto:FebilyAI@gmail.com" className="text-white/90 hover:text-white">
-                    FebilyAI@gmail.com
+                  <a href="mailto:febilysupport@gmail.com" className="text-white/90 hover:text-white">
+                    febilysupport@gmail.com
                   </a>
                 </li>
               </ul>
