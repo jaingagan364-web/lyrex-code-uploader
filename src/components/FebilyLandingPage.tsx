@@ -370,7 +370,7 @@ export default function FebilyLandingPage() {
                   onClick={scrollTo("demo")}
                   className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08]"
                 >
-                  Hear Febily Live
+                  Hear AI Demo
                 </button>
               </div>
 
