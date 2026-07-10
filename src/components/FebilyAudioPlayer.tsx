@@ -19,9 +19,36 @@ export default function FebilyAudioPlayer() {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    let durationFixed = false;
+
     const onTime = () => setCurrent(audio.currentTime);
-    const onLoaded = () => setDuration(audio.duration || 0);
-    const onEnd = () => setIsPlaying(false);
+    const onLoaded = () => {
+      const d = audio.duration;
+      if (isFinite(d) && d > 0) {
+        setDuration(d);
+      } else if (!durationFixed) {
+        // Some MP3s (VBR / missing headers) report Infinity/NaN duration.
+        // Force the browser to compute it by seeking to the end.
+        durationFixed = true;
+        const onSeeked = () => {
+          audio.currentTime = 0;
+          setCurrent(0);
+          audio.removeEventListener("seeked", onSeeked);
+        };
+        audio.addEventListener("seeked", onSeeked);
+        try {
+          audio.currentTime = 1e9;
+        } catch {
+          /* noop */
+        }
+      }
+    };
+    const onEnd = () => {
+      setIsPlaying(false);
+      if (isFinite(audio.duration) && audio.duration > 0) {
+        setCurrent(audio.duration);
+      }
+    };
     audio.addEventListener("timeupdate", onTime);
     audio.addEventListener("loadedmetadata", onLoaded);
     audio.addEventListener("durationchange", onLoaded);
