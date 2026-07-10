@@ -608,19 +608,19 @@ export default function FebilyLandingPage() {
                 <div>
                   <SectionLabel>Book Demo</SectionLabel>
                   <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
-                    See Febily Live On A Real Call.
+                    Get Your Personalized AI Demo.
                   </h2>
                   <p className="mt-4 max-w-2xl text-white/65 leading-7">
-                    A 15-minute call where you hear exactly how Febily would sound answering your shop's phone.
+                    Fill out the form and we'll contact you within one business day to schedule your personalized AI receptionist demo.
                   </p>
 
                   <div className="mt-8 space-y-3">
                     {[
-                      "Live AI phone demo",
-                      "Hear real customer conversations",
-                      "See Google Calendar booking in real-time",
-                      "Ask questions live",
-                      "No obligation, no pressure",
+                      "Personalized AI receptionist demo",
+                      "See real customer conversations",
+                      "Google Calendar booking integration",
+                      "Tailored to your business",
+                      "No obligation or long-term contract",
                     ].map((item) => (
                       <div
                         key={item}
@@ -636,7 +636,6 @@ export default function FebilyLandingPage() {
 
                   <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-white/45">
                     <span className="inline-flex items-center gap-1.5"><Lock className="h-3.5 w-3.5" /> Your info stays private</span>
-                    <span className="inline-flex items-center gap-1.5"><Clock3 className="h-3.5 w-3.5" /> 15 minutes</span>
                   </div>
                 </div>
 
