@@ -562,7 +562,7 @@ export default function FebilyLandingPage() {
                 className={plan.highlight ? "lg:-mt-4" : ""}
               >
                 <Card
-                  className={`relative flex h-full flex-col p-7 sm:p-8 ${
+                  className={`relative flex h-full flex-col p-6 sm:p-7 ${
                     plan.highlight
                       ? "border-white/30 bg-white/[0.07] shadow-[0_30px_120px_rgba(255,255,255,0.1)] ring-1 ring-white/15"
                       : ""
@@ -574,12 +574,12 @@ export default function FebilyLandingPage() {
                     </div>
                   )}
                   <div className="text-lg font-medium">{plan.name}</div>
-                  <div className="mt-4 flex items-end gap-1">
-                    <div className="text-5xl font-semibold tracking-tight">{plan.price}</div>
-                    <div className="pb-2 text-white/55">{plan.period}</div>
+                  <div className="mt-3 flex items-end gap-1">
+                    <div className="text-4xl font-semibold tracking-tight sm:text-5xl">{plan.price}</div>
+                    <div className="pb-1.5 text-white/55">{plan.period}</div>
                   </div>
-                  <p className="mt-4 leading-6 text-white/60">{plan.description}</p>
-                  <div className="mt-7 space-y-3.5">
+                  <p className="mt-3 text-sm leading-6 text-white/60">{plan.description}</p>
+                  <div className="mt-5 space-y-2.5">
                     {plan.features.map((item) => (
                       <div key={item} className="flex items-start gap-3 text-sm text-white/85">
                         <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300/90" />
@@ -587,9 +587,9 @@ export default function FebilyLandingPage() {
                       </div>
                     ))}
                   </div>
-                  <div className="mt-auto pt-8">
+                  <div className="mt-auto pt-6">
                     <button
-                      className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-sm font-semibold transition ${
+                      className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
                         plan.highlight
                           ? "bg-white text-black hover:scale-[1.01]"
                           : "border border-white/12 bg-white/5 text-white hover:border-white/25 hover:bg-white/[0.08]"
