@@ -427,7 +427,7 @@ export default function FebilyLandingPage() {
         </section>
 
         {/* AUDIO DEMO */}
-        <section id="demo" className="mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8">
+        <section id="demo" className="mx-auto max-w-5xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp} className="text-center">
             <SectionLabel>Live Sample</SectionLabel>
             <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
@@ -447,7 +447,7 @@ export default function FebilyLandingPage() {
         </section>
 
         {/* FEATURES */}
-        <section id="features" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <section id="features" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp} className="max-w-2xl">
             <SectionLabel>Features</SectionLabel>
             <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -503,7 +503,7 @@ export default function FebilyLandingPage() {
         </section>
 
         {/* HOW IT WORKS */}
-        <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp} className="max-w-2xl">
             <SectionLabel>How It Works</SectionLabel>
             <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -542,7 +542,7 @@ export default function FebilyLandingPage() {
         </section>
 
         {/* PRICING */}
-        <section id="pricing" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <section id="pricing" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
             <SectionLabel>Pricing</SectionLabel>
             <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -615,7 +615,7 @@ export default function FebilyLandingPage() {
         </section>
 
         {/* DEMO REQUEST FORM */}
-        <section id="request-demo" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <section id="request-demo" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp}>
             <Card className="relative overflow-hidden p-8 sm:p-10 lg:p-12">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.14),_transparent_30%)]" />
@@ -750,7 +750,7 @@ export default function FebilyLandingPage() {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <section id="faq" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp} className="max-w-2xl">
             <SectionLabel>FAQ</SectionLabel>
             <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -777,7 +777,7 @@ export default function FebilyLandingPage() {
         </section>
 
         {/* FINAL CTA */}
-        <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp}>
             <Card className="relative overflow-hidden p-8 sm:p-10 lg:p-12">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.14),_transparent_30%)]" />
