@@ -261,7 +261,35 @@ function HeroChat() {
 export default function FebilyLandingPage() {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [formError, setFormError] = useState<string | null>(null);
+useEffect(() => {
+  const script = document.createElement("script");
+  script.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
+  script.async = true;
 
+  script.onload = () => {
+    // @ts-ignore
+    window.Paddle.Initialize({
+      token: "live_29dd363e7d44cdfef734b1949b3",
+    });
+  };
+
+  document.body.appendChild(script);
+}, []);
+
+const checkout = (priceId: string) => {
+  // @ts-ignore
+  if (!window.Paddle) return;
+
+  // @ts-ignore
+  window.Paddle.Checkout.open({
+    items: [
+      {
+        priceId,
+        quantity: 1,
+      },
+    ],
+  });
+};
   const handleRequestDemo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (formStatus === "submitting") return;
@@ -589,14 +617,26 @@ export default function FebilyLandingPage() {
                   </div>
                   <div className="mt-auto pt-6">
                     <button
-                      className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
-                        plan.highlight
-                          ? "bg-white text-black hover:scale-[1.01]"
-                          : "border border-white/12 bg-white/5 text-white hover:border-white/25 hover:bg-white/[0.08]"
-                      }`}
-                    >
-                      {plan.cta} <ArrowRight className="h-4 w-4" />
-                    </button>
+                     
+  onClick={() => {
+    if (plan.name === "Starter") {
+      checkout("pri_01kx87tjr05yndbsnfgdwee46v");
+    } else if (plan.name === "Growth") {
+      checkout("pri_01kx882g8nv2xmxwn8h611pwvp");
+    } else if (plan.name === "Premium") {
+      checkout("pri_01kx88gp65gwkh5d65hwtf0tyg");
+    }
+  }}
+  className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
+    plan.highlight
+      ? "bg-white text-black hover:scale-[1.01]"
+      : "border border-white/12 bg-white/5 text-white hover:border-white/25 hover:bg-white/[0.08]"
+  }`}
+>
+  {plan.cta}
+  <ArrowRight className="h-4 w-4" />
+</button>
+                    
                   </div>
                 </Card>
               </motion.div>
