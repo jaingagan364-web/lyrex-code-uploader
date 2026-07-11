@@ -219,7 +219,7 @@ function HeroChat() {
   return (
     <div
       ref={scrollRef}
-      className="mt-8 h-[340px] space-y-3 overflow-y-auto pr-1 [scrollbar-width:thin] [-ms-overflow-style:none] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/10"
+      className="mt-6 h-[232px] space-y-2.5 overflow-y-auto pr-1 [scrollbar-width:thin] [-ms-overflow-style:none] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/10"
     >
       <AnimatePresence initial={false}>
         {chatScript.slice(0, visible).map((msg, i) => (
