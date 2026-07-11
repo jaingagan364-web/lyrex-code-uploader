@@ -672,7 +672,7 @@ export default function FebilyLandingPage() {
                       </button>
                     </div>
                   ) : (
-                    <form onSubmit={handleRequestDemo} noValidate className="space-y-4">
+                    <form onSubmit={handleRequestDemo} noValidate className="space-y-3">
                       {formStatus === "error" && formError && (
                         <div className="rounded-2xl border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-300">
                           {formError}
@@ -680,31 +680,31 @@ export default function FebilyLandingPage() {
                       )}
 
                       <div>
-                        <label htmlFor="name" className="mb-2 block text-xs font-medium uppercase tracking-[0.18em] text-white/55">Full Name</label>
+                        <label htmlFor="name" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-white/55">Full Name</label>
                         <input
                           id="name"
                           name="name"
                           required
                           maxLength={100}
                           placeholder="Jordan Smith"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25"
                         />
                       </div>
 
                       <div>
-                        <label htmlFor="business" className="mb-2 block text-xs font-medium uppercase tracking-[0.18em] text-white/55">Business Name</label>
+                        <label htmlFor="business" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-white/55">Business Name</label>
                         <input
                           id="business"
                           name="business"
                           required
                           maxLength={120}
                           placeholder="Elite Fade Barbershop"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25"
                         />
                       </div>
 
                       <div>
-                        <label htmlFor="email" className="mb-2 block text-xs font-medium uppercase tracking-[0.18em] text-white/55">Email Address</label>
+                        <label htmlFor="email" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-white/55">Email Address</label>
                         <input
                           id="email"
                           name="email"
@@ -712,12 +712,12 @@ export default function FebilyLandingPage() {
                           required
                           maxLength={255}
                           placeholder="you@yourshop.com"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25"
                         />
                       </div>
 
                       <div>
-                        <label htmlFor="phone" className="mb-2 block text-xs font-medium uppercase tracking-[0.18em] text-white/55">Phone Number</label>
+                        <label htmlFor="phone" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-white/55">Phone Number</label>
                         <input
                           id="phone"
                           name="phone"
@@ -725,7 +725,7 @@ export default function FebilyLandingPage() {
                           required
                           maxLength={20}
                           placeholder="(555) 123-4567"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25"
                         />
                       </div>
 
@@ -764,7 +764,7 @@ export default function FebilyLandingPage() {
                 key={item.q}
                 {...fadeUp}
                 transition={{ duration: 0.6, delay: index * 0.04 }}
-                className="group rounded-3xl border border-white/10 bg-white/[0.035] p-6 open:bg-white/[0.05]"
+                className="group rounded-3xl border border-white/10 bg-white/[0.035] p-5 open:bg-white/[0.05] sm:p-6"
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-medium outline-none">
                   {item.q}
