@@ -815,11 +815,8 @@ export default function FebilyLandingPage() {
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="grid gap-10 md:grid-cols-4">
             <div>
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/10">
-                  <Sparkles className="h-4 w-4" />
-                </div>
-                <div className="text-xl font-semibold">Febily</div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/95 px-3.5 py-1.5 ring-1 ring-white/10">
+                <img src="/febily-logo.png" alt="Febily" width="112" height="35" className="h-6 w-auto" draggable={false} />
               </div>
               <p className="mt-3 text-sm text-white/55">
                 AI Receptionists for US Salons &amp; Barber Shops.
