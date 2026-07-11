@@ -617,7 +617,7 @@ export default function FebilyLandingPage() {
         {/* DEMO REQUEST FORM */}
         <section id="request-demo" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp}>
-            <Card className="relative overflow-hidden p-8 sm:p-10 lg:p-12">
+            <Card className="relative overflow-hidden p-6 sm:p-10 lg:p-12">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.14),_transparent_30%)]" />
               <div className="relative z-10 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
                 <div>
@@ -779,7 +779,7 @@ export default function FebilyLandingPage() {
         {/* FINAL CTA */}
         <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp}>
-            <Card className="relative overflow-hidden p-8 sm:p-10 lg:p-12">
+            <Card className="relative overflow-hidden p-6 sm:p-10 lg:p-12">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.14),_transparent_30%)]" />
               <div className="relative z-10 text-center">
                 <SectionLabel>Start Today</SectionLabel>
