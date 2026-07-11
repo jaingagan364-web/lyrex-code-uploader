@@ -467,12 +467,12 @@ export default function FebilyLandingPage() {
                   {...fadeUp}
                   transition={{ duration: 0.65, delay: index * 0.05 }}
                 >
-                  <Card className="h-full p-6 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.055]">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/8">
+                  <Card className="h-full p-5 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.055] sm:p-6">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/8">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <h3 className="mt-5 text-xl font-semibold">{feature.title}</h3>
-                    <p className="mt-3 leading-7 text-white/60">{feature.description}</p>
+                    <h3 className="mt-4 text-lg font-semibold sm:text-xl">{feature.title}</h3>
+                    <p className="mt-2 text-[15px] leading-6 text-white/60">{feature.description}</p>
                   </Card>
                 </motion.div>
               );
