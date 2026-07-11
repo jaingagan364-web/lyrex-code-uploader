@@ -156,9 +156,8 @@ const heroTrust = [
 
 const chatScript: { role: "ai" | "customer"; text: string }[] = [
   { role: "customer", text: "Hi, I'd like a haircut tomorrow afternoon." },
-  { role: "ai", text: "Absolutely! I have 3:30 PM available with Marcus. Would that work?" },
+  { role: "ai", text: "I have 3:30 PM with Marcus. Would that work?" },
   { role: "customer", text: "Perfect." },
-  { role: "ai", text: "Great — you're booked for 3:30 PM tomorrow. You'll get a confirmation text shortly." },
 ];
 
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
