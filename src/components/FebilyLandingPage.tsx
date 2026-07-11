@@ -7,7 +7,7 @@ import {
   CheckCircle2,
   Mic,
   PhoneCall,
-  Sparkles,
+  
   ShieldCheck,
   Bot,
   MessageSquareMore,
