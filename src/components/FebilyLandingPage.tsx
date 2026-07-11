@@ -317,16 +317,17 @@ export default function FebilyLandingPage() {
       </div>
 
       <header className="sticky top-0 z-50 border-b border-white/5 bg-black/60 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/10 shadow-lg shadow-white/5">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <div>
-              <div className="text-lg font-semibold tracking-wide">Febily</div>
-              <div className="text-xs text-white/45">AI Receptionists</div>
-            </div>
-          </div>
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3.5 sm:px-6 sm:py-4 lg:px-8">
+          <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-2 rounded-full bg-white/95 px-3.5 py-1.5 shadow-sm ring-1 ring-white/10 transition hover:bg-white sm:px-4 sm:py-2">
+            <img
+              src="/febily-logo.png"
+              alt="Febily"
+              width="112"
+              height="35"
+              className="h-6 w-auto sm:h-7"
+              draggable={false}
+            />
+          </a>
 
           <nav className="hidden items-center gap-8 text-sm text-white/70 md:flex">
             <a href="#demo" className="transition hover:text-white">Demo</a>
@@ -338,9 +339,9 @@ export default function FebilyLandingPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={scrollToForm}
-              className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:scale-[1.02]"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-semibold text-black transition hover:scale-[1.02] sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm"
             >
-              Get Started <ArrowRight className="h-4 w-4" />
+              Book My Demo <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
           </div>
         </div>
