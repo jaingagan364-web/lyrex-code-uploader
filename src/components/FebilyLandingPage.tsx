@@ -373,7 +373,7 @@ const checkout = (priceId: string) => {
           <div className="flex items-center gap-3">
             <button
               onClick={scrollToForm}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-semibold text-black transition hover:scale-[1.02] sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-semibold text-black transition hover:scale-[1.02] active:scale-[0.98] sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200"
             >
               Book My Demo <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
