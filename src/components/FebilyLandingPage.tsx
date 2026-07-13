@@ -538,21 +538,21 @@ const checkout = (priceId: string) => {
         </section>
 
         {/* HOW IT WORKS */}
-        <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
+        <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-24 max-md:py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp} className="max-w-2xl">
             <SectionLabel>How It Works</SectionLabel>
             <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
               From ringing phone to booked appointment in seconds.
             </h2>
-            <p className="mt-4 text-white/60">
+            <p className="mt-4 text-white/60 max-md:text-white/70">
               Five simple steps. No new hardware, no apps for your customers to download.
             </p>
           </motion.div>
 
-          <div className="relative mt-12">
+          <div className="relative mt-12 max-md:mt-10">
             <div className="pointer-events-none absolute left-0 right-0 top-[34px] hidden h-px bg-gradient-to-r from-transparent via-white/15 to-transparent lg:block" />
 
-            <div className="relative grid gap-6 lg:grid-cols-5 lg:gap-4">
+            <div className="relative grid gap-6 max-md:gap-5 lg:grid-cols-5 lg:gap-4">
               {steps.map((step, index) => (
                 <motion.div
                   key={step.title}
@@ -561,11 +561,11 @@ const checkout = (priceId: string) => {
                   className="relative"
                 >
                   <div className="flex flex-col items-start">
-                    <div className="relative z-10 flex h-[68px] w-[68px] items-center justify-center rounded-2xl border border-white/15 bg-[#0a0a0a] shadow-[0_10px_40px_rgba(255,255,255,0.06)]">
+                    <div className="relative z-10 flex h-[68px] w-[68px] items-center justify-center rounded-2xl border border-white/15 bg-[#0a0a0a] shadow-[0_10px_40px_rgba(255,255,255,0.06)] max-md:border-white/[0.18] max-md:shadow-[0_12px_40px_rgba(255,255,255,0.07)]">
                       <span className="text-lg font-bold tracking-tight">0{index + 1}</span>
                     </div>
                     <h3 className="mt-5 text-base font-semibold text-white/90">{step.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-white/55">{step.description}</p>
+                    <p className="mt-2 text-sm leading-6 text-white/55 max-md:text-white/65">{step.description}</p>
                   </div>
                   {index < steps.length - 1 && (
                     <ChevronRight className="absolute right-[-12px] top-[22px] hidden h-6 w-6 text-white/30 lg:block" />
