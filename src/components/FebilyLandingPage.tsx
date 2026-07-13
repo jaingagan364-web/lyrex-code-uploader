@@ -797,7 +797,7 @@ const checkout = (priceId: string) => {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
+        <section id="faq" className="mx-auto max-w-7xl px-4 py-24 max-md:py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp} className="max-w-2xl">
             <SectionLabel>FAQ</SectionLabel>
             <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -811,20 +811,20 @@ const checkout = (priceId: string) => {
                 key={item.q}
                 {...fadeUp}
                 transition={{ duration: 0.6, delay: index * 0.04 }}
-                className="group rounded-3xl border border-white/10 bg-white/[0.035] p-5 open:bg-white/[0.05] sm:p-6"
+                className="group rounded-3xl border border-white/10 bg-white/[0.035] p-5 open:bg-white/[0.05] sm:p-6 max-md:border-white/[0.14] max-md:bg-white/[0.04]"
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-medium outline-none">
                   {item.q}
                   <ChevronRight className="h-5 w-5 shrink-0 text-white/45 transition duration-300 group-open:rotate-90" />
                 </summary>
-                <p className="mt-4 max-w-2xl leading-7 text-white/60">{item.a}</p>
+                <p className="mt-4 max-w-2xl leading-7 text-white/60 max-md:text-white/70">{item.a}</p>
               </motion.details>
             ))}
           </div>
         </section>
 
         {/* FINAL CTA */}
-        <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
+        <section className="mx-auto max-w-7xl px-4 py-24 max-md:py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp}>
             <Card className="relative overflow-hidden p-6 sm:p-10 lg:p-12">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.14),_transparent_30%)]" />
@@ -833,20 +833,20 @@ const checkout = (priceId: string) => {
                 <h2 className="mx-auto mt-5 max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
                   Your next missed call could be your next best client.
                 </h2>
-                <p className="mx-auto mt-4 max-w-2xl leading-7 text-white/65">
+                <p className="mx-auto mt-4 max-w-2xl leading-7 text-white/65 max-md:text-white/75">
                   Set up Febily in under 24 hours and never miss another booking.
                 </p>
 
                 <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                   <button
                     onClick={scrollToForm}
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02]"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02] active:scale-[0.98] max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200"
                   >
                     Get My AI Receptionist <ArrowRight className="h-4 w-4" />
                   </button>
                   <button
                     onClick={scrollTo("demo")}
-                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08]"
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08] active:border-white/30 active:bg-white/[0.12] max-md:transition-all max-md:duration-200"
                   >
                     Hear AI Demo
                   </button>
