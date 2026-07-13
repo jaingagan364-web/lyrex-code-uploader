@@ -636,8 +636,8 @@ const checkout = (priceId: string) => {
   }}
   className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
     plan.highlight
-      ? "bg-white text-black hover:scale-[1.01] active:scale-[0.98] max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200"
-      : "border border-white/12 bg-white/5 text-white hover:border-white/25 hover:bg-white/[0.08] active:border-white/30 active:bg-white/[0.12] max-md:transition-all max-md:duration-200"
+      ? "bg-white text-black hover:scale-[1.01] max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200 max-md:active:scale-[0.98]"
+      : "border border-white/12 bg-white/5 text-white hover:border-white/25 hover:bg-white/[0.08] max-md:transition-all max-md:duration-200 max-md:active:border-white/30 max-md:active:bg-white/[0.12]"
   }`}
 >
   {plan.cta}
