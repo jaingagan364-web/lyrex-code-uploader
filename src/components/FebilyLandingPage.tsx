@@ -343,6 +343,13 @@ const checkout = (priceId: string) => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.07),_transparent_30%),linear-gradient(to_bottom,rgba(255,255,255,0.03),transparent)]" />
       </div>
 
+      {/* Mobile-only depth overlay */}
+      <div className="pointer-events-none fixed inset-0 hidden overflow-hidden max-md:block">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.06),_transparent_55%),radial-gradient(ellipse_at_bottom,_rgba(255,255,255,0.03),_transparent_55%)]" />
+        <div className="absolute left-1/2 top-0 h-[24rem] w-[24rem] -translate-x-1/2 rounded-full bg-white/[0.06] blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-[18rem] w-[18rem] rounded-full bg-white/[0.035] blur-3xl" />
+      </div>
+
       <header className="sticky top-0 z-50 border-b border-white/5 bg-black/60 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3.5 sm:px-6 sm:py-4 lg:px-8">
           <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-2 rounded-full bg-white/95 px-3.5 py-1.5 shadow-sm ring-1 ring-white/10 transition hover:bg-white sm:px-4 sm:py-2">
