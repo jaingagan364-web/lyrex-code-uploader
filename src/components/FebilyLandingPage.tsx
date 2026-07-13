@@ -662,17 +662,17 @@ const checkout = (priceId: string) => {
         </section>
 
         {/* DEMO REQUEST FORM */}
-        <section id="request-demo" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
+        <section id="request-demo" className="mx-auto max-w-7xl px-4 py-24 max-md:py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp}>
             <Card className="relative overflow-hidden p-6 sm:p-10 lg:p-12">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.14),_transparent_30%)]" />
-              <div className="relative z-10 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+              <div className="relative z-10 grid gap-10 max-md:gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
                 <div>
                   <SectionLabel>Book Demo</SectionLabel>
                   <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
                     Get Your Personalized AI Demo.
                   </h2>
-                  <p className="mt-4 max-w-2xl text-white/65 leading-7">
+                  <p className="mt-4 max-w-2xl text-white/65 max-md:text-white/75 leading-7">
                     Fill out the form and we'll contact you within one business day to schedule your personalized AI receptionist demo.
                   </p>
 
@@ -686,7 +686,7 @@ const checkout = (priceId: string) => {
                     ].map((item) => (
                       <div
                         key={item}
-                        className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-white/85"
+                        className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-white/85 max-md:border-white/[0.14] max-md:bg-white/[0.04]"
                       >
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-400/15">
                           <CheckCircle2 className="h-4 w-4 text-emerald-300" />
@@ -696,7 +696,7 @@ const checkout = (priceId: string) => {
                     ))}
                   </div>
 
-                  <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-white/45">
+                  <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-white/45 max-md:text-white/55">
                     <span className="inline-flex items-center gap-1.5"><Lock className="h-3.5 w-3.5" /> Your info stays private</span>
                   </div>
                 </div>
@@ -708,12 +708,12 @@ const checkout = (priceId: string) => {
                         <CheckCircle2 className="h-8 w-8 text-emerald-400" />
                       </div>
                       <h3 className="mt-6 text-xl font-semibold">Thank you!</h3>
-                      <p className="mt-3 text-white/65">
+                      <p className="mt-3 text-white/65 max-md:text-white/75">
                         Your demo request has been received. We'll contact you within one business day.
                       </p>
                       <button
                         onClick={() => setFormStatus("idle")}
-                        className="mt-6 inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08]"
+                        className="mt-6 inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08] active:border-white/30 active:bg-white/[0.12] max-md:transition-all max-md:duration-200"
                       >
                         Submit Another Request
                       </button>
@@ -727,31 +727,31 @@ const checkout = (priceId: string) => {
                       )}
 
                       <div>
-                        <label htmlFor="name" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-white/55">Full Name</label>
+                        <label htmlFor="name" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-white/55 max-md:text-white/65">Full Name</label>
                         <input
                           id="name"
                           name="name"
                           required
                           maxLength={100}
                           placeholder="Jordan Smith"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
                         />
                       </div>
 
                       <div>
-                        <label htmlFor="business" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-white/55">Business Name</label>
+                        <label htmlFor="business" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-white/55 max-md:text-white/65">Business Name</label>
                         <input
                           id="business"
                           name="business"
                           required
                           maxLength={120}
                           placeholder="Elite Fade Barbershop"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
                         />
                       </div>
 
                       <div>
-                        <label htmlFor="email" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-white/55">Email Address</label>
+                        <label htmlFor="email" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-white/55 max-md:text-white/65">Email Address</label>
                         <input
                           id="email"
                           name="email"
@@ -759,12 +759,12 @@ const checkout = (priceId: string) => {
                           required
                           maxLength={255}
                           placeholder="you@yourshop.com"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
                         />
                       </div>
 
                       <div>
-                        <label htmlFor="phone" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-white/55">Phone Number</label>
+                        <label htmlFor="phone" className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-white/55 max-md:text-white/65">Phone Number</label>
                         <input
                           id="phone"
                           name="phone"
@@ -772,20 +772,20 @@ const checkout = (priceId: string) => {
                           required
                           maxLength={20}
                           placeholder="(555) 123-4567"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
                         />
                       </div>
 
                       <button
                         type="submit"
                         disabled={formStatus === "submitting"}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.01] disabled:opacity-70 disabled:cursor-not-allowed"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.01] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200"
                       >
                         {formStatus === "submitting" ? "Submitting..." : "Book My Demo"}
                         {formStatus !== "submitting" && <ArrowRight className="h-4 w-4" />}
                       </button>
 
-                      <div className="text-center text-xs text-white/45">
+                      <div className="text-center text-xs text-white/45 max-md:text-white/55">
                         We'll reach out within 1 business day to schedule your demo.
                       </div>
                     </form>
