@@ -779,7 +779,7 @@ const checkout = (priceId: string) => {
                       <button
                         type="submit"
                         disabled={formStatus === "submitting"}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.01] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.01] disabled:opacity-70 disabled:cursor-not-allowed max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200 max-md:active:scale-[0.98]"
                       >
                         {formStatus === "submitting" ? "Submitting..." : "Book My Demo"}
                         {formStatus !== "submitting" && <ArrowRight className="h-4 w-4" />}
