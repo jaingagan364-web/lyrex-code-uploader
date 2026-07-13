@@ -176,7 +176,7 @@ function Card({
 }) {
   return (
     <div
-      className={`rounded-3xl border border-white/10 bg-white/[0.04] shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl ${className}`}
+      className={`rounded-3xl border border-white/10 bg-white/[0.04] shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl max-md:border-white/[0.14] max-md:bg-white/[0.045] max-md:shadow-[0_24px_80px_rgba(0,0,0,0.55)] ${className}`}
     >
       {children}
     </div>
