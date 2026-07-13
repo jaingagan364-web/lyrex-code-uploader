@@ -858,23 +858,23 @@ const checkout = (priceId: string) => {
       </main>
 
       <footer className="border-t border-white/5 bg-black/40">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="grid gap-10 md:grid-cols-4">
+        <div className="mx-auto max-w-7xl px-4 py-12 max-md:py-10 sm:px-6 lg:px-8">
+          <div className="grid gap-10 max-md:gap-8 md:grid-cols-4">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full bg-white/95 px-3.5 py-1.5 ring-1 ring-white/10">
                 <img src="/febily-logo.png" alt="Febily" width="112" height="35" className="h-6 w-auto" draggable={false} />
               </div>
-              <p className="mt-3 text-sm text-white/55">
+              <p className="mt-3 text-sm text-white/55 max-md:text-white/65">
                 AI Receptionists for US Salons &amp; Barber Shops.
               </p>
-              <p className="mt-2 text-sm text-white/45">
+              <p className="mt-2 text-sm text-white/45 max-md:text-white/55">
                 Built for salons &amp; barber shops across the United States.
               </p>
             </div>
 
             <div>
-              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Explore</div>
-              <ul className="mt-4 space-y-2 text-sm text-white/70">
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50 max-md:text-white/60">Explore</div>
+              <ul className="mt-4 space-y-2 text-sm text-white/70 max-md:text-white/80">
                 <li><a href="#pricing" onClick={scrollTo("pricing")} className="hover:text-white">Pricing</a></li>
                 <li><a href="#demo" onClick={scrollTo("demo")} className="hover:text-white">Demo</a></li>
                 <li><a href="#faq" onClick={scrollTo("faq")} className="hover:text-white">FAQ</a></li>
@@ -882,8 +882,8 @@ const checkout = (priceId: string) => {
             </div>
 
             <div>
-              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Legal</div>
-              <ul className="mt-4 space-y-2 text-sm text-white/70">
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50 max-md:text-white/60">Legal</div>
+              <ul className="mt-4 space-y-2 text-sm text-white/70 max-md:text-white/80">
                 <li><Link to="/privacy" className="hover:text-white">Privacy Policy</Link></li>
                 <li><Link to="/terms" className="hover:text-white">Terms of Service</Link></li>
                 <li><Link to="/refund" className="hover:text-white">Refund Policy</Link></li>
@@ -891,8 +891,8 @@ const checkout = (priceId: string) => {
             </div>
 
             <div>
-              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Contact</div>
-              <ul className="mt-4 space-y-2 text-sm text-white/70">
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50 max-md:text-white/60">Contact</div>
+              <ul className="mt-4 space-y-2 text-sm text-white/70 max-md:text-white/80">
                 <li>
                   Email:{" "}
                   <a href="mailto:febilysupport@gmail.com" className="text-white/90 hover:text-white">
@@ -903,7 +903,7 @@ const checkout = (priceId: string) => {
             </div>
           </div>
 
-          <div className="mt-10 border-t border-white/5 pt-6 text-center text-xs text-white/40">
+          <div className="mt-10 max-md:mt-8 border-t border-white/5 pt-6 max-md:pt-5 text-center text-xs text-white/40 max-md:text-white/50">
             © 2026 Febily. All Rights Reserved.
           </div>
         </div>
