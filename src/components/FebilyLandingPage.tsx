@@ -713,7 +713,7 @@ const checkout = (priceId: string) => {
                       </p>
                       <button
                         onClick={() => setFormStatus("idle")}
-                        className="mt-6 inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08] active:border-white/30 active:bg-white/[0.12] max-md:transition-all max-md:duration-200"
+                        className="mt-6 inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08] max-md:transition-all max-md:duration-200 max-md:active:border-white/30 max-md:active:bg-white/[0.12]"
                       >
                         Submit Another Request
                       </button>
