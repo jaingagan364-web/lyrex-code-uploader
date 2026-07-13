@@ -482,13 +482,13 @@ const checkout = (priceId: string) => {
         </section>
 
         {/* FEATURES */}
-        <section id="features" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
+        <section id="features" className="mx-auto max-w-7xl px-4 py-24 max-md:py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp} className="max-w-2xl">
             <SectionLabel>Features</SectionLabel>
             <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
               Everything a busy shop needs to turn calls into bookings.
             </h2>
-            <p className="mt-4 text-white/60">
+            <p className="mt-4 text-white/60 max-md:text-white/70">
               One smart receptionist that handles your phones, your calendar, and your customers — built specifically for US salons and barber shops.
             </p>
           </motion.div>
@@ -507,7 +507,7 @@ const checkout = (priceId: string) => {
                       <Icon className="h-5 w-5" />
                     </div>
                     <h3 className="mt-4 text-lg font-semibold sm:text-xl">{feature.title}</h3>
-                    <p className="mt-2 text-[15px] leading-6 text-white/60">{feature.description}</p>
+                    <p className="mt-2 text-[15px] leading-6 text-white/60 max-md:text-white/70">{feature.description}</p>
                   </Card>
                 </motion.div>
               );
@@ -516,7 +516,7 @@ const checkout = (priceId: string) => {
 
           <motion.div
             {...fadeUp}
-            className="mt-10 grid gap-3 rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:grid-cols-2 lg:grid-cols-4"
+            className="mt-10 grid gap-3 rounded-3xl border border-white/10 bg-white/[0.03] p-5 max-md:border-white/[0.14] max-md:bg-white/[0.04] sm:grid-cols-2 lg:grid-cols-4"
           >
             {[
               { icon: Lock, text: "Secure booking process" },
@@ -526,7 +526,7 @@ const checkout = (priceId: string) => {
             ].map((item) => {
               const Icon = item.icon;
               return (
-                <div key={item.text} className="flex items-center gap-3 text-sm text-white/75">
+                <div key={item.text} className="flex items-center gap-3 text-sm text-white/75 max-md:text-white/85">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5">
                     <Icon className="h-4 w-4" />
                   </div>
