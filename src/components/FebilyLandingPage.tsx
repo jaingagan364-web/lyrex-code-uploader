@@ -577,13 +577,13 @@ const checkout = (priceId: string) => {
         </section>
 
         {/* PRICING */}
-        <section id="pricing" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
+        <section id="pricing" className="mx-auto max-w-7xl px-4 py-24 max-md:py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
             <SectionLabel>Pricing</SectionLabel>
             <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
               Simple monthly pricing. Cancel anytime.
             </h2>
-            <p className="mt-4 text-white/65">
+            <p className="mt-4 text-white/65 max-md:text-white/75">
               Most shops cover their plan with just 1–2 saved bookings per month. No contracts. No setup fees.
             </p>
           </motion.div>
@@ -611,9 +611,9 @@ const checkout = (priceId: string) => {
                   <div className="text-lg font-medium">{plan.name}</div>
                   <div className="mt-3 flex items-end gap-1">
                     <div className="text-4xl font-semibold tracking-tight sm:text-5xl">{plan.price}</div>
-                    <div className="pb-1.5 text-white/55">{plan.period}</div>
+                    <div className="pb-1.5 text-white/55 max-md:text-white/65">{plan.period}</div>
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-white/60">{plan.description}</p>
+                  <p className="mt-3 text-sm leading-6 text-white/60 max-md:text-white/70">{plan.description}</p>
                   <div className="mt-5 space-y-2.5">
                     {plan.features.map((item) => (
                       <div key={item} className="flex items-start gap-3 text-sm text-white/85">
@@ -636,8 +636,8 @@ const checkout = (priceId: string) => {
   }}
   className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
     plan.highlight
-      ? "bg-white text-black hover:scale-[1.01]"
-      : "border border-white/12 bg-white/5 text-white hover:border-white/25 hover:bg-white/[0.08]"
+      ? "bg-white text-black hover:scale-[1.01] active:scale-[0.98] max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200"
+      : "border border-white/12 bg-white/5 text-white hover:border-white/25 hover:bg-white/[0.08] active:border-white/30 active:bg-white/[0.12] max-md:transition-all max-md:duration-200"
   }`}
 >
   {plan.cta}
@@ -650,13 +650,13 @@ const checkout = (priceId: string) => {
             ))}
           </div>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-white/55">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-white/55 max-md:text-white/65">
             <span className="inline-flex items-center gap-2"><Lock className="h-4 w-4" /> Secure checkout</span>
             <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Cancel anytime</span>
             <span className="inline-flex items-center gap-2"><Zap className="h-4 w-4" /> Live in 24 hours</span>
           </div>
 
-          <div className="mt-6 text-center text-sm text-white/55">
+          <div className="mt-6 text-center text-sm text-white/55 max-md:text-white/65">
             Not sure which plan? <button onClick={scrollToForm} className="text-white underline-offset-4 hover:underline">Book a demo</button> and we'll recommend the right fit.
           </div>
         </section>
