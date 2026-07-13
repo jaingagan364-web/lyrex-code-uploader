@@ -462,20 +462,20 @@ const checkout = (priceId: string) => {
         </section>
 
         {/* AUDIO DEMO */}
-        <section id="demo" className="mx-auto max-w-5xl px-4 py-24 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
+        <section id="demo" className="mx-auto max-w-5xl px-4 py-24 max-md:py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp} className="text-center">
             <SectionLabel>Live Sample</SectionLabel>
             <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
               Hear Febily in Action
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-white/65 leading-7">
+            <p className="mx-auto mt-4 max-w-2xl text-white/65 max-md:text-white/75 leading-7">
               Listen to a real AI receptionist answering a customer call and booking an appointment automatically.
             </p>
           </motion.div>
 
           <motion.div {...fadeUp} transition={{ duration: 0.8, ease: "easeOut" as const, delay: 0.1 }} className="mt-10">
             <FebilyAudioPlayer />
-            <p className="mt-5 text-center text-sm text-white/55">
+            <p className="mt-5 text-center text-sm text-white/55 max-md:text-white/65">
               This is a real AI conversation powered by Febily's AI receptionist.
             </p>
           </motion.div>
