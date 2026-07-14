@@ -811,13 +811,13 @@ const checkout = (priceId: string) => {
                 key={item.q}
                 {...fadeUp}
                 transition={{ duration: 0.6, delay: index * 0.04 }}
-                className="group rounded-3xl border border-white/10 bg-white/[0.035] p-5 open:bg-white/[0.05] sm:p-6 max-md:border-white/[0.14] max-md:bg-white/[0.04]"
+                className="group rounded-3xl border border-white/10 bg-white/[0.035] p-5 open:bg-white/[0.05] sm:p-6 max-md:border-white/[0.14] max-md:bg-white/[0.04] max-md:p-5"
               >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-medium outline-none">
-                  {item.q}
-                  <ChevronRight className="h-5 w-5 shrink-0 text-white/45 transition duration-300 group-open:rotate-90" />
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-lg font-medium outline-none max-md:text-base max-md:leading-6">
+                  <span className="min-w-0 flex-1">{item.q}</span>
+                  <ChevronRight className="h-5 w-5 shrink-0 text-white/45 transition duration-300 group-open:rotate-90 max-md:mt-0.5" />
                 </summary>
-                <p className="mt-4 max-w-2xl leading-7 text-white/60 max-md:text-white/70">{item.a}</p>
+                <p className="mt-4 max-w-2xl leading-7 text-white/60 max-md:mt-3 max-md:pr-1 max-md:text-[15px] max-md:leading-7 max-md:text-white/70">{item.a}</p>
               </motion.details>
             ))}
           </div>
