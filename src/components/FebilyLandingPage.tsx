@@ -351,7 +351,7 @@ const checkout = (priceId: string) => {
       </div>
 
       <header className="sticky top-0 z-50 border-b border-white/5 bg-black/60 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3.5 sm:px-6 sm:py-4 lg:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3.5 max-md:px-4 max-md:py-3 sm:px-6 sm:py-4 lg:px-8">
           <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-2 rounded-full bg-white/95 px-3.5 py-1.5 shadow-sm ring-1 ring-white/10 transition hover:bg-white sm:px-4 sm:py-2">
             <img
               src="/febily-logo.png"
