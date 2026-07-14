@@ -403,7 +403,7 @@ const checkout = (priceId: string) => {
                   onClick={scrollTo("demo")}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white/90 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] backdrop-blur-sm transition-all duration-200 hover:border-white/20 hover:bg-white/[0.07] max-md:py-4 max-md:text-[15px] max-md:active:bg-white/[0.1] sm:w-auto"
                 >
-                  Hear AI Demo
+                  Hear AI Demos
                 </button>
               </div>
 
