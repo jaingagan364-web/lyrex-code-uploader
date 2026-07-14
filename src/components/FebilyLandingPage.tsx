@@ -734,7 +734,7 @@ const checkout = (priceId: string) => {
                           required
                           maxLength={100}
                           placeholder="Jordan Smith"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 max-md:px-4 max-md:py-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
                         />
                       </div>
 
@@ -746,7 +746,7 @@ const checkout = (priceId: string) => {
                           required
                           maxLength={120}
                           placeholder="Elite Fade Barbershop"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 max-md:px-4 max-md:py-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
                         />
                       </div>
 
@@ -759,7 +759,7 @@ const checkout = (priceId: string) => {
                           required
                           maxLength={255}
                           placeholder="you@yourshop.com"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 max-md:px-4 max-md:py-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
                         />
                       </div>
 
@@ -772,7 +772,7 @@ const checkout = (priceId: string) => {
                           required
                           maxLength={20}
                           placeholder="(555) 123-4567"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 max-md:px-4 max-md:py-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
                         />
                       </div>
 
