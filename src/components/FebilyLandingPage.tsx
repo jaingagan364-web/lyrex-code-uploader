@@ -415,7 +415,7 @@ const checkout = (priceId: string) => {
                     key={item}
                     className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 max-md:justify-center max-md:px-3 max-md:py-2"
                   >
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-300/90" /> <span className="truncate">{item}</span>
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-300/90" /> <span className="min-w-0">{item}</span>
                   </div>
                 ))}
               </div>
