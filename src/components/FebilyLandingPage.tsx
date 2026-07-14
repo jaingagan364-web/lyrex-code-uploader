@@ -449,9 +449,9 @@ const checkout = (priceId: string) => {
                       { label: "Avg. pickup", value: "< 1s" },
                       { label: "Lost bookings", value: "Zero" },
                     ].map((stat) => (
-                      <div key={stat.label} className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-                        <div className="text-sm text-white/45">{stat.label}</div>
-                        <div className="mt-2 text-xl font-semibold">{stat.value}</div>
+                      <div key={stat.label} className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 max-md:p-3">
+                        <div className="text-sm text-white/45 max-md:text-[11px] max-md:leading-tight">{stat.label}</div>
+                        <div className="mt-2 text-xl font-semibold max-md:mt-1.5 max-md:text-lg">{stat.value}</div>
                       </div>
                     ))}
                   </div>
