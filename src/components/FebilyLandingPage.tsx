@@ -701,7 +701,7 @@ const checkout = (priceId: string) => {
                   </div>
                 </div>
 
-                <Card className="p-6 sm:p-7">
+                <Card className="p-6 max-md:p-7 sm:p-7">
                   {formStatus === "success" ? (
                     <div className="flex flex-col items-center justify-center py-8 text-center">
                       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-400/20">
@@ -719,7 +719,7 @@ const checkout = (priceId: string) => {
                       </button>
                     </div>
                   ) : (
-                    <form onSubmit={handleRequestDemo} noValidate className="space-y-3">
+                    <form onSubmit={handleRequestDemo} noValidate className="space-y-3 max-md:space-y-4">
                       {formStatus === "error" && formError && (
                         <div className="rounded-2xl border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-300">
                           {formError}
