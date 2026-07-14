@@ -779,13 +779,13 @@ const checkout = (priceId: string) => {
                       <button
                         type="submit"
                         disabled={formStatus === "submitting"}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.01] disabled:opacity-70 disabled:cursor-not-allowed max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200 max-md:active:scale-[0.98]"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.01] disabled:opacity-70 disabled:cursor-not-allowed max-md:mt-2 max-md:py-4 max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200 max-md:active:scale-[0.98]"
                       >
                         {formStatus === "submitting" ? "Submitting..." : "Book My Demo"}
                         {formStatus !== "submitting" && <ArrowRight className="h-4 w-4" />}
                       </button>
 
-                      <div className="text-center text-xs text-white/45 max-md:text-white/55">
+                      <div className="text-center text-xs text-white/45 max-md:pt-1 max-md:text-white/55">
                         We'll reach out within 1 business day to schedule your demo.
                       </div>
                     </form>
