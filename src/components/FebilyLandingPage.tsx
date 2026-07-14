@@ -351,7 +351,7 @@ const checkout = (priceId: string) => {
       </div>
 
       <header className="sticky top-0 z-50 border-b border-white/5 bg-black/60 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3.5 sm:px-6 sm:py-4 lg:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3.5 max-md:px-4 max-md:py-3 sm:px-6 sm:py-4 lg:px-8">
           <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-2 rounded-full bg-white/95 px-3.5 py-1.5 shadow-sm ring-1 ring-white/10 transition hover:bg-white sm:px-4 sm:py-2">
             <img
               src="/febily-logo.png"
@@ -383,39 +383,39 @@ const checkout = (priceId: string) => {
 
       <main className="relative z-10">
         {/* HERO */}
-        <section className="mx-auto max-w-7xl px-4 pb-16 pt-14 max-md:pb-12 max-md:pt-10 sm:px-6 lg:px-8 lg:pb-24 lg:pt-20">
-          <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-16">
+        <section className="mx-auto max-w-7xl px-4 pb-16 pt-14 max-md:pb-12 max-md:pt-8 sm:px-6 lg:px-8 lg:pb-24 lg:pt-20">
+          <div className="grid items-center gap-14 max-md:gap-10 lg:grid-cols-2 lg:gap-16">
             <motion.div {...fadeUp}>
               <SectionLabel>AI Receptionists for US Salons & Barber Shops</SectionLabel>
-              <h1 className="mt-6 max-w-3xl text-5xl font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl">
+              <h1 className="mt-6 max-w-3xl text-5xl font-semibold tracking-tight text-balance max-md:mt-5 max-md:text-[2.5rem] max-md:leading-[1.08] sm:text-6xl lg:text-7xl">
                 Never Miss Another Booking.
               </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75 max-md:text-white/85 sm:text-xl">
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75 max-md:mt-4 max-md:text-[15.5px] max-md:leading-7 max-md:text-white/85 sm:text-xl">
                 Febily is a human-like AI receptionist that answers every call, books appointments directly into your Google Calendar, and turns missed calls into paying clients—24/7.
               </p>
 
-              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+              <div className="mt-8 flex flex-col gap-4 max-md:mt-7 max-md:gap-3 sm:flex-row">
                 <button
                   onClick={scrollToForm}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02] max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200 max-md:active:scale-[0.98]"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02] max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200 max-md:active:scale-[0.98] sm:w-auto"
                 >
                   Get My AI Receptionist <ArrowRight className="h-4 w-4" />
                 </button>
                 <button
                   onClick={scrollTo("demo")}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08] max-md:transition-all max-md:duration-200 max-md:active:border-white/30 max-md:active:bg-white/[0.12]"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08] max-md:transition-all max-md:duration-200 max-md:active:border-white/30 max-md:active:bg-white/[0.12] sm:w-auto"
                 >
                   Hear AI Demo
                 </button>
               </div>
 
-              <div className="mt-8 grid grid-cols-2 gap-2 text-sm text-white/70 max-md:text-white/80 sm:flex sm:flex-wrap sm:gap-3">
+              <div className="mt-8 grid grid-cols-2 gap-2 text-sm text-white/70 max-md:mt-7 max-md:gap-2.5 max-md:text-[13px] max-md:text-white/80 sm:flex sm:flex-wrap sm:gap-3">
                 {heroTrust.map((item) => (
                   <div
                     key={item}
-                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5"
+                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 max-md:justify-center max-md:px-3 max-md:py-2"
                   >
-                    <CheckCircle2 className="h-4 w-4 text-emerald-300/90" /> {item}
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-300/90" /> <span className="min-w-0">{item}</span>
                   </div>
                 ))}
               </div>
@@ -443,15 +443,15 @@ const checkout = (priceId: string) => {
 
                   <HeroChat />
 
-                  <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                  <div className="mt-8 grid grid-cols-3 gap-3 max-md:mt-6 max-md:gap-2.5 sm:grid-cols-3 sm:gap-4">
                     {[
                       { label: "Calls answered", value: "100%" },
                       { label: "Avg. pickup", value: "< 1s" },
                       { label: "Lost bookings", value: "Zero" },
                     ].map((stat) => (
-                      <div key={stat.label} className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-                        <div className="text-sm text-white/45">{stat.label}</div>
-                        <div className="mt-2 text-xl font-semibold">{stat.value}</div>
+                      <div key={stat.label} className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 max-md:p-3">
+                        <div className="text-sm text-white/45 max-md:text-[11px] max-md:leading-tight">{stat.label}</div>
+                        <div className="mt-2 text-xl font-semibold max-md:mt-1.5 max-md:text-lg">{stat.value}</div>
                       </div>
                     ))}
                   </div>
@@ -664,7 +664,7 @@ const checkout = (priceId: string) => {
         {/* DEMO REQUEST FORM */}
         <section id="request-demo" className="mx-auto max-w-7xl px-4 py-24 max-md:py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <motion.div {...fadeUp}>
-            <Card className="relative overflow-hidden p-6 sm:p-10 lg:p-12">
+            <Card className="relative overflow-hidden p-6 max-md:p-5 sm:p-10 lg:p-12">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.14),_transparent_30%)]" />
               <div className="relative z-10 grid gap-10 max-md:gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
                 <div>
@@ -701,7 +701,7 @@ const checkout = (priceId: string) => {
                   </div>
                 </div>
 
-                <Card className="p-6 sm:p-7">
+                <Card className="p-6 max-md:p-7 sm:p-7">
                   {formStatus === "success" ? (
                     <div className="flex flex-col items-center justify-center py-8 text-center">
                       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-400/20">
@@ -719,7 +719,7 @@ const checkout = (priceId: string) => {
                       </button>
                     </div>
                   ) : (
-                    <form onSubmit={handleRequestDemo} noValidate className="space-y-3">
+                    <form onSubmit={handleRequestDemo} noValidate className="space-y-3 max-md:space-y-4">
                       {formStatus === "error" && formError && (
                         <div className="rounded-2xl border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-300">
                           {formError}
@@ -734,7 +734,7 @@ const checkout = (priceId: string) => {
                           required
                           maxLength={100}
                           placeholder="Jordan Smith"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 max-md:px-4 max-md:py-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
                         />
                       </div>
 
@@ -746,7 +746,7 @@ const checkout = (priceId: string) => {
                           required
                           maxLength={120}
                           placeholder="Elite Fade Barbershop"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 max-md:px-4 max-md:py-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
                         />
                       </div>
 
@@ -759,7 +759,7 @@ const checkout = (priceId: string) => {
                           required
                           maxLength={255}
                           placeholder="you@yourshop.com"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 max-md:px-4 max-md:py-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
                         />
                       </div>
 
@@ -772,20 +772,20 @@ const checkout = (priceId: string) => {
                           required
                           maxLength={20}
                           placeholder="(555) 123-4567"
-                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
+                          className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-2.5 max-md:px-4 max-md:py-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/25 max-md:border-white/[0.14]"
                         />
                       </div>
 
                       <button
                         type="submit"
                         disabled={formStatus === "submitting"}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.01] disabled:opacity-70 disabled:cursor-not-allowed max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200 max-md:active:scale-[0.98]"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.01] disabled:opacity-70 disabled:cursor-not-allowed max-md:mt-2 max-md:py-4 max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200 max-md:active:scale-[0.98]"
                       >
                         {formStatus === "submitting" ? "Submitting..." : "Book My Demo"}
                         {formStatus !== "submitting" && <ArrowRight className="h-4 w-4" />}
                       </button>
 
-                      <div className="text-center text-xs text-white/45 max-md:text-white/55">
+                      <div className="text-center text-xs text-white/45 max-md:pt-1 max-md:text-white/55">
                         We'll reach out within 1 business day to schedule your demo.
                       </div>
                     </form>
@@ -811,13 +811,13 @@ const checkout = (priceId: string) => {
                 key={item.q}
                 {...fadeUp}
                 transition={{ duration: 0.6, delay: index * 0.04 }}
-                className="group rounded-3xl border border-white/10 bg-white/[0.035] p-5 open:bg-white/[0.05] sm:p-6 max-md:border-white/[0.14] max-md:bg-white/[0.04]"
+                className="group rounded-3xl border border-white/10 bg-white/[0.035] p-5 open:bg-white/[0.05] sm:p-6 max-md:border-white/[0.14] max-md:bg-white/[0.04] max-md:p-5"
               >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-medium outline-none">
-                  {item.q}
-                  <ChevronRight className="h-5 w-5 shrink-0 text-white/45 transition duration-300 group-open:rotate-90" />
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-lg font-medium outline-none max-md:text-base max-md:leading-6">
+                  <span className="min-w-0 flex-1">{item.q}</span>
+                  <ChevronRight className="h-5 w-5 shrink-0 text-white/45 transition duration-300 group-open:rotate-90 max-md:mt-0.5" />
                 </summary>
-                <p className="mt-4 max-w-2xl leading-7 text-white/60 max-md:text-white/70">{item.a}</p>
+                <p className="mt-4 max-w-2xl leading-7 text-white/60 max-md:mt-3 max-md:pr-1 max-md:text-[15px] max-md:leading-7 max-md:text-white/70">{item.a}</p>
               </motion.details>
             ))}
           </div>
@@ -840,13 +840,13 @@ const checkout = (priceId: string) => {
                 <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                   <button
                     onClick={scrollToForm}
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02] max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200 max-md:active:scale-[0.98]"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02] max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200 max-md:active:scale-[0.98] sm:w-auto"
                   >
                     Get My AI Receptionist <ArrowRight className="h-4 w-4" />
                   </button>
                   <button
                     onClick={scrollTo("demo")}
-                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08] max-md:transition-all max-md:duration-200 max-md:active:border-white/30 max-md:active:bg-white/[0.12]"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08] max-md:transition-all max-md:duration-200 max-md:active:border-white/30 max-md:active:bg-white/[0.12] sm:w-auto"
                   >
                     Hear AI Demo
                   </button>
