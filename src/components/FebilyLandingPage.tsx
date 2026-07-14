@@ -443,7 +443,7 @@ const checkout = (priceId: string) => {
 
                   <HeroChat />
 
-                  <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                  <div className="mt-8 grid grid-cols-3 gap-3 max-md:mt-6 max-md:gap-2.5 sm:grid-cols-3 sm:gap-4">
                     {[
                       { label: "Calls answered", value: "100%" },
                       { label: "Avg. pickup", value: "< 1s" },
