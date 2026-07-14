@@ -383,39 +383,39 @@ const checkout = (priceId: string) => {
 
       <main className="relative z-10">
         {/* HERO */}
-        <section className="mx-auto max-w-7xl px-4 pb-16 pt-14 max-md:pb-12 max-md:pt-10 sm:px-6 lg:px-8 lg:pb-24 lg:pt-20">
-          <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-16">
+        <section className="mx-auto max-w-7xl px-4 pb-16 pt-14 max-md:pb-12 max-md:pt-8 sm:px-6 lg:px-8 lg:pb-24 lg:pt-20">
+          <div className="grid items-center gap-14 max-md:gap-10 lg:grid-cols-2 lg:gap-16">
             <motion.div {...fadeUp}>
               <SectionLabel>AI Receptionists for US Salons & Barber Shops</SectionLabel>
-              <h1 className="mt-6 max-w-3xl text-5xl font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl">
+              <h1 className="mt-6 max-w-3xl text-5xl font-semibold tracking-tight text-balance max-md:mt-5 max-md:text-[2.5rem] max-md:leading-[1.08] sm:text-6xl lg:text-7xl">
                 Never Miss Another Booking.
               </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75 max-md:text-white/85 sm:text-xl">
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75 max-md:mt-4 max-md:text-[15.5px] max-md:leading-7 max-md:text-white/85 sm:text-xl">
                 Febily is a human-like AI receptionist that answers every call, books appointments directly into your Google Calendar, and turns missed calls into paying clients—24/7.
               </p>
 
-              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+              <div className="mt-8 flex flex-col gap-4 max-md:mt-7 max-md:gap-3 sm:flex-row">
                 <button
                   onClick={scrollToForm}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02] max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200 max-md:active:scale-[0.98]"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02] max-md:shadow-[0_4px_20px_rgba(255,255,255,0.08)] max-md:transition-all max-md:duration-200 max-md:active:scale-[0.98] sm:w-auto"
                 >
                   Get My AI Receptionist <ArrowRight className="h-4 w-4" />
                 </button>
                 <button
                   onClick={scrollTo("demo")}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08] max-md:transition-all max-md:duration-200 max-md:active:border-white/30 max-md:active:bg-white/[0.12]"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:border-white/25 hover:bg-white/[0.08] max-md:transition-all max-md:duration-200 max-md:active:border-white/30 max-md:active:bg-white/[0.12] sm:w-auto"
                 >
                   Hear AI Demo
                 </button>
               </div>
 
-              <div className="mt-8 grid grid-cols-2 gap-2 text-sm text-white/70 max-md:text-white/80 sm:flex sm:flex-wrap sm:gap-3">
+              <div className="mt-8 grid grid-cols-2 gap-2 text-sm text-white/70 max-md:mt-7 max-md:gap-2.5 max-md:text-[13px] max-md:text-white/80 sm:flex sm:flex-wrap sm:gap-3">
                 {heroTrust.map((item) => (
                   <div
                     key={item}
-                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5"
+                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 max-md:justify-center max-md:px-3 max-md:py-2"
                   >
-                    <CheckCircle2 className="h-4 w-4 text-emerald-300/90" /> {item}
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-300/90" /> <span className="truncate">{item}</span>
                   </div>
                 ))}
               </div>
