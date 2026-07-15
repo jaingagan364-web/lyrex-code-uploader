@@ -358,7 +358,7 @@ const checkout = (priceId: string) => {
           </a>
 
           <nav className="hidden items-center gap-8 text-sm text-white/60 md:flex">
-            <a href="#demo" className="transition-colors duration-200 hover:text-white">Demo</a>
+            <a href="#demo" className="transition-colors duration-200 hover:text-white">Live Demo</a>
             <a href="#features" className="transition-colors duration-200 hover:text-white">Features</a>
             <a href="#pricing" className="transition-colors duration-200 hover:text-white">Pricing</a>
             <a href="#faq" className="transition-colors duration-200 hover:text-white">FAQ</a>
@@ -771,19 +771,19 @@ const checkout = (priceId: string) => {
                 <div>
                   <SectionLabel>Contact Sales</SectionLabel>
                   <h2 className="mt-5 text-3xl font-semibold tracking-[-0.02em] sm:text-4xl max-md:text-[1.75rem]">
-                    Get Your Personalized AI Demo.
+                    Contact Sales
                   </h2>
                   <p className="mt-4 max-w-2xl leading-7 text-white/55 max-md:mt-3 max-md:text-[15px] max-md:leading-[1.65] max-md:text-white/65">
-                    Fill out the form and we'll contact you within one business day to schedule your personalized AI receptionist demo.
+                    Have questions about pricing, setup, integrations, or whether Febily is right for your business? Leave your details and our team will get back to you within one business day.
                   </p>
 
                   <div className="mt-8 space-y-3 max-md:mt-6 max-md:space-y-2">
                     {[
-                      "Personalized AI receptionist demo",
-                      "See real customer conversations",
-                      "Google Calendar booking integration",
-                      "Tailored to your business",
-                      "No obligation or long-term contract",
+                      "Setup guidance",
+                      "Pricing questions",
+                      "Existing business number support",
+                      "Google Calendar integration help",
+                      "Usually replies within one business day",
                     ].map((item) => (
                       <div
                         key={item}
@@ -882,7 +882,11 @@ const checkout = (priceId: string) => {
                         disabled={formStatus === "submitting"}
                         className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black shadow-[0_2px_24px_-4px_rgba(255,255,255,0.3)] transition-all duration-200 hover:scale-[1.01] hover:shadow-[0_4px_32px_-4px_rgba(255,255,255,0.4)] disabled:cursor-not-allowed disabled:opacity-70 max-md:mt-2 max-md:py-4 max-md:text-[15px] max-md:active:scale-[0.98]"
                       >
+<<<<<<< Updated upstream
                         {formStatus === "submitting" ? "Submitting..." : "Get Started"}
+=======
+                        {formStatus === "submitting" ? "Submitting..." : "Contact Sales"}
+>>>>>>> Stashed changes
                         {formStatus !== "submitting" && <ArrowRight className="h-4 w-4" />}
                       </button>
 
@@ -895,6 +899,32 @@ const checkout = (priceId: string) => {
               </div>
             </Card>
           </motion.div>
+          </div>
+        </section>
+
+        {/* TECHNOLOGY */}
+        <section id="technology" className="relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute left-1/2 top-[20%] h-[420px] w-[780px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse,rgba(99,102,241,0.08)_0%,transparent_70%)] blur-3xl max-md:h-[260px] max-md:w-[110%]" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(3,3,6,0.3)_100%)]" />
+          </div>
+          <div className="relative z-10 mx-auto max-w-7xl px-4 py-28 max-md:px-5 max-md:py-16 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
+            <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
+              <SectionLabel>Technology</SectionLabel>
+              <h2 className="mt-5 text-3xl font-semibold tracking-[-0.02em] sm:text-4xl max-md:text-[1.75rem]">
+                Built using trusted AI technology
+              </h2>
+            </motion.div>
+
+            <motion.div {...fadeUp} transition={{ duration: 0.7, delay: 0.05 }} className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 max-md:mt-8 max-md:gap-2.5">
+              {['OpenAI', 'ElevenLabs', 'Vapi', 'Google Calendar'].map((item) => (
+                <Card key={item} className="flex items-center justify-center p-6 text-center max-md:p-4">
+                  <div className="text-base font-semibold uppercase tracking-[0.24em] text-white/75 max-md:text-sm">
+                    {item}
+                  </div>
+                </Card>
+              ))}
+            </motion.div>
           </div>
         </section>
 
@@ -992,7 +1022,7 @@ const checkout = (priceId: string) => {
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/45 max-md:text-[11px] max-md:text-white/50">Explore</div>
               <ul className="mt-4 space-y-2 text-sm text-white/60 max-md:space-y-2.5 max-md:text-[13px] max-md:text-white/65">
                 <li><a href="#pricing" onClick={scrollTo("pricing")} className="hover:text-white">Pricing</a></li>
-                <li><a href="#demo" onClick={scrollTo("demo")} className="hover:text-white">Demo</a></li>
+                <li><a href="#demo" onClick={scrollTo("demo")} className="hover:text-white">Live Demo</a></li>
                 <li><a href="#faq" onClick={scrollTo("faq")} className="hover:text-white">FAQ</a></li>
               </ul>
             </div>
