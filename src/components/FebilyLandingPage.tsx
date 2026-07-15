@@ -324,7 +324,7 @@ const checkout = (priceId: string) => {
         const payload = await response.json().catch(() => null);
         const message =
           (payload && Array.isArray(payload.errors) && payload.errors[0]?.message) ||
-          "We couldn't submit your request. Please try again or email febilysupport@gmail.com.";
+          "We couldn't submit your request. Please try again or email support@febily.com.";
         setFormError(message);
         setFormStatus("error");
       }
@@ -949,8 +949,8 @@ const checkout = (priceId: string) => {
               <ul className="mt-4 space-y-2 text-sm text-white/60 max-md:space-y-2.5 max-md:text-[13px] max-md:text-white/65">
                 <li>
                   Email:{" "}
-                  <a href="mailto:febilysupport@gmail.com" className="text-white/90 hover:text-white">
-                    febilysupport@gmail.com
+                  <a href="mailto:support@febily.com" className="text-white/90 hover:text-white">
+                    support@febily.com
                   </a>
                 </li>
               </ul>

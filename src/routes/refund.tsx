@@ -35,7 +35,7 @@ function RefundPage() {
 
       <h2>3. How to Request a Refund</h2>
       <p>
-        Email <a href="mailto:febilysupport@gmail.com">febilysupport@gmail.com</a> from the email
+        Email <a href="mailto:support@febily.com">support@febily.com</a> from the email
         associated with your account. Please include your business name and the reason for the
         request. Approved refunds are issued to the original payment method within 5–10 business
         days.
@@ -62,7 +62,7 @@ function RefundPage() {
 
       <h2>7. Contact</h2>
       <p>
-        Questions about refunds? Email <a href="mailto:febilysupport@gmail.com">febilysupport@gmail.com</a>.
+        Questions about refunds? Email <a href="mailto:support@febily.com">support@febily.com</a>.
       </p>
     </LegalLayout>
   );
