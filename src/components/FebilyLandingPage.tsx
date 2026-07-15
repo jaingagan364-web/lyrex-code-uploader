@@ -713,7 +713,7 @@ const checkout = (priceId: string) => {
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/20 to-transparent" />
               <div className="relative z-10 grid gap-10 max-md:gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
                 <div>
-                  <SectionLabel>Book Demo</SectionLabel>
+                  <SectionLabel>Contact Sales</SectionLabel>
                   <h2 className="mt-5 text-3xl font-semibold tracking-[-0.02em] sm:text-4xl max-md:text-[1.75rem]">
                     Get Your Personalized AI Demo.
                   </h2>
