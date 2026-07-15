@@ -467,6 +467,59 @@ const checkout = (priceId: string) => {
           </div>
         </section>
 
+        {/* TRUSTED TECHNOLOGY */}
+        <section className="relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          </div>
+          <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 max-md:px-5 max-md:py-12 sm:px-6 sm:py-20 lg:px-8">
+            <motion.div {...fadeUp} className="text-center">
+              <div className="text-xs font-semibold uppercase tracking-[0.24em] text-white/45 max-md:text-[11px]">
+                Powered by Industry-Leading AI Technology
+              </div>
+              <div className="mx-auto mt-8 flex flex-wrap items-center justify-center gap-x-12 gap-y-6 max-md:mt-6 max-md:gap-x-8 max-md:gap-y-5 sm:gap-x-16">
+                {/* Vapi */}
+                <span className="text-2xl font-semibold tracking-[-0.02em] text-white/55 transition-colors hover:text-white/80 max-md:text-xl">
+                  vapi<span className="text-white/30">.</span>
+                </span>
+                {/* ElevenLabs */}
+                <span className="inline-flex items-center gap-2 text-lg font-medium tracking-tight text-white/55 transition-colors hover:text-white/80 max-md:text-base">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5 max-md:h-4 max-md:w-4" fill="currentColor" aria-hidden="true">
+                    <rect x="4" y="4" width="6" height="16" rx="1" />
+                    <rect x="14" y="4" width="6" height="16" rx="1" />
+                  </svg>
+                  ElevenLabs
+                </span>
+                {/* Google Calendar */}
+                <span className="inline-flex items-center gap-2 text-lg font-medium tracking-tight text-white/55 transition-colors hover:text-white/80 max-md:text-base">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5 max-md:h-4 max-md:w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                    <rect x="3" y="5" width="18" height="16" rx="2" />
+                    <path d="M3 9h18M8 3v4M16 3v4" strokeLinecap="round" />
+                  </svg>
+                  Google Calendar
+                </span>
+              </div>
+
+              <div className="mx-auto mt-12 grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-4 max-md:mt-10 max-md:gap-2.5">
+                {[
+                  "Setup completed within 24 hours",
+                  "Works with your existing business number",
+                  "No hardware required",
+                  "Cancel anytime",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-left text-sm text-white/75 shadow-[0_0_0_1px_rgba(255,255,255,0.02)_inset,0_16px_48px_-16px_rgba(0,0,0,0.5)] backdrop-blur-xl max-md:rounded-xl max-md:px-3.5 max-md:py-2.5 max-md:text-[13px]"
+                  >
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-300/90" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
         {/* AUDIO DEMO */}
         <section id="demo" className="relative overflow-hidden">
           <div className="pointer-events-none absolute inset-0">
