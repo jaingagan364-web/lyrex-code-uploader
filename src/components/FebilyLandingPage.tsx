@@ -361,12 +361,18 @@ const checkout = (priceId: string) => {
             <a href="#faq" className="transition-colors duration-200 hover:text-white">FAQ</a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={scrollToForm}
+              className="hidden shrink-0 items-center gap-1.5 rounded-full border border-white/[0.12] bg-white/[0.04] px-4 py-2 text-xs font-semibold text-white/85 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] backdrop-blur-sm transition-all duration-200 hover:border-white/20 hover:bg-white/[0.07] sm:inline-flex sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm"
+            >
+              Contact Sales
+            </button>
             <button
               onClick={scrollToForm}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-semibold text-black shadow-[0_2px_20px_-2px_rgba(255,255,255,0.25)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[0_4px_28px_-2px_rgba(255,255,255,0.35)] sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm max-md:px-4 max-md:py-2.5 max-md:text-[13px] max-md:active:scale-[0.98]"
             >
-              Book My Demo <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              Get Started <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
           </div>
         </div>
