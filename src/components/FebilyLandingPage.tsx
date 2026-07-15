@@ -288,6 +288,9 @@ const checkout = (priceId: string) => {
         quantity: 1,
       },
     ],
+    settings: {
+      successUrl: `${window.location.origin}/thank-you`,
+    },
   });
 };
   const handleRequestDemo = async (e: React.FormEvent<HTMLFormElement>) => {
