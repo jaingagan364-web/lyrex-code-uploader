@@ -694,7 +694,7 @@ const checkout = (priceId: string) => {
           </div>
 
           <div className="mt-6 text-center text-sm text-white/50 max-md:mt-5 max-md:text-[13px] max-md:text-white/55">
-            Not sure which plan? <button onClick={scrollToForm} className="text-white underline-offset-4 transition-colors hover:underline">Book a demo</button> and we'll recommend the right fit.
+            Not sure which plan? <button onClick={scrollToForm} className="text-white underline-offset-4 transition-colors hover:underline">Contact sales</button> and we'll recommend the right fit.
           </div>
           </div>
         </section>
