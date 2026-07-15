@@ -900,13 +900,13 @@ const checkout = (priceId: string) => {
                     onClick={scrollToForm}
                     className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black shadow-[0_2px_24px_-4px_rgba(255,255,255,0.3)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[0_4px_32px_-4px_rgba(255,255,255,0.4)] max-md:py-4 max-md:text-[15px] max-md:active:scale-[0.98] sm:w-auto"
                   >
-                    Get My AI Receptionist <ArrowRight className="h-4 w-4" />
+                    Get Started <ArrowRight className="h-4 w-4" />
                   </button>
                   <button
                     onClick={scrollTo("demo")}
                     className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white/90 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] transition-all duration-200 hover:border-white/20 hover:bg-white/[0.07] max-md:py-4 max-md:text-[15px] max-md:active:bg-white/[0.1] sm:w-auto"
                   >
-                    Hear AI Demo
+                    🎧 Hear Live Demo
                   </button>
                 </div>
               </div>
