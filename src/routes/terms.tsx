@@ -106,7 +106,7 @@ function TermsPage() {
 
       <h2>13. Contact</h2>
       <p>
-        Questions? Email <a href="mailto:febilysupport@gmail.com">febilysupport@gmail.com</a>.
+        Questions? Email <a href="mailto:support@febily.com">support@febily.com</a>.
       </p>
     </LegalLayout>
   );

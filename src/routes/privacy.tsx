@@ -62,7 +62,7 @@ function PrivacyPage() {
       <p>
         Depending on your location, you may have rights to access, correct, delete, or export
         your personal information, and to opt out of certain processing. To exercise these
-        rights, email us at <a href="mailto:febilysupport@gmail.com">febilysupport@gmail.com</a>.
+        rights, email us at <a href="mailto:support@febily.com">support@febily.com</a>.
       </p>
 
       <h2>7. Children's Privacy</h2>
@@ -79,7 +79,7 @@ function PrivacyPage() {
 
       <h2>9. Contact Us</h2>
       <p>
-        Questions? Email <a href="mailto:febilysupport@gmail.com">febilysupport@gmail.com</a>.
+        Questions? Email <a href="mailto:support@febily.com">support@febily.com</a>.
       </p>
     </LegalLayout>
   );

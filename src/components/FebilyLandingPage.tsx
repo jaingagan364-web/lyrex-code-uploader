@@ -288,6 +288,9 @@ const checkout = (priceId: string) => {
         quantity: 1,
       },
     ],
+    settings: {
+      successUrl: `${window.location.origin}/thank-you`,
+    },
   });
 };
   const handleRequestDemo = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -324,7 +327,7 @@ const checkout = (priceId: string) => {
         const payload = await response.json().catch(() => null);
         const message =
           (payload && Array.isArray(payload.errors) && payload.errors[0]?.message) ||
-          "We couldn't submit your request. Please try again or email febilysupport@gmail.com.";
+          "We couldn't submit your request. Please try again or email support@febily.com.";
         setFormError(message);
         setFormStatus("error");
       }
@@ -361,12 +364,18 @@ const checkout = (priceId: string) => {
             <a href="#faq" className="transition-colors duration-200 hover:text-white">FAQ</a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={scrollToForm}
+              className="hidden shrink-0 items-center gap-1.5 rounded-full border border-white/[0.12] bg-white/[0.04] px-4 py-2 text-xs font-semibold text-white/85 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] backdrop-blur-sm transition-all duration-200 hover:border-white/20 hover:bg-white/[0.07] sm:inline-flex sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm"
+            >
+              Contact Sales
+            </button>
             <button
               onClick={scrollToForm}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-semibold text-black shadow-[0_2px_20px_-2px_rgba(255,255,255,0.25)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[0_4px_28px_-2px_rgba(255,255,255,0.35)] sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm max-md:px-4 max-md:py-2.5 max-md:text-[13px] max-md:active:scale-[0.98]"
             >
-              Book My Demo <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              Get Started <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
           </div>
         </div>
@@ -397,13 +406,13 @@ const checkout = (priceId: string) => {
                   onClick={scrollToForm}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black shadow-[0_2px_24px_-4px_rgba(255,255,255,0.3)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[0_4px_32px_-4px_rgba(255,255,255,0.4)] max-md:py-4 max-md:text-[15px] max-md:active:scale-[0.98] sm:w-auto"
                 >
-                  Get My AI Receptionist <ArrowRight className="h-4 w-4" />
+                  Get Started <ArrowRight className="h-4 w-4" />
                 </button>
                 <button
                   onClick={scrollTo("demo")}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white/90 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] backdrop-blur-sm transition-all duration-200 hover:border-white/20 hover:bg-white/[0.07] max-md:py-4 max-md:text-[15px] max-md:active:bg-white/[0.1] sm:w-auto"
                 >
-                  Hear AI Demos
+                  🎧 Hear Live Demo
                 </button>
               </div>
 
@@ -461,6 +470,59 @@ const checkout = (priceId: string) => {
           </div>
         </section>
 
+        {/* TRUSTED TECHNOLOGY */}
+        <section className="relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          </div>
+          <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 max-md:px-5 max-md:py-12 sm:px-6 sm:py-20 lg:px-8">
+            <motion.div {...fadeUp} className="text-center">
+              <div className="text-xs font-semibold uppercase tracking-[0.24em] text-white/45 max-md:text-[11px]">
+                Powered by Industry-Leading AI Technology
+              </div>
+              <div className="mx-auto mt-8 flex flex-wrap items-center justify-center gap-x-12 gap-y-6 max-md:mt-6 max-md:gap-x-8 max-md:gap-y-5 sm:gap-x-16">
+                {/* Vapi */}
+                <span className="text-2xl font-semibold tracking-[-0.02em] text-white/55 transition-colors hover:text-white/80 max-md:text-xl">
+                  vapi<span className="text-white/30">.</span>
+                </span>
+                {/* ElevenLabs */}
+                <span className="inline-flex items-center gap-2 text-lg font-medium tracking-tight text-white/55 transition-colors hover:text-white/80 max-md:text-base">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5 max-md:h-4 max-md:w-4" fill="currentColor" aria-hidden="true">
+                    <rect x="4" y="4" width="6" height="16" rx="1" />
+                    <rect x="14" y="4" width="6" height="16" rx="1" />
+                  </svg>
+                  ElevenLabs
+                </span>
+                {/* Google Calendar */}
+                <span className="inline-flex items-center gap-2 text-lg font-medium tracking-tight text-white/55 transition-colors hover:text-white/80 max-md:text-base">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5 max-md:h-4 max-md:w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                    <rect x="3" y="5" width="18" height="16" rx="2" />
+                    <path d="M3 9h18M8 3v4M16 3v4" strokeLinecap="round" />
+                  </svg>
+                  Google Calendar
+                </span>
+              </div>
+
+              <div className="mx-auto mt-12 grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-4 max-md:mt-10 max-md:gap-2.5">
+                {[
+                  "Setup completed within 24 hours",
+                  "Works with your existing business number",
+                  "No hardware required",
+                  "Cancel anytime",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-left text-sm text-white/75 shadow-[0_0_0_1px_rgba(255,255,255,0.02)_inset,0_16px_48px_-16px_rgba(0,0,0,0.5)] backdrop-blur-xl max-md:rounded-xl max-md:px-3.5 max-md:py-2.5 max-md:text-[13px]"
+                  >
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-300/90" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
         {/* AUDIO DEMO */}
         <section id="demo" className="relative overflow-hidden">
           <div className="pointer-events-none absolute inset-0">
@@ -472,10 +534,10 @@ const checkout = (priceId: string) => {
           <motion.div {...fadeUp} className="text-center">
             <SectionLabel>Live Sample</SectionLabel>
             <h2 className="mt-5 text-3xl font-semibold tracking-[-0.02em] sm:text-4xl lg:text-5xl">
-              Hear Febily in Action
+              Listen to a Real AI Receptionist
             </h2>
             <p className="mx-auto mt-4 max-w-2xl leading-7 text-white/60 max-md:mt-3 max-md:text-[15px] max-md:leading-[1.65] max-md:text-white/70">
-              Listen to a real AI receptionist answering a customer call and booking an appointment automatically.
+              This is a real AI receptionist answering a salon customer call.
             </p>
           </motion.div>
 
@@ -688,7 +750,7 @@ const checkout = (priceId: string) => {
           </div>
 
           <div className="mt-6 text-center text-sm text-white/50 max-md:mt-5 max-md:text-[13px] max-md:text-white/55">
-            Not sure which plan? <button onClick={scrollToForm} className="text-white underline-offset-4 transition-colors hover:underline">Book a demo</button> and we'll recommend the right fit.
+            Not sure which plan? <button onClick={scrollToForm} className="text-white underline-offset-4 transition-colors hover:underline">Contact sales</button> and we'll recommend the right fit.
           </div>
           </div>
         </section>
@@ -707,7 +769,7 @@ const checkout = (priceId: string) => {
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/20 to-transparent" />
               <div className="relative z-10 grid gap-10 max-md:gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
                 <div>
-                  <SectionLabel>Book Demo</SectionLabel>
+                  <SectionLabel>Contact Sales</SectionLabel>
                   <h2 className="mt-5 text-3xl font-semibold tracking-[-0.02em] sm:text-4xl max-md:text-[1.75rem]">
                     Get Your Personalized AI Demo.
                   </h2>
@@ -820,7 +882,7 @@ const checkout = (priceId: string) => {
                         disabled={formStatus === "submitting"}
                         className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black shadow-[0_2px_24px_-4px_rgba(255,255,255,0.3)] transition-all duration-200 hover:scale-[1.01] hover:shadow-[0_4px_32px_-4px_rgba(255,255,255,0.4)] disabled:cursor-not-allowed disabled:opacity-70 max-md:mt-2 max-md:py-4 max-md:text-[15px] max-md:active:scale-[0.98]"
                       >
-                        {formStatus === "submitting" ? "Submitting..." : "Book My Demo"}
+                        {formStatus === "submitting" ? "Submitting..." : "Get Started"}
                         {formStatus !== "submitting" && <ArrowRight className="h-4 w-4" />}
                       </button>
 
@@ -894,13 +956,13 @@ const checkout = (priceId: string) => {
                     onClick={scrollToForm}
                     className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black shadow-[0_2px_24px_-4px_rgba(255,255,255,0.3)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[0_4px_32px_-4px_rgba(255,255,255,0.4)] max-md:py-4 max-md:text-[15px] max-md:active:scale-[0.98] sm:w-auto"
                   >
-                    Get My AI Receptionist <ArrowRight className="h-4 w-4" />
+                    Get Started <ArrowRight className="h-4 w-4" />
                   </button>
                   <button
                     onClick={scrollTo("demo")}
                     className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white/90 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] transition-all duration-200 hover:border-white/20 hover:bg-white/[0.07] max-md:py-4 max-md:text-[15px] max-md:active:bg-white/[0.1] sm:w-auto"
                   >
-                    Hear AI Demo
+                    🎧 Hear Live Demo
                   </button>
                 </div>
               </div>
@@ -949,8 +1011,8 @@ const checkout = (priceId: string) => {
               <ul className="mt-4 space-y-2 text-sm text-white/60 max-md:space-y-2.5 max-md:text-[13px] max-md:text-white/65">
                 <li>
                   Email:{" "}
-                  <a href="mailto:febilysupport@gmail.com" className="text-white/90 hover:text-white">
-                    febilysupport@gmail.com
+                  <a href="mailto:support@febily.com" className="text-white/90 hover:text-white">
+                    support@febily.com
                   </a>
                 </li>
               </ul>
