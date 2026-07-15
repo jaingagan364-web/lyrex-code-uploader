@@ -478,10 +478,10 @@ const checkout = (priceId: string) => {
           <motion.div {...fadeUp} className="text-center">
             <SectionLabel>Live Sample</SectionLabel>
             <h2 className="mt-5 text-3xl font-semibold tracking-[-0.02em] sm:text-4xl lg:text-5xl">
-              Hear Febily in Action
+              Listen to a Real AI Receptionist
             </h2>
             <p className="mx-auto mt-4 max-w-2xl leading-7 text-white/60 max-md:mt-3 max-md:text-[15px] max-md:leading-[1.65] max-md:text-white/70">
-              Listen to a real AI receptionist answering a customer call and booking an appointment automatically.
+              This is a real AI receptionist answering a salon customer call.
             </p>
           </motion.div>
 
