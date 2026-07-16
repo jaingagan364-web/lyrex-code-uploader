@@ -882,7 +882,11 @@ const checkout = (priceId: string) => {
                         disabled={formStatus === "submitting"}
                         className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black shadow-[0_2px_24px_-4px_rgba(255,255,255,0.3)] transition-all duration-200 hover:scale-[1.01] hover:shadow-[0_4px_32px_-4px_rgba(255,255,255,0.4)] disabled:cursor-not-allowed disabled:opacity-70 max-md:mt-2 max-md:py-4 max-md:text-[15px] max-md:active:scale-[0.98]"
                       >
+<<<<<<< Updated upstream
                         {formStatus === "submitting" ? "Submitting..." : "Get Started"}
+=======
+                        {formStatus === "submitting" ? "Submitting..." : "Contact Sales"}
+>>>>>>> Stashed changes
                         {formStatus !== "submitting" && <ArrowRight className="h-4 w-4" />}
                       </button>
 
