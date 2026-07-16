@@ -167,6 +167,34 @@ const SectionLabel = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
+function BrandLogo({
+  name,
+  src,
+  alt,
+}: {
+  name: string;
+  src?: string;
+  alt?: string;
+}) {
+  return (
+    <div className="group flex h-16 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.03] px-6 py-4 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.16] hover:bg-white/[0.06] hover:shadow-[0_0_24px_rgba(255,255,255,0.06)] max-md:h-14 max-md:px-5">
+      {src ? (
+        <img
+          src={src}
+          alt={alt ?? name}
+          className="h-7 w-auto max-w-[140px] object-contain opacity-80 transition duration-300 group-hover:opacity-100"
+          style={{ filter: "brightness(0) invert(1)" }}
+        />
+      ) : (
+        <div className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.24em] text-white/70 transition duration-300 group-hover:text-white">
+          <span className="h-2.5 w-2.5 rounded-full border border-white/20 bg-white/10" />
+          <span>{name}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Card({
   children,
   className = "",
@@ -412,7 +440,7 @@ const checkout = (priceId: string) => {
                   onClick={scrollTo("demo")}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white/90 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] backdrop-blur-sm transition-all duration-200 hover:border-white/20 hover:bg-white/[0.07] max-md:py-4 max-md:text-[15px] max-md:active:bg-white/[0.1] sm:w-auto"
                 >
-                  🎧 Hear Live Demo
+                  🎧 Listen to Sample Call
                 </button>
               </div>
 
@@ -702,7 +730,7 @@ const checkout = (priceId: string) => {
           </div>
         </section>
 
-        {/* DEMO REQUEST FORM */}
+        {/* CONTACT SALES */}
         <section id="request-demo" className="relative overflow-hidden">
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute left-[-5%] top-[20%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.1)_0%,transparent_65%)] blur-3xl max-md:left-[-25%] max-md:top-[10%] max-md:h-[280px] max-md:w-[280px]" />
@@ -757,13 +785,13 @@ const checkout = (priceId: string) => {
                       </div>
                       <h3 className="mt-6 text-xl font-semibold">Thank you!</h3>
                       <p className="mt-3 text-white/65 max-md:text-white/75">
-                        Your demo request has been received. We'll contact you within one business day.
+                        Thanks for contacting Febily. Our team will review your inquiry and get back to you within one business day.
                       </p>
                       <button
                         onClick={() => setFormStatus("idle")}
                         className="mt-6 inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.04] px-6 py-3 text-sm font-semibold text-white/90 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] transition-all duration-200 hover:border-white/20 hover:bg-white/[0.07] max-md:py-3.5 max-md:active:bg-white/[0.1]"
                       >
-                        Submit Another Request
+                        Contact Us Again
                       </button>
                     </div>
                   ) : (
@@ -892,13 +920,14 @@ const checkout = (priceId: string) => {
               </h2>
             </motion.div>
 
-            <motion.div {...fadeUp} transition={{ duration: 0.7, delay: 0.05 }} className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 max-md:mt-8 max-md:gap-2.5">
-              {['OpenAI', 'ElevenLabs', 'Vapi', 'Google Calendar'].map((item) => (
-                <Card key={item} className="flex items-center justify-center p-6 text-center max-md:p-4">
-                  <div className="text-base font-semibold uppercase tracking-[0.24em] text-white/75 max-md:text-sm">
-                    {item}
-                  </div>
-                </Card>
+            <motion.div {...fadeUp} transition={{ duration: 0.7, delay: 0.05 }} className="mt-12 flex flex-wrap items-center justify-center gap-4 max-md:mt-8 max-md:gap-3">
+              {[
+                { name: 'OpenAI' },
+                { name: 'ElevenLabs' },
+                { name: 'Vapi' },
+                { name: 'Google Calendar', src: 'https://www.gstatic.com/images/branding/productlogos/calendar_2026/v2/web/192px.svg' },
+              ].map((brand) => (
+                <BrandLogo key={brand.name} name={brand.name} src={brand.src} alt={brand.name} />
               ))}
             </motion.div>
           </div>
