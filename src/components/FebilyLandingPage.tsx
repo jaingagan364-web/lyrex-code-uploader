@@ -358,7 +358,7 @@ const checkout = (priceId: string) => {
           </a>
 
           <nav className="hidden items-center gap-8 text-sm text-white/60 md:flex">
-            <a href="#demo" className="transition-colors duration-200 hover:text-white">Live Demo</a>
+            <a href="#demo" className="transition-colors duration-200 hover:text-white">Sample Call</a>
             <a href="#features" className="transition-colors duration-200 hover:text-white">Features</a>
             <a href="#pricing" className="transition-colors duration-200 hover:text-white">Pricing</a>
             <a href="#faq" className="transition-colors duration-200 hover:text-white">FAQ</a>
@@ -470,59 +470,6 @@ const checkout = (priceId: string) => {
           </div>
         </section>
 
-        {/* TRUSTED TECHNOLOGY */}
-        <section className="relative overflow-hidden">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-          </div>
-          <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 max-md:px-5 max-md:py-12 sm:px-6 sm:py-20 lg:px-8">
-            <motion.div {...fadeUp} className="text-center">
-              <div className="text-xs font-semibold uppercase tracking-[0.24em] text-white/45 max-md:text-[11px]">
-                Powered by Industry-Leading AI Technology
-              </div>
-              <div className="mx-auto mt-8 flex flex-wrap items-center justify-center gap-x-12 gap-y-6 max-md:mt-6 max-md:gap-x-8 max-md:gap-y-5 sm:gap-x-16">
-                {/* Vapi */}
-                <span className="text-2xl font-semibold tracking-[-0.02em] text-white/55 transition-colors hover:text-white/80 max-md:text-xl">
-                  vapi<span className="text-white/30">.</span>
-                </span>
-                {/* ElevenLabs */}
-                <span className="inline-flex items-center gap-2 text-lg font-medium tracking-tight text-white/55 transition-colors hover:text-white/80 max-md:text-base">
-                  <svg viewBox="0 0 24 24" className="h-5 w-5 max-md:h-4 max-md:w-4" fill="currentColor" aria-hidden="true">
-                    <rect x="4" y="4" width="6" height="16" rx="1" />
-                    <rect x="14" y="4" width="6" height="16" rx="1" />
-                  </svg>
-                  ElevenLabs
-                </span>
-                {/* Google Calendar */}
-                <span className="inline-flex items-center gap-2 text-lg font-medium tracking-tight text-white/55 transition-colors hover:text-white/80 max-md:text-base">
-                  <svg viewBox="0 0 24 24" className="h-5 w-5 max-md:h-4 max-md:w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                    <rect x="3" y="5" width="18" height="16" rx="2" />
-                    <path d="M3 9h18M8 3v4M16 3v4" strokeLinecap="round" />
-                  </svg>
-                  Google Calendar
-                </span>
-              </div>
-
-              <div className="mx-auto mt-12 grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-4 max-md:mt-10 max-md:gap-2.5">
-                {[
-                  "Setup completed within 24 hours",
-                  "Works with your existing business number",
-                  "No hardware required",
-                  "Cancel anytime",
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-left text-sm text-white/75 shadow-[0_0_0_1px_rgba(255,255,255,0.02)_inset,0_16px_48px_-16px_rgba(0,0,0,0.5)] backdrop-blur-xl max-md:rounded-xl max-md:px-3.5 max-md:py-2.5 max-md:text-[13px]"
-                  >
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-300/90" />
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
         {/* AUDIO DEMO */}
         <section id="demo" className="relative overflow-hidden">
           <div className="pointer-events-none absolute inset-0">
@@ -532,19 +479,19 @@ const checkout = (priceId: string) => {
           </div>
           <div className="relative z-10 mx-auto max-w-5xl px-4 py-28 max-md:px-5 max-md:py-16 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
           <motion.div {...fadeUp} className="text-center">
-            <SectionLabel>Live Sample</SectionLabel>
+            <SectionLabel>Sample Recording</SectionLabel>
             <h2 className="mt-5 text-3xl font-semibold tracking-[-0.02em] sm:text-4xl lg:text-5xl">
-              Listen to a Real AI Receptionist
+              Hear a Real Customer Call
             </h2>
             <p className="mx-auto mt-4 max-w-2xl leading-7 text-white/60 max-md:mt-3 max-md:text-[15px] max-md:leading-[1.65] max-md:text-white/70">
-              This is a real AI receptionist answering a salon customer call.
+              Listen to an actual customer conversation handled by Febily.
             </p>
           </motion.div>
 
           <motion.div {...fadeUp} transition={{ duration: 0.8, ease: "easeOut" as const, delay: 0.1 }} className="mt-10 max-md:mt-8">
             <FebilyAudioPlayer />
             <p className="mt-5 text-center text-sm text-white/50 max-md:mt-4 max-md:text-[13px] max-md:text-white/60">
-              This is a real AI conversation powered by Febily's AI receptionist.
+              A real customer conversation demonstrating how Febily answers calls professionally.
             </p>
           </motion.div>
           </div>
@@ -674,7 +621,7 @@ const checkout = (priceId: string) => {
           <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
             <SectionLabel>Pricing</SectionLabel>
             <h2 className="mt-5 text-3xl font-semibold tracking-[-0.02em] sm:text-4xl">
-              Simple monthly pricing. Cancel anytime.
+              Simple monthly pricing. No long-term contracts.
             </h2>
             <p className="mt-4 text-white/55 max-md:text-[15px] max-md:leading-[1.65] max-md:text-white/65">
               Most shops cover their plan with just 1–2 saved bookings per month. No contracts. No setup fees.
@@ -745,7 +692,7 @@ const checkout = (priceId: string) => {
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-white/50 max-md:mt-8 max-md:gap-x-4 max-md:gap-y-2.5 max-md:text-[13px] max-md:text-white/55">
             <span className="inline-flex items-center gap-2"><Lock className="h-4 w-4 max-md:h-3.5 max-md:w-3.5" /> Secure checkout</span>
-            <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 max-md:h-3.5 max-md:w-3.5" /> Cancel anytime</span>
+            <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 max-md:h-3.5 max-md:w-3.5" /> No long-term contracts</span>
             <span className="inline-flex items-center gap-2"><Zap className="h-4 w-4 max-md:h-3.5 max-md:w-3.5" /> Live in 24 hours</span>
           </div>
 
@@ -882,12 +829,12 @@ const checkout = (priceId: string) => {
                         disabled={formStatus === "submitting"}
                         className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-black shadow-[0_2px_24px_-4px_rgba(255,255,255,0.3)] transition-all duration-200 hover:scale-[1.01] hover:shadow-[0_4px_32px_-4px_rgba(255,255,255,0.4)] disabled:cursor-not-allowed disabled:opacity-70 max-md:mt-2 max-md:py-4 max-md:text-[15px] max-md:active:scale-[0.98]"
                       >
-                        {formStatus === "submitting" ? "Submitting..." : "Get Started"}
+                        {formStatus === "submitting" ? "Submitting..." : "Contact Sales"}
                         {formStatus !== "submitting" && <ArrowRight className="h-4 w-4" />}
                       </button>
 
                       <div className="text-center text-xs text-white/45 max-md:pt-1 max-md:text-white/55">
-                        We'll reach out within 1 business day to schedule your demo.
+                        We'll get back to you within one business day.
                       </div>
                     </form>
                   )}
@@ -895,32 +842,6 @@ const checkout = (priceId: string) => {
               </div>
             </Card>
           </motion.div>
-          </div>
-        </section>
-
-        {/* TECHNOLOGY */}
-        <section id="technology" className="relative overflow-hidden">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-1/2 top-[20%] h-[420px] w-[780px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse,rgba(99,102,241,0.08)_0%,transparent_70%)] blur-3xl max-md:h-[260px] max-md:w-[110%]" />
-            <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(3,3,6,0.3)_100%)]" />
-          </div>
-          <div className="relative z-10 mx-auto max-w-7xl px-4 py-28 max-md:px-5 max-md:py-16 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
-            <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
-              <SectionLabel>Technology</SectionLabel>
-              <h2 className="mt-5 text-3xl font-semibold tracking-[-0.02em] sm:text-4xl max-md:text-[1.75rem]">
-                Built using trusted AI technology
-              </h2>
-            </motion.div>
-
-            <motion.div {...fadeUp} transition={{ duration: 0.7, delay: 0.05 }} className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 max-md:mt-8 max-md:gap-2.5">
-              {['OpenAI', 'ElevenLabs', 'Vapi', 'Google Calendar'].map((item) => (
-                <Card key={item} className="flex items-center justify-center p-6 text-center max-md:p-4">
-                  <div className="text-base font-semibold uppercase tracking-[0.24em] text-white/75 max-md:text-sm">
-                    {item}
-                  </div>
-                </Card>
-              ))}
-            </motion.div>
           </div>
         </section>
 
@@ -957,6 +878,32 @@ const checkout = (priceId: string) => {
           </div>
         </section>
 
+        {/* TECHNOLOGY */}
+        <section id="technology" className="relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute left-1/2 top-[20%] h-[420px] w-[780px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse,rgba(99,102,241,0.08)_0%,transparent_70%)] blur-3xl max-md:h-[260px] max-md:w-[110%]" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(3,3,6,0.3)_100%)]" />
+          </div>
+          <div className="relative z-10 mx-auto max-w-7xl px-4 py-28 max-md:px-5 max-md:py-16 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
+            <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
+              <SectionLabel>Technology</SectionLabel>
+              <h2 className="mt-5 text-3xl font-semibold tracking-[-0.02em] sm:text-4xl max-md:text-[1.75rem]">
+                Powered by Trusted Technology
+              </h2>
+            </motion.div>
+
+            <motion.div {...fadeUp} transition={{ duration: 0.7, delay: 0.05 }} className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 max-md:mt-8 max-md:gap-2.5">
+              {['OpenAI', 'ElevenLabs', 'Vapi', 'Google Calendar'].map((item) => (
+                <Card key={item} className="flex items-center justify-center p-6 text-center max-md:p-4">
+                  <div className="text-base font-semibold uppercase tracking-[0.24em] text-white/75 max-md:text-sm">
+                    {item}
+                  </div>
+                </Card>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
         {/* FINAL CTA */}
         <section className="relative overflow-hidden">
           <div className="pointer-events-none absolute inset-0">
@@ -988,7 +935,7 @@ const checkout = (priceId: string) => {
                     onClick={scrollTo("demo")}
                     className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white/90 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] transition-all duration-200 hover:border-white/20 hover:bg-white/[0.07] max-md:py-4 max-md:text-[15px] max-md:active:bg-white/[0.1] sm:w-auto"
                   >
-                    🎧 Hear Live Demo
+                    🎧 Listen to Sample Call
                   </button>
                 </div>
               </div>
@@ -1018,7 +965,7 @@ const checkout = (priceId: string) => {
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/45 max-md:text-[11px] max-md:text-white/50">Explore</div>
               <ul className="mt-4 space-y-2 text-sm text-white/60 max-md:space-y-2.5 max-md:text-[13px] max-md:text-white/65">
                 <li><a href="#pricing" onClick={scrollTo("pricing")} className="hover:text-white">Pricing</a></li>
-                <li><a href="#demo" onClick={scrollTo("demo")} className="hover:text-white">Live Demo</a></li>
+                <li><a href="#demo" onClick={scrollTo("demo")} className="hover:text-white">Sample Call</a></li>
                 <li><a href="#faq" onClick={scrollTo("faq")} className="hover:text-white">FAQ</a></li>
               </ul>
             </div>

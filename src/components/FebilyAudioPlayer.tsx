@@ -148,12 +148,12 @@ export default function FebilyAudioPlayer() {
             <div className="text-[10px] font-medium uppercase tracking-[0.22em] text-white/45">
               Now Playing
             </div>
-            <div className="text-base font-semibold text-white">Real AI Receptionist Call</div>
+            <div className="text-base font-semibold text-white">Sample Customer Call</div>
           </div>
         </div>
         <div className="hidden items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300 sm:flex">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-          Live sample
+          Sample Recording
         </div>
       </div>
 

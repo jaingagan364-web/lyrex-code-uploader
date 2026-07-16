@@ -26,11 +26,11 @@ function RefundPage() {
         started.
       </p>
 
-      <h2>2. 7-Day Money-Back Guarantee</h2>
+      <h2>2. Refund Eligibility</h2>
       <p>
-        If you are not satisfied with Febily, you may request a full refund of your first
-        month's subscription within seven (7) days of your initial paid subscription. This
-        guarantee applies only to your first paid billing cycle.
+        Refunds may be granted for duplicate charges, accidental purchases, billing errors, or
+        verified technical issues that prevent Febily from functioning as intended. Refund
+        requests are reviewed on a case-by-case basis.
       </p>
 
       <h2>3. How to Request a Refund</h2>
@@ -43,16 +43,15 @@ function RefundPage() {
 
       <h2>4. Cancellations</h2>
       <p>
-        You can cancel your subscription at any time. Cancellation stops future billing; your
-        service remains active until the end of your current billing period.
+        You may cancel your subscription at any time to stop future renewals. Your subscription
+        remains active until the end of your current billing period.
       </p>
 
-      <h2>5. Non-Refundable Items</h2>
-      <ul>
-        <li>Usage-based overage charges.</li>
-        <li>Custom onboarding, integration, or professional-service fees.</li>
-        <li>Renewal charges after the initial 7-day guarantee period.</li>
-      </ul>
+      <h2>5. Non-Refundable Charges</h2>
+      <p>
+        Unless required by applicable law, subscription payments are non-refundable once a billing
+        period has begun.
+      </p>
 
       <h2>6. Chargebacks</h2>
       <p>
