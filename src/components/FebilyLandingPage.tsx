@@ -167,34 +167,6 @@ const SectionLabel = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-function BrandLogo({
-  name,
-  src,
-  alt,
-}: {
-  name: string;
-  src?: string;
-  alt?: string;
-}) {
-  return (
-    <div className="group flex h-16 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.03] px-6 py-4 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.16] hover:bg-white/[0.06] hover:shadow-[0_0_24px_rgba(255,255,255,0.06)] max-md:h-14 max-md:px-5">
-      {src ? (
-        <img
-          src={src}
-          alt={alt ?? name}
-          className="h-7 w-auto max-w-[140px] object-contain opacity-80 transition duration-300 group-hover:opacity-100"
-          style={{ filter: "brightness(0) invert(1)" }}
-        />
-      ) : (
-        <div className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.24em] text-white/70 transition duration-300 group-hover:text-white">
-          <span className="h-2.5 w-2.5 rounded-full border border-white/20 bg-white/10" />
-          <span>{name}</span>
-        </div>
-      )}
-    </div>
-  );
-}
-
 function Card({
   children,
   className = "",
@@ -903,33 +875,6 @@ const checkout = (priceId: string) => {
               </motion.details>
             ))}
           </div>
-          </div>
-        </section>
-
-        {/* TECHNOLOGY */}
-        <section id="technology" className="relative overflow-hidden">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-1/2 top-[20%] h-[420px] w-[780px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse,rgba(99,102,241,0.08)_0%,transparent_70%)] blur-3xl max-md:h-[260px] max-md:w-[110%]" />
-            <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(3,3,6,0.3)_100%)]" />
-          </div>
-          <div className="relative z-10 mx-auto max-w-7xl px-4 py-28 max-md:px-5 max-md:py-16 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
-            <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
-              <SectionLabel>Technology</SectionLabel>
-              <h2 className="mt-5 text-3xl font-semibold tracking-[-0.02em] sm:text-4xl max-md:text-[1.75rem]">
-                Powered by Trusted Technology
-              </h2>
-            </motion.div>
-
-            <motion.div {...fadeUp} transition={{ duration: 0.7, delay: 0.05 }} className="mt-12 flex flex-wrap items-center justify-center gap-4 max-md:mt-8 max-md:gap-3">
-              {[
-                { name: 'OpenAI' },
-                { name: 'ElevenLabs' },
-                { name: 'Vapi' },
-                { name: 'Google Calendar', src: 'https://www.gstatic.com/images/branding/productlogos/calendar_2026/v2/web/192px.svg' },
-              ].map((brand) => (
-                <BrandLogo key={brand.name} name={brand.name} src={brand.src} alt={brand.name} />
-              ))}
-            </motion.div>
           </div>
         </section>
 
