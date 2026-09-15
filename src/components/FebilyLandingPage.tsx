@@ -18,7 +18,7 @@ import {
   Lock,
   MapPin,
 } from "lucide-react";
-import FebilyAudioPlayer from "@/components/FebilyAudioPlayer";
+import FebilyVideoPlayer from "@/components/FebilyVideoPlayer";
 
 const fadeUp = {
   initial: { opacity: 0, y: 28 },
@@ -412,7 +412,7 @@ const checkout = (priceId: string) => {
                   onClick={scrollTo("demo")}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white/90 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] backdrop-blur-sm transition-all duration-200 hover:border-white/20 hover:bg-white/[0.07] max-md:py-4 max-md:text-[15px] max-md:active:bg-white/[0.1] sm:w-auto"
                 >
-                  🎧 Listen to Sample Call
+                  Listen to Sample Call
                 </button>
               </div>
 
@@ -489,7 +489,7 @@ const checkout = (priceId: string) => {
           </motion.div>
 
           <motion.div {...fadeUp} transition={{ duration: 0.8, ease: "easeOut" as const, delay: 0.1 }} className="mt-10 max-md:mt-8">
-            <FebilyAudioPlayer />
+            <FebilyVideoPlayer />
             <p className="mt-5 text-center text-sm text-white/50 max-md:mt-4 max-md:text-[13px] max-md:text-white/60">
               A real customer conversation demonstrating how Febily answers calls professionally.
             </p>
@@ -909,7 +909,7 @@ const checkout = (priceId: string) => {
                     onClick={scrollTo("demo")}
                     className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white/90 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] transition-all duration-200 hover:border-white/20 hover:bg-white/[0.07] max-md:py-4 max-md:text-[15px] max-md:active:bg-white/[0.1] sm:w-auto"
                   >
-                    🎧 Listen to Sample Call
+                    Listen to Sample Call
                   </button>
                 </div>
               </div>
