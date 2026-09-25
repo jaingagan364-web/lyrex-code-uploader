@@ -3,8 +3,8 @@ import { createHmac, timingSafeEqual } from "crypto";
 
 // Paddle webhook endpoint.
 // Security model: Paddle is an external caller, so this lives under
-// /api/public/* (bypasses site auth) and authenticity is enforced here by
-// verifying the Paddle-Signature HMAC over the RAW request body.
+// Authenticity is enforced here by verifying the Paddle-Signature HMAC over
+// the exact raw request body before parsing the event.
 
 // Best-effort idempotency: remember recently processed event IDs so duplicate
 // deliveries are acknowledged without reprocessing. Module-level cache is
@@ -55,14 +55,14 @@ function verifyPaddleSignature(
   return timingSafeEqual(a, b);
 }
 
-export const Route = createFileRoute("/api/public/paddle/webhook")({
+export const Route = createFileRoute("/api/paddle/webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
         const secret = process.env["PADDLE_WEBHOOK_SECRET"];
         if (!secret) {
           console.error("[paddle-webhook] PADDLE_WEBHOOK_SECRET is not configured");
-          return new Response("Webhook not configured", { status: 500 });
+          return Response.json({ error: "Webhook not configured" }, { status: 500 });
         }
 
         // Read the raw body BEFORE any parsing — signature depends on it.
@@ -71,7 +71,7 @@ export const Route = createFileRoute("/api/public/paddle/webhook")({
 
         if (!verifyPaddleSignature(signature, rawBody, secret)) {
           console.warn("[paddle-webhook] Rejected: missing or invalid signature");
-          return new Response("Invalid signature", { status: 401 });
+          return Response.json({ error: "Invalid signature" }, { status: 401 });
         }
 
         let event: {
@@ -87,7 +87,7 @@ export const Route = createFileRoute("/api/public/paddle/webhook")({
         try {
           event = JSON.parse(rawBody);
         } catch {
-          return new Response("Invalid payload", { status: 400 });
+          return Response.json({ error: "Invalid payload" }, { status: 400 });
         }
 
         const eventId = event.event_id ?? "unknown";
