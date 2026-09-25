@@ -62,7 +62,7 @@ export const Route = createFileRoute("/api/paddle/webhook")({
         const secret = process.env["PADDLE_WEBHOOK_SECRET"];
         if (!secret) {
           console.error("[paddle-webhook] PADDLE_WEBHOOK_SECRET is not configured");
-          return new Response("Webhook not configured", { status: 500 });
+          return Response.json({ error: "Webhook not configured" }, { status: 500 });
         }
 
         // Read the raw body BEFORE any parsing — signature depends on it.
@@ -71,7 +71,7 @@ export const Route = createFileRoute("/api/paddle/webhook")({
 
         if (!verifyPaddleSignature(signature, rawBody, secret)) {
           console.warn("[paddle-webhook] Rejected: missing or invalid signature");
-          return new Response("Invalid signature", { status: 401 });
+          return Response.json({ error: "Invalid signature" }, { status: 401 });
         }
 
         let event: {
@@ -87,7 +87,7 @@ export const Route = createFileRoute("/api/paddle/webhook")({
         try {
           event = JSON.parse(rawBody);
         } catch {
-          return new Response("Invalid payload", { status: 400 });
+          return Response.json({ error: "Invalid payload" }, { status: 400 });
         }
 
         const eventId = event.event_id ?? "unknown";
