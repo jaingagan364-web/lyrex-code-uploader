@@ -3,8 +3,8 @@ import { createHmac, timingSafeEqual } from "crypto";
 
 // Paddle webhook endpoint.
 // Security model: Paddle is an external caller, so this lives under
-// /api/public/* (bypasses site auth) and authenticity is enforced here by
-// verifying the Paddle-Signature HMAC over the RAW request body.
+// Authenticity is enforced here by verifying the Paddle-Signature HMAC over
+// the exact raw request body before parsing the event.
 
 // Best-effort idempotency: remember recently processed event IDs so duplicate
 // deliveries are acknowledged without reprocessing. Module-level cache is
@@ -55,7 +55,7 @@ function verifyPaddleSignature(
   return timingSafeEqual(a, b);
 }
 
-export const Route = createFileRoute("/api/public/paddle/webhook")({
+export const Route = createFileRoute("/api/paddle/webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
