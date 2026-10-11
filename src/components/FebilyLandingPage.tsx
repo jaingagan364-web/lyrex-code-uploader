@@ -19,6 +19,7 @@ import {
   MapPin,
 } from "lucide-react";
 import FebilyVideoPlayer from "@/components/FebilyVideoPlayer";
+import { supabase } from "@/lib/supabase";
 
 const fadeUp = {
   initial: { opacity: 0, y: 28 },
@@ -276,7 +277,37 @@ useEffect(() => {
   document.body.appendChild(script);
 }, []);
 
-const checkout = (priceId: string) => {
+const checkout = async (priceId: string) => {
+  try {
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error || !data.user) {
+      window.location.href = "/account";
+      return;
+    }
+
+    // @ts-ignore
+    if (!window.Paddle) {
+      alert("Checkout is loading. Please try again.");
+      return;
+    }
+
+    // @ts-ignore
+    window.Paddle.Checkout.open({
+      items: [{ priceId, quantity: 1 }],
+      customData: {
+        user_id: data.user.id,
+      },
+      settings: {
+        successUrl: `${window.location.origin}/thank-you`,
+      },
+    });
+  } catch (error) {
+    console.error("Checkout sign-in verification failed:", error);
+    alert("Could not verify your sign-in. Please sign in again.");
+  }
+};
+
   // @ts-ignore
   if (!window.Paddle) return;
 
