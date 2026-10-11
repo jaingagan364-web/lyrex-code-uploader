@@ -308,22 +308,7 @@ const checkout = async (priceId: string) => {
   }
 };
 
-  // @ts-ignore
-  if (!window.Paddle) return;
-
-  // @ts-ignore
-  window.Paddle.Checkout.open({
-    items: [
-      {
-        priceId,
-        quantity: 1,
-      },
-    ],
-    settings: {
-      successUrl: `${window.location.origin}/thank-you`,
-    },
-  });
-};
+  
   const handleRequestDemo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (formStatus === "submitting") return;
