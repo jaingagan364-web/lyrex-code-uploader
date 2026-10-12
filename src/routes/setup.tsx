@@ -67,7 +67,7 @@ function SetupPage() {
 
   setMessage(`Could not load your business details: ${detail}`);
 }
-        }
+        
       } finally {
         if (!cancelled) setLoading(false);
       }
