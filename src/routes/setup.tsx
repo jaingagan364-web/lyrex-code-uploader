@@ -55,12 +55,18 @@ function SetupPage() {
           setInstructions(data.receptionist_instructions ?? "");
         }
       } catch (error) {
-        if (!cancelled) {
-          setMessage(
-            error instanceof Error
-              ? error.message
-              : "Could not load your business details."
-          );
+       if (!cancelled) {
+  const detail =
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error
+      ? String(error.message)
+      : error instanceof Error
+        ? error.message
+        : String(error);
+
+  setMessage(`Could not load your business details: ${detail}`);
+}
         }
       } finally {
         if (!cancelled) setLoading(false);
