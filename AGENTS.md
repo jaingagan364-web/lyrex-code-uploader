@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep private Vapi JWT issuance in a dedicated TanStack server route so credentials and access checks remain server-side.
