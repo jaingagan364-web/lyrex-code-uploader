@@ -16,6 +16,7 @@ import { Route as RefundRouteImport } from './routes/refund'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiVapiTokenRouteImport } from './routes/api/vapi/token'
 import { Route as ApiPaddleWebhookRouteImport } from './routes/api/paddle/webhook'
 
 const ThankYouRoute = ThankYouRouteImport.update({
@@ -53,6 +54,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiVapiTokenRoute = ApiVapiTokenRouteImport.update({
+  id: '/api/vapi/token',
+  path: '/api/vapi/token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPaddleWebhookRoute = ApiPaddleWebhookRouteImport.update({
   id: '/api/paddle/webhook',
   path: '/api/paddle/webhook',
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
   '/api/paddle/webhook': typeof ApiPaddleWebhookRoute
+  '/api/vapi/token': typeof ApiVapiTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
   '/api/paddle/webhook': typeof ApiPaddleWebhookRoute
+  '/api/vapi/token': typeof ApiVapiTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
   '/api/paddle/webhook': typeof ApiPaddleWebhookRoute
+  '/api/vapi/token': typeof ApiVapiTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/thank-you'
     | '/api/paddle/webhook'
+    | '/api/vapi/token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/thank-you'
     | '/api/paddle/webhook'
+    | '/api/vapi/token'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/thank-you'
     | '/api/paddle/webhook'
+    | '/api/vapi/token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ThankYouRoute: typeof ThankYouRoute
   ApiPaddleWebhookRoute: typeof ApiPaddleWebhookRoute
+  ApiVapiTokenRoute: typeof ApiVapiTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -185,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/vapi/token': {
+      id: '/api/vapi/token'
+      path: '/api/vapi/token'
+      fullPath: '/api/vapi/token'
+      preLoaderRoute: typeof ApiVapiTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/paddle/webhook': {
       id: '/api/paddle/webhook'
       path: '/api/paddle/webhook'
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ThankYouRoute: ThankYouRoute,
   ApiPaddleWebhookRoute: ApiPaddleWebhookRoute,
+  ApiVapiTokenRoute: ApiVapiTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
