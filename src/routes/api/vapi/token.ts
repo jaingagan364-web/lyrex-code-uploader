@@ -54,16 +54,14 @@ export const Route = createFileRoute("/api/vapi/token")({
               .from("businesses")
               .select("id")
               .eq("owner_id", userId)
-              .limit(1)
-              .maybeSingle(),
+              .limit(2),
             supabase
               .from("subscriptions")
               .select("id")
               .eq("user_id", userId)
               .eq("status", "active")
               .not("paddle_subscription_id", "is", null)
-              .limit(1)
-              .maybeSingle(),
+              .limit(2),
           ]);
 
           if (businessResult.error || subscriptionResult.error) {
@@ -74,11 +72,18 @@ export const Route = createFileRoute("/api/vapi/token")({
             return json({ error: "Could not verify receptionist access." }, 500);
           }
 
-          if (!businessResult.data) {
+          if (!businessResult.data?.length) {
             return json({ error: "Complete your business setup to continue." }, 403);
           }
 
-          if (!subscriptionResult.data) {
+          if (businessResult.data.length > 1 || subscriptionResult.data?.length !== 1) {
+            return json(
+              { error: "Could not verify a single business and active subscription." },
+              403,
+            );
+          }
+
+          if (!subscriptionResult.data.length) {
             return json({ error: "An active Febily subscription is required." }, 403);
           }
 
