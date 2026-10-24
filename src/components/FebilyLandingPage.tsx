@@ -299,7 +299,7 @@ const checkout = async (priceId: string) => {
         user_id: data.user.id,
       },
       settings: {
-        successUrl: `${window.location.origin}/thank-you`,
+        successUrl: `${window.location.origin}/setup`,
       },
     });
   } catch (error) {
