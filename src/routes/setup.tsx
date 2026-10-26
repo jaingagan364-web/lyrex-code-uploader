@@ -5,7 +5,67 @@ import { supabase } from "@/lib/supabase";
 export const Route = createFileRoute("/setup")({
   component: SetupPage,
 });
+function parseOpeningHoursField(value: string) {
+  const text = value.trim();
+  if (!text) return {};
 
+  if (text.startsWith("{")) {
+    const parsed = JSON.parse(text);
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      Array.isArray(parsed)
+    ) {
+      throw new Error("Opening hours must be a JSON object.");
+    }
+    return parsed;
+  }
+
+  const entries = text.split(/\r?\n/).filter(Boolean).map((line) => {
+    const i = line.indexOf(":");
+    if (i <= 0 || !line.slice(i + 1).trim()) {
+      throw new Error(
+        "Use one entry per line, e.g. Monday: 9 AM - 5 PM."
+      );
+    }
+    return [line.slice(0, i).trim(), line.slice(i + 1).trim()];
+  });
+
+  return Object.fromEntries(entries);
+}
+
+function parseListField(value: string) {
+  const text = value.trim();
+  if (!text) return [];
+
+  if (text.startsWith("[") || text.startsWith("{")) {
+    return JSON.parse(text);
+  }
+
+  return text.split(/\r?\n/)
+    .map((line) => line.trim().replace(/^[-•]\s*/, ""))
+    .filter(Boolean);
+}
+
+function parseFaqsField(value: string) {
+  const text = value.trim();
+  if (!text) return [];
+
+  if (text.startsWith("[") || text.startsWith("{")) {
+    return JSON.parse(text);
+  }
+
+  return text.split(/\r?\n/).filter(Boolean).map((line) => {
+    const i = line.indexOf("|");
+    if (i <= 0 || !line.slice(i + 1).trim()) {
+      throw new Error("Enter each FAQ as question | answer.");
+    }
+    return {
+      question: line.slice(0, i).trim(),
+      answer: line.slice(i + 1).trim(),
+    };
+  });
+}
 function SetupPage() {
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [businessName, setBusinessName] = useState("");
@@ -15,6 +75,10 @@ function SetupPage() {
   const [address, setAddress] = useState("");
   const [timezone, setTimezone] = useState("");
   const [instructions, setInstructions] = useState("");
+  const [openingHours, setOpeningHours] = useState("");
+const [services, setServices] = useState("");
+const [staff, setStaff] = useState("");
+const [faqs, setFaqs] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -34,8 +98,7 @@ function SetupPage() {
 
         const { data, error } = await supabase
           .from("businesses")
-          .select(
-            "id,business_name,business_type,phone,email,address,timezone,receptionist_instructions"
+         "id,business_name,business_type,phone,email,address,timezone,receptionist_instructions,opening_hours,services,staff,faqs"
           )
           .eq("owner_id", auth.user.id)
           .limit(1)
@@ -53,6 +116,35 @@ function SetupPage() {
           setAddress(data.address ?? "");
           setTimezone(data.timezone ?? "");
           setInstructions(data.receptionist_instructions ?? "");
+          setOpeningHours(
+  data.opening_hours && typeof data.opening_hours === "object"
+    ? Object.entries(data.opening_hours as Record<string, unknown>)
+        .map(([day, hours]) => `${day}: ${String(hours)}`)
+        .join("\n")
+    : String(data.opening_hours ?? "")
+);
+
+setServices(
+  data.services == null
+    ? ""
+    : Array.isArray(data.services) && data.services.every((item: unknown) => typeof item === "string")
+      ? data.services.join("\n")
+      : JSON.stringify(data.services, null, 2)
+);
+
+setStaff(
+  data.staff == null
+    ? ""
+    : Array.isArray(data.staff) && data.staff.every((item: unknown) => typeof item === "string")
+      ? data.staff.join("\n")
+      : JSON.stringify(data.staff, null, 2)
+);
+
+setFaqs(
+  data.faqs == null
+    ? ""
+    : JSON.stringify(data.faqs, null, 2)
+);
         }
       } catch (error) {
        if (!cancelled) {
@@ -103,6 +195,10 @@ function SetupPage() {
         address: address.trim() || null,
         timezone: timezone.trim(),
         receptionist_instructions: instructions.trim() || null,
+        opening_hours: parseOpeningHoursField(openingHours),
+services: parseListField(services),
+staff: parseListField(staff),
+faqs: parseFaqsField(faqs),
         updated_at: new Date().toISOString(),
       };
 
@@ -235,7 +331,49 @@ function SetupPage() {
               />
             </label>
 
-            <button
+            <label className="block text-sm">
+  Opening hours
+  <textarea
+    value={openingHours}
+    onChange={(e) => setOpeningHours(e.target.value)}
+    rows={4}
+    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 outline-none focus:border-emerald-400"
+    placeholder={"Monday: 9 AM - 5 PM\nTuesday: 9 AM - 5 PM\nWednesday: Closed"}
+  />
+</label>
+
+<label className="block text-sm">
+  Services and prices
+  <textarea
+    value={services}
+    onChange={(e) => setServices(e.target.value)}
+    rows={4}
+    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 outline-none focus:border-emerald-400"
+    placeholder={"Haircut - $25\nBeard trim - $15"}
+  />
+</label>
+
+<label className="block text-sm">
+  Staff members
+  <textarea
+    value={staff}
+    onChange={(e) => setStaff(e.target.value)}
+    rows={3}
+    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 outline-none focus:border-emerald-400"
+    placeholder={"John - Barber\nSarah - Stylist"}
+  />
+</label>
+
+<label className="block text-sm">
+  Frequently asked questions
+  <textarea
+    value={faqs}
+    onChange={(e) => setFaqs(e.target.value)}
+    rows={4}
+    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 outline-none focus:border-emerald-400"
+    placeholder={"Do you accept walk-ins? | Yes, subject to availability."}
+  />
+</label><button
               type="submit"
               disabled={saving}
               className="w-full rounded-xl bg-white px-4 py-3 font-semibold text-black disabled:opacity-50"
