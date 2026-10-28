@@ -98,6 +98,7 @@ const [faqs, setFaqs] = useState("");
 
         const { data, error } = await supabase
           .from("businesses")
+        .select(
          "id,business_name,business_type,phone,email,address,timezone,receptionist_instructions,opening_hours,services,staff,faqs"
           )
           .eq("owner_id", auth.user.id)
