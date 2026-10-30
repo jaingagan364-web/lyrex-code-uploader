@@ -179,16 +179,15 @@ setFaqs(
     setMessage("");
 
     try {
-      const { data: auth, error: authError } =
-        await supabase.auth.getUser();
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
 
-      if (authError || !auth.user) {
+      if (sessionError || !sessionData.session?.access_token) {
         window.location.href = "/account";
         return;
       }
 
       const payload = {
-        owner_id: auth.user.id,
         business_name: businessName.trim(),
         business_type: businessType,
         phone: phone.trim() || null,
@@ -203,25 +202,27 @@ faqs: parseFaqsField(faqs),
         updated_at: new Date().toISOString(),
       };
 
-      const result = businessId
-        ? await supabase
-            .from("businesses")
-            .update(payload)
-            .eq("id", businessId)
-            .select("id")
-            .single()
-        : await supabase
-            .from("businesses")
-            .insert(payload)
-            .select("id")
-            .single();
+      const response = await fetch("/api/business/setup", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+        body: JSON.stringify(payload),
+      });
 
-      if (result.error) throw result.error;
+      const result = (await response.json().catch(() => ({}))) as {
+        businessId?: string;
+        message?: string;
+        error?: string;
+      };
 
-      setBusinessId(result.data.id);
-      setMessage(
-        "Business details saved. Subscription verification and receptionist activation are still pending."
-      );
+      if (!response.ok) {
+        throw new Error(result.error || "Could not save your business details.");
+      }
+
+      if (result.businessId) setBusinessId(result.businessId);
+      setMessage(result.message || "Business details saved.");
     } catch (error) {
       setMessage(
         error instanceof Error

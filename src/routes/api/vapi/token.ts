@@ -49,42 +49,53 @@ export const Route = createFileRoute("/api/vapi/token")({
           }
 
           const userId = authData.user.id;
-          const [businessResult, subscriptionResult] = await Promise.all([
-            supabase
-              .from("businesses")
-              .select("id")
-              .eq("owner_id", userId)
-              .limit(2),
-            supabase
-              .from("subscriptions")
-              .select("id")
-              .eq("user_id", userId)
-              .eq("status", "active")
-              .not("paddle_subscription_id", "is", null)
-              .limit(2),
-          ]);
+          const { data: businesses, error: businessError } = await supabase
+            .from("businesses")
+            .select("id")
+            .eq("owner_id", userId)
+            .limit(2);
 
-          if (businessResult.error || subscriptionResult.error) {
-            console.error("[vapi-token] Could not verify business or subscription", {
-              businessError: businessResult.error?.message,
-              subscriptionError: subscriptionResult.error?.message,
-            });
+          if (businessError) {
+            console.error("[vapi-token] Could not verify business ownership", businessError.message);
             return json({ error: "Could not verify receptionist access." }, 500);
           }
 
-          if (!businessResult.data?.length) {
+          if (!businesses?.length) {
             return json({ error: "Complete your business setup to continue." }, 403);
           }
 
-          if (businessResult.data.length > 1 || subscriptionResult.data?.length !== 1) {
+          if (businesses.length !== 1) {
+            return json({ error: "A single business profile is required for receptionist access." }, 403);
+          }
+
+          const now = new Date().toISOString();
+          const { data: subscriptions, error: subscriptionError } = await supabase
+            .from("subscriptions")
+            .select("id")
+            .eq("user_id", userId)
+            .eq("business_id", businesses[0].id)
+            .eq("status", "active")
+            .not("paddle_subscription_id", "is", null)
+            .gt("current_period_end", now)
+            .limit(2);
+
+          if (subscriptionError) {
+            console.error("[vapi-token] Could not verify subscription ownership", subscriptionError.message);
+            return json({ error: "Could not verify receptionist access." }, 500);
+          }
+
+          if (!subscriptions?.length) {
             return json(
-              { error: "Could not verify a single business and active subscription." },
+              { error: "A verified, unexpired Febily subscription linked to this business is required." },
               403,
             );
           }
 
-          if (!subscriptionResult.data.length) {
-            return json({ error: "An active Febily subscription is required." }, 403);
+          if (subscriptions.length !== 1) {
+            return json(
+              { error: "Could not verify exactly one active subscription for this business." },
+              403,
+            );
           }
 
           const vapiPrivateKey = process.env["VAPI_PRIVATE_KEY"];
