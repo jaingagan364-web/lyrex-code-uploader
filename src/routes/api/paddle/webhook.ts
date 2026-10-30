@@ -88,9 +88,27 @@ function verifyPaddleSignature(
   });
 }
 
-function extractUserId(data: PaddleData): string | null {
+function extractUserId(data: PaddleData, signingSecret: string): string | null {
   const candidate = data.custom_data?.user_id;
-  return typeof candidate === "string" && UUID_RE.test(candidate) ? candidate : null;
+  const signature = data.custom_data?.user_id_signature;
+
+  if (
+    typeof candidate !== "string" ||
+    !UUID_RE.test(candidate) ||
+    typeof signature !== "string" ||
+    !/^[0-9a-f]{64}$/i.test(signature)
+  ) {
+    return null;
+  }
+
+  const expected = createHmac("sha256", signingSecret)
+    .update(`febily:checkout-user:v1:${candidate}`)
+    .digest();
+  const received = Buffer.from(signature, "hex");
+
+  return received.length === expected.length && timingSafeEqual(expected, received)
+    ? candidate
+    : null;
 }
 
 function extractPriceId(data: PaddleData): string | null {
@@ -129,7 +147,7 @@ async function updateTransactionReference(
   // subscription event creates the subscription row and carries custom_data.
   if (!existing) return;
 
-  const incomingUserId = extractUserId(data);
+  const incomingUserId = extractUserId(data, process.env["PADDLE_WEBHOOK_SECRET"]!);
   if (existing.user_id && incomingUserId && existing.user_id !== incomingUserId) {
     throw new PermanentWebhookError("Transaction custom_data does not match subscription owner");
   }
@@ -241,7 +259,7 @@ export const Route = createFileRoute("/api/paddle/webhook")({
 
             const { data: result, error } = await supabase.rpc("apply_paddle_subscription_event", {
               p_paddle_subscription_id: data.id,
-              p_user_id: extractUserId(data),
+              p_user_id: extractUserId(data, process.env["PADDLE_WEBHOOK_SECRET"]!),
               p_paddle_customer_id: data.customer_id ?? null,
               p_status: data.status,
               p_price_id: extractPriceId(data),
