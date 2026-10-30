@@ -262,22 +262,47 @@ function HeroChat() {
 export default function FebilyLandingPage() {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [formError, setFormError] = useState<string | null>(null);
+const paddleClientToken = import.meta.env.VITE_PADDLE_CLIENT_TOKEN;
+const paddlePriceIds = {
+  Starter: import.meta.env.VITE_PADDLE_PRICE_STARTER,
+  Growth: import.meta.env.VITE_PADDLE_PRICE_GROWTH,
+  Premium: import.meta.env.VITE_PADDLE_PRICE_PREMIUM,
+};
+
 useEffect(() => {
+  if (!paddleClientToken) {
+    console.info("[paddle] Checkout is disabled: no environment-specific client token is configured.");
+    return;
+  }
+
   const script = document.createElement("script");
   script.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
   script.async = true;
 
   script.onload = () => {
-    // @ts-ignore
-    window.Paddle.Initialize({
-      token: "live_29dd363e7d44cdfef734b1949b3",
-    });
+    // @ts-ignore Paddle.js is loaded from Paddle's hosted script.
+    window.Paddle.Initialize({ token: paddleClientToken });
+  };
+
+  script.onerror = () => {
+    console.error("[paddle] Could not load Paddle.js");
   };
 
   document.body.appendChild(script);
-}, []);
 
-const checkout = async (priceId: string) => {
+  return () => {
+    script.remove();
+  };
+}, [paddleClientToken]);
+
+const checkout = async (plan: keyof typeof paddlePriceIds) => {
+  const priceId = paddlePriceIds[plan];
+
+  if (!paddleClientToken || !priceId) {
+    alert("Checkout is not configured for this environment yet.");
+    return;
+  }
+
   try {
     const { data: sessionData, error: sessionError } =
       await supabase.auth.getSession();
@@ -700,12 +725,8 @@ const checkout = async (priceId: string) => {
                     <button
                      
   onClick={() => {
-    if (plan.name === "Starter") {
-      checkout("pri_01kx87tjr05yndbsnfgdwee46v");
-    } else if (plan.name === "Growth") {
-      checkout("pri_01kx882g8nv2xmxwn8h611pwvp");
-    } else if (plan.name === "Premium") {
-      checkout("pri_01kx88gp65gwkh5d65hwtf0tyg");
+    if (plan.name === "Starter" || plan.name === "Growth" || plan.name === "Premium") {
+      void checkout(plan.name);
     }
   }}
   className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-all duration-200 max-md:py-3.5 max-md:text-[15px] max-md:active:scale-[0.98] ${
