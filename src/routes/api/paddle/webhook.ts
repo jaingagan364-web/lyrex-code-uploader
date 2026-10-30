@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createHmac, timingSafeEqual } from "crypto";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-const SIGNATURE_TOLERANCE_SECONDS = 5;
+const SIGNATURE_TOLERANCE_SECONDS = 5 * 60;
 
 type PaddleData = {
   id?: string;
