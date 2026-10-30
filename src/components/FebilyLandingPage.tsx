@@ -279,11 +279,28 @@ useEffect(() => {
 
 const checkout = async (priceId: string) => {
   try {
-    const { data, error } = await supabase.auth.getUser();
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession();
 
-    if (error || !data.user) {
+    if (sessionError || !sessionData.session?.access_token) {
       window.location.href = "/account";
       return;
+    }
+
+    const identityResponse = await fetch("/api/paddle/checkout-identity", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${sessionData.session.access_token}`,
+      },
+    });
+    const identity = (await identityResponse.json().catch(() => ({}))) as {
+      userId?: string;
+      signature?: string;
+      error?: string;
+    };
+
+    if (!identityResponse.ok || !identity.userId || !identity.signature) {
+      throw new Error(identity.error || "Could not securely verify your checkout identity.");
     }
 
     // @ts-ignore
@@ -296,7 +313,8 @@ const checkout = async (priceId: string) => {
     window.Paddle.Checkout.open({
       items: [{ priceId, quantity: 1 }],
       customData: {
-        user_id: data.user.id,
+        user_id: identity.userId,
+        user_id_signature: identity.signature,
       },
       settings: {
         successUrl: `${window.location.origin}/setup`,
@@ -304,7 +322,7 @@ const checkout = async (priceId: string) => {
     });
   } catch (error) {
     console.error("Checkout sign-in verification failed:", error);
-    alert("Could not verify your sign-in. Please sign in again.");
+    alert(error instanceof Error ? error.message : "Could not verify your sign-in. Please sign in again.");
   }
 };
 
