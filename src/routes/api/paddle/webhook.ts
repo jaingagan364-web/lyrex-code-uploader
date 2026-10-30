@@ -133,6 +133,7 @@ function createAdminClient(): SupabaseClient {
 async function updateTransactionReference(
   supabase: SupabaseClient,
   data: PaddleData,
+  signingSecret: string,
 ): Promise<void> {
   if (!data.id || !data.subscription_id) return;
 
@@ -147,7 +148,7 @@ async function updateTransactionReference(
   // subscription event creates the subscription row and carries custom_data.
   if (!existing) return;
 
-  const incomingUserId = extractUserId(data, process.env["PADDLE_WEBHOOK_SECRET"]!);
+  const incomingUserId = extractUserId(data, signingSecret);
   if (existing.user_id && incomingUserId && existing.user_id !== incomingUserId) {
     throw new PermanentWebhookError("Transaction custom_data does not match subscription owner");
   }
@@ -259,7 +260,7 @@ export const Route = createFileRoute("/api/paddle/webhook")({
 
             const { data: result, error } = await supabase.rpc("apply_paddle_subscription_event", {
               p_paddle_subscription_id: data.id,
-              p_user_id: extractUserId(data, process.env["PADDLE_WEBHOOK_SECRET"]!),
+              p_user_id: extractUserId(data, webhookSecret),
               p_paddle_customer_id: data.customer_id ?? null,
               p_status: data.status,
               p_price_id: extractPriceId(data),
@@ -291,7 +292,7 @@ export const Route = createFileRoute("/api/paddle/webhook")({
               return json({ received: true, quarantined: true }, 200);
             }
           } else if (TRANSACTION_EVENTS.has(eventType)) {
-            await updateTransactionReference(supabase, data);
+            await updateTransactionReference(supabase, data, webhookSecret);
           }
 
           const { error: completeError } = await supabase
