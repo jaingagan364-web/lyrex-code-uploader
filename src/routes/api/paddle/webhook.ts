@@ -186,8 +186,9 @@ export const Route = createFileRoute("/api/paddle/webhook")({
     handlers: {
       POST: async ({ request }) => {
         const webhookSecret = process.env["PADDLE_WEBHOOK_SECRET"];
-        if (!webhookSecret) {
-          console.error("[paddle-webhook] PADDLE_WEBHOOK_SECRET is not configured");
+        const identitySigningSecret = process.env["PADDLE_IDENTITY_SIGNING_SECRET"];
+        if (!webhookSecret || !identitySigningSecret || identitySigningSecret.length < 32) {
+          console.error("[paddle-webhook] Webhook or checkout identity signing configuration is missing");
           return json({ error: "Webhook not configured" }, 500);
         }
 
@@ -260,7 +261,7 @@ export const Route = createFileRoute("/api/paddle/webhook")({
 
             const { data: result, error } = await supabase.rpc("apply_paddle_subscription_event", {
               p_paddle_subscription_id: data.id,
-              p_user_id: extractUserId(data, webhookSecret),
+              p_user_id: extractUserId(data, identitySigningSecret),
               p_paddle_customer_id: data.customer_id ?? null,
               p_status: data.status,
               p_price_id: extractPriceId(data),
@@ -292,7 +293,7 @@ export const Route = createFileRoute("/api/paddle/webhook")({
               return json({ received: true, quarantined: true }, 200);
             }
           } else if (TRANSACTION_EVENTS.has(eventType)) {
-            await updateTransactionReference(supabase, data, webhookSecret);
+            await updateTransactionReference(supabase, data, identitySigningSecret);
           }
 
           const { error: completeError } = await supabase
