@@ -263,6 +263,8 @@ export default function FebilyLandingPage() {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [formError, setFormError] = useState<string | null>(null);
 const paddleClientToken = import.meta.env.VITE_PADDLE_CLIENT_TOKEN;
+const paddleEnvironment =
+  import.meta.env.VITE_PADDLE_ENVIRONMENT === "production" ? "production" : "sandbox";
 const paddlePriceIds = {
   Starter: import.meta.env.VITE_PADDLE_PRICE_STARTER,
   Growth: import.meta.env.VITE_PADDLE_PRICE_GROWTH,
@@ -280,6 +282,8 @@ useEffect(() => {
   script.async = true;
 
   script.onload = () => {
+    // @ts-ignore Paddle.js is loaded from Paddle's hosted script.
+    window.Paddle.Environment.set(paddleEnvironment);
     // @ts-ignore Paddle.js is loaded from Paddle's hosted script.
     window.Paddle.Initialize({ token: paddleClientToken });
   };
