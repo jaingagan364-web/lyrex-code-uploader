@@ -16,9 +16,14 @@ export const Route = createFileRoute("/api/paddle/checkout-identity")({
 
         const supabaseUrl = process.env["SUPABASE_URL"];
         const supabaseSecretKey = process.env["SUPABASE_SECRET_KEY"];
-        const signingSecret = process.env["PADDLE_WEBHOOK_SECRET"];
+        const identitySigningSecret = process.env["PADDLE_IDENTITY_SIGNING_SECRET"];
 
-        if (!supabaseUrl || !supabaseSecretKey || !signingSecret) {
+        if (
+          !supabaseUrl ||
+          !supabaseSecretKey ||
+          !identitySigningSecret ||
+          identitySigningSecret.length < 32
+        ) {
           console.error("[paddle-checkout-identity] Server configuration is missing");
           return json({ error: "Secure checkout is temporarily unavailable." }, 503);
         }
@@ -35,7 +40,7 @@ export const Route = createFileRoute("/api/paddle/checkout-identity")({
         // The signature proves this user ID was issued by our authenticated
         // server endpoint. Browser-supplied custom_data alone is not trusted.
         const userId = data.user.id;
-        const signature = createHmac("sha256", signingSecret)
+        const signature = createHmac("sha256", identitySigningSecret)
           .update(`febily:checkout-user:v1:${userId}`)
           .digest("hex");
 
