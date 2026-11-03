@@ -262,20 +262,68 @@ function HeroChat() {
 export default function FebilyLandingPage() {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [formError, setFormError] = useState<string | null>(null);
-useEffect(() => {
-  const script = document.createElement("script");
-  script.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
-  script.async = true;
+const paddleClientToken = import.meta.env.VITE_PADDLE_CLIENT_TOKEN as string | undefined;
+const paddleEnvironment = import.meta.env.VITE_PADDLE_ENVIRONMENT as string | undefined;
 
-  script.onload = () => {
-    // @ts-ignore
-    window.Paddle.Initialize({
-      token: "live_29dd363e7d44cdfef734b1949b3",
-    });
+const paddlePriceIds = {
+  Starter: import.meta.env.VITE_PADDLE_PRICE_STARTER as string | undefined,
+  Growth: import.meta.env.VITE_PADDLE_PRICE_GROWTH as string | undefined,
+  Premium: import.meta.env.VITE_PADDLE_PRICE_PREMIUM as string | undefined,
+};
+
+useEffect(() => {
+  if (!paddleClientToken) {
+    console.error("[paddle] VITE_PADDLE_CLIENT_TOKEN is not configured");
+    return;
+  }
+
+  if (paddleEnvironment !== "sandbox" && paddleEnvironment !== "production") {
+    console.error("[paddle] Set VITE_PADDLE_ENVIRONMENT to sandbox or production");
+    return;
+  }
+
+  let active = true;
+
+  const initializePaddle = () => {
+    if (!active) return;
+
+    const paddle = (window as Window & { Paddle?: any }).Paddle;
+    if (!paddle) {
+      console.error("[paddle] Paddle.js loaded without exposing window.Paddle");
+      return;
+    }
+
+    // Paddle requires sandbox mode to be set before Initialize when using a test_ token.
+    if (paddleEnvironment === "sandbox") {
+      paddle.Environment.set("sandbox");
+    }
+
+    paddle.Initialize({ token: paddleClientToken });
   };
 
-  document.body.appendChild(script);
-}, []);
+  const existingScript = document.querySelector<HTMLScriptElement>(
+    'script[data-paddle-sdk="true"]',
+  );
+
+  if ((window as Window & { Paddle?: any }).Paddle) {
+    initializePaddle();
+  } else if (existingScript) {
+    existingScript.addEventListener("load", initializePaddle, { once: true });
+  } else {
+    const script = document.createElement("script");
+    script.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
+    script.async = true;
+    script.dataset.paddleSdk = "true";
+    script.onload = initializePaddle;
+    script.onerror = () => console.error("[paddle] Failed to load Paddle.js");
+    document.body.appendChild(script);
+  }
+
+  return () => {
+    active = false;
+    existingScript?.removeEventListener("load", initializePaddle);
+  };
+}, [paddleClientToken, paddleEnvironment]);
 
 const checkout = async (priceId: string) => {
   try {
@@ -682,13 +730,12 @@ const checkout = async (priceId: string) => {
                     <button
                      
   onClick={() => {
-    if (plan.name === "Starter") {
-      checkout("pri_01kx87tjr05yndbsnfgdwee46v");
-    } else if (plan.name === "Growth") {
-      checkout("pri_01kx882g8nv2xmxwn8h611pwvp");
-    } else if (plan.name === "Premium") {
-      checkout("pri_01kx88gp65gwkh5d65hwtf0tyg");
+    const priceId = paddlePriceIds[plan.name as keyof typeof paddlePriceIds];
+    if (!priceId) {
+      alert(`The Paddle price for ${plan.name} is not configured for this deployment.`);
+      return;
     }
+    checkout(priceId);
   }}
   className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-all duration-200 max-md:py-3.5 max-md:text-[15px] max-md:active:scale-[0.98] ${
     plan.highlight
