@@ -262,42 +262,67 @@ function HeroChat() {
 export default function FebilyLandingPage() {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [formError, setFormError] = useState<string | null>(null);
-const paddleClientToken = import.meta.env.VITE_PADDLE_CLIENT_TOKEN;
-const paddleEnvironment =
-  import.meta.env.VITE_PADDLE_ENVIRONMENT === "production" ? "production" : "sandbox";
+const paddleClientToken = import.meta.env.VITE_PADDLE_CLIENT_TOKEN as string | undefined;
+const paddleEnvironment = import.meta.env.VITE_PADDLE_ENVIRONMENT as string | undefined;
 const paddlePriceIds = {
-  Starter: import.meta.env.VITE_PADDLE_PRICE_STARTER,
-  Growth: import.meta.env.VITE_PADDLE_PRICE_GROWTH,
-  Premium: import.meta.env.VITE_PADDLE_PRICE_PREMIUM,
+  Starter: import.meta.env.VITE_PADDLE_PRICE_STARTER as string | undefined,
+  Growth: import.meta.env.VITE_PADDLE_PRICE_GROWTH as string | undefined,
+  Premium: import.meta.env.VITE_PADDLE_PRICE_PREMIUM as string | undefined,
 };
 
 useEffect(() => {
   if (!paddleClientToken) {
-    console.info("[paddle] Checkout is disabled: no environment-specific client token is configured.");
+    console.error("[paddle] VITE_PADDLE_CLIENT_TOKEN is not configured");
     return;
   }
 
-  const script = document.createElement("script");
-  script.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
-  script.async = true;
+  if (paddleEnvironment !== "sandbox" && paddleEnvironment !== "production") {
+    console.error("[paddle] Set VITE_PADDLE_ENVIRONMENT explicitly to sandbox or production");
+    return;
+  }
 
-  script.onload = () => {
-    // @ts-ignore Paddle.js is loaded from Paddle's hosted script.
-    window.Paddle.Environment.set(paddleEnvironment);
-    // @ts-ignore Paddle.js is loaded from Paddle's hosted script.
-    window.Paddle.Initialize({ token: paddleClientToken });
+  let active = true;
+
+  const initializePaddle = () => {
+    if (!active) return;
+
+    const paddle = (window as Window & { Paddle?: any }).Paddle;
+    if (!paddle) {
+      console.error("[paddle] Paddle.js loaded without exposing window.Paddle");
+      return;
+    }
+
+    // Paddle requires sandbox mode to be set before Initialize when using a test_ token.
+    if (paddleEnvironment === "sandbox") {
+      paddle.Environment.set("sandbox");
+    }
+
+    paddle.Initialize({ token: paddleClientToken });
   };
 
-  script.onerror = () => {
-    console.error("[paddle] Could not load Paddle.js");
-  };
+  const existingScript = document.querySelector<HTMLScriptElement>(
+    'script[data-paddle-sdk="true"]',
+  );
 
-  document.body.appendChild(script);
+  if ((window as Window & { Paddle?: any }).Paddle) {
+    initializePaddle();
+  } else if (existingScript) {
+    existingScript.addEventListener("load", initializePaddle, { once: true });
+  } else {
+    const script = document.createElement("script");
+    script.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
+    script.async = true;
+    script.dataset.paddleSdk = "true";
+    script.onload = initializePaddle;
+    script.onerror = () => console.error("[paddle] Failed to load Paddle.js");
+    document.body.appendChild(script);
+  }
 
   return () => {
-    script.remove();
+    active = false;
+    existingScript?.removeEventListener("load", initializePaddle);
   };
-}, [paddleClientToken]);
+}, [paddleClientToken, paddleEnvironment]);
 
 const checkout = async (plan: keyof typeof paddlePriceIds) => {
   const priceId = paddlePriceIds[plan];
