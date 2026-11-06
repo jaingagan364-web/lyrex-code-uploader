@@ -51,7 +51,7 @@ export const Route = createFileRoute("/api/vapi/token")({
           const userId = authData.user.id;
           const { data: businesses, error: businessError } = await supabase
             .from("businesses")
-            .select("id")
+            .select("id,vapi_assistant_id,vapi_provisioning_status")
             .eq("owner_id", userId)
             .limit(2);
 
@@ -98,14 +98,29 @@ export const Route = createFileRoute("/api/vapi/token")({
             );
           }
 
+          const business = businesses[0];
+          if (
+            business.vapi_provisioning_status !== "provisioned" ||
+            typeof business.vapi_assistant_id !== "string" ||
+            !business.vapi_assistant_id.trim()
+          ) {
+            return json(
+              {
+                error: "Your receptionist is not provisioned yet. Your subscription and business setup are saved; activation is pending.",
+                provisioningStatus: business.vapi_provisioning_status ?? "pending",
+              },
+              503,
+            );
+          }
+
           const vapiPrivateKey = process.env["VAPI_PRIVATE_KEY"];
           const orgId = process.env["VAPI_ORG_ID"];
-          const assistantId = process.env["VAPI_ASSISTANT_ID"];
-          if (!vapiPrivateKey || !orgId || !assistantId) {
+          if (!vapiPrivateKey || !orgId) {
             console.error("[vapi-token] Vapi server configuration is missing");
             return json({ error: "Receptionist access is temporarily unavailable." }, 503);
           }
 
+          const assistantId = business.vapi_assistant_id;
           const token = await new SignJWT({
             orgId,
             token: {
