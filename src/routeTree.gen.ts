@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ThankYouRouteImport } from './routes/thank-you'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SetupRouteImport } from './routes/setup'
+import { Route as ReceptionistRouteImport } from './routes/receptionist'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as AccountRouteImport } from './routes/account'
@@ -32,6 +33,11 @@ const TermsRoute = TermsRouteImport.update({
 const SetupRoute = SetupRouteImport.update({
   id: '/setup',
   path: '/setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReceptionistRoute = ReceptionistRouteImport.update({
+  id: '/receptionist',
+  path: '/receptionist',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RefundRoute = RefundRouteImport.update({
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
+  '/receptionist': typeof ReceptionistRoute
   '/setup': typeof SetupRoute
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
+  '/receptionist': typeof ReceptionistRoute
   '/setup': typeof SetupRoute
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
+  '/receptionist': typeof ReceptionistRoute
   '/setup': typeof SetupRoute
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/privacy'
     | '/refund'
+    | '/receptionist'
     | '/setup'
     | '/terms'
     | '/thank-you'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/privacy'
     | '/refund'
+    | '/receptionist'
     | '/setup'
     | '/terms'
     | '/thank-you'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/privacy'
     | '/refund'
+    | '/receptionist'
     | '/setup'
     | '/terms'
     | '/thank-you'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
+  ReceptionistRoute: typeof ReceptionistRoute
   SetupRoute: typeof SetupRoute
   TermsRoute: typeof TermsRoute
   ThankYouRoute: typeof ThankYouRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/setup'
       fullPath: '/setup'
       preLoaderRoute: typeof SetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/receptionist': {
+      id: '/receptionist'
+      path: '/receptionist'
+      fullPath: '/receptionist'
+      preLoaderRoute: typeof ReceptionistRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/refund': {
@@ -221,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,
   SetupRoute: SetupRoute,
+  ReceptionistRoute: ReceptionistRoute,
   TermsRoute: TermsRoute,
   ThankYouRoute: ThankYouRoute,
   ApiPaddleWebhookRoute: ApiPaddleWebhookRoute,
