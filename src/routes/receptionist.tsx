@@ -143,9 +143,15 @@ function ReceptionistPage() {
       });
 
       client.on("error", () => {
+        // Tear down a failed call so a retry cannot leave a hidden microphone
+        // session running behind the next attempt.
+        client.removeAllListeners();
+        if (vapiRef.current === client) vapiRef.current = null;
+        void client.stop();
         if (!isMountedRef.current) return;
+        setMuted(false);
         setPhase("error");
-        setMessage("The voice connection encountered an error. End the session and try again.");
+        setMessage("The voice connection failed and was stopped. You can safely try again.");
       });
 
       setPhase("connecting");
