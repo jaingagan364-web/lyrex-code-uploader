@@ -390,6 +390,13 @@ faqs: parseFaqsField(faqs),
             {message}
           </p>
         )}
+
+        <p className="mt-6 text-center text-sm text-white/60">
+          Already set up?{" "}
+          <a href="/receptionist" className="font-medium text-white underline underline-offset-4">
+            Open your receptionist dashboard
+          </a>
+        </p>
       </section>
     </main>
   );
