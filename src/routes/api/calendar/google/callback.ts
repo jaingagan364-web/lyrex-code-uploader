@@ -2,6 +2,7 @@ import {
   createServerSupabase,
   encryptRefreshToken,
   googleOAuthConfig,
+  GOOGLE_CALENDAR_REQUIRED_SCOPES,
   GOOGLE_CALENDAR_SCOPES,
   requireOneActiveSubscription,
   sha256,
@@ -103,7 +104,7 @@ export const Route = createFileRoute("/api/calendar/google/callback")({
           }
 
           const grantedScopes = tokens.scope?.split(" ").filter(Boolean) ?? [];
-          const missingScopes = GOOGLE_CALENDAR_SCOPES.filter((scope) => !grantedScopes.includes(scope));
+          const missingScopes = GOOGLE_CALENDAR_REQUIRED_SCOPES.filter((scope) => !grantedScopes.includes(scope));
           if (missingScopes.length > 0) {
             console.error("[google-calendar-callback] Google did not grant the required Calendar scopes");
             return appRedirect("error");
