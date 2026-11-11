@@ -186,7 +186,7 @@ export const Route = createFileRoute("/api/business/setup")({
               businessId,
               subscriptionLinked: false,
               pending: true,
-              message: "Business details saved. More than one eligible subscription needs review before receptionist activation.",
+              message: `Business details saved. The connected database returned ${activeSubscriptions.length} eligible active subscriptions for this account; exactly one is required before activation.`,
             });
           }
 
