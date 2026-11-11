@@ -132,3 +132,92 @@ export function validateIanaTimezone(value: unknown): value is string {
     return false;
   }
 }
+
+
+export async function refreshGoogleAccessToken(refreshToken: string) {
+  const { clientId, clientSecret } = googleOAuthConfig();
+  const body = new URLSearchParams({
+    client_id: clientId,
+    client_secret: clientSecret,
+    refresh_token: refreshToken,
+    grant_type: "refresh_token",
+  });
+  const response = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body,
+    signal: AbortSignal.timeout(15000),
+  });
+  const payload = await response.json().catch(() => null) as
+    | { access_token?: string; expires_in?: number; error?: string }
+    | null;
+  if (!response.ok || !payload?.access_token) {
+    const errorCode = payload?.error === "invalid_grant" ? "reconnect_required" : "token_refresh_failed";
+    throw Object.assign(new Error("Google Calendar authorization must be renewed."), { code: errorCode });
+  }
+  return payload.access_token;
+}
+
+export async function googleCalendarRequest<T>(
+  path: string,
+  accessToken: string,
+  init?: RequestInit,
+): Promise<T> {
+  const response = await fetch(`https://www.googleapis.com/calendar/v3${path}`, {
+    ...init,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      "content-type": "application/json",
+      ...(init?.headers ?? {}),
+    },
+    signal: init?.signal ?? AbortSignal.timeout(15000),
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    const code = response.status === 401 ? "reconnect_required" : "calendar_api_error";
+    throw Object.assign(new Error("Google Calendar request failed."), { code, status: response.status });
+  }
+  return payload as T;
+}
+
+export async function getBusinessCalendarAccess(
+  supabase: ServerSupabase,
+  businessId: string,
+) {
+  const { data: connection, error } = await supabase
+    .from("business_calendar_connections")
+    .select("refresh_token_encrypted,calendar_id,connection_status,account_email")
+    .eq("business_id", businessId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!connection || connection.connection_status !== "connected") {
+    throw Object.assign(new Error("A Google Calendar must be connected first."), { code: "not_connected" });
+  }
+
+  const refreshToken = decryptRefreshToken(connection.refresh_token_encrypted);
+  try {
+    const accessToken = await refreshGoogleAccessToken(refreshToken);
+    await supabase
+      .from("business_calendar_connections")
+      .update({ last_verified_at: new Date().toISOString(), last_error_code: null })
+      .eq("business_id", businessId);
+    return { accessToken, calendarId: connection.calendar_id, accountEmail: connection.account_email };
+  } catch (error) {
+    const code = error instanceof Error && "code" in error ? String(error.code) : "token_refresh_failed";
+    if (code === "reconnect_required") {
+      await supabase
+        .from("business_calendar_connections")
+        .update({ connection_status: "reconnect_required", last_error_code: code, updated_at: new Date().toISOString() })
+        .eq("business_id", businessId);
+    }
+    throw error;
+  }
+}
+
+export const GOOGLE_CALENDAR_SCOPES = [
+  "openid",
+  "email",
+  "https://www.googleapis.com/auth/calendar.events",
+  "https://www.googleapis.com/auth/calendar.events.freebusy",
+  "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
+];
