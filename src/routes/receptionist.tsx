@@ -107,7 +107,7 @@ function ReceptionistPage() {
           return `Record ${index + 1}: ${suffix}, ${expiry}, ${link}.`;
         }) ?? [];
         throw new Error(
-          [result.error || "Your receptionist is not ready to launch yet.", ...subscriptionDetails].join("\\n"),
+          [result.error || "Your receptionist is not ready to launch yet.", ...subscriptionDetails].join(" | "),
         );
       }
       if (!result.token || !result.assistantId) {
