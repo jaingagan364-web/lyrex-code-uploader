@@ -17,6 +17,7 @@ type TokenResponse = {
   token?: string;
   assistantId?: string;
   error?: string;
+  databaseProjectRef?: string | null;
   subscriptionDiagnostics?: Array<{
     paddleSubscriptionSuffix: string | null;
     currentPeriodEnd: string | null;
@@ -106,8 +107,11 @@ function ReceptionistPage() {
             : "business link mismatch";
           return `Record ${index + 1}: ${suffix}, ${expiry}, ${link}.`;
         }) ?? [];
+        const databaseDetails = result.databaseProjectRef
+          ? [`Preview server Supabase project: ${result.databaseProjectRef}`]
+          : [];
         throw new Error(
-          [result.error || "Your receptionist is not ready to launch yet.", ...subscriptionDetails].join(" | "),
+          [result.error || "Your receptionist is not ready to launch yet.", ...databaseDetails, ...subscriptionDetails].join(" | "),
         );
       }
       if (!result.token || !result.assistantId) {
