@@ -71,7 +71,7 @@ export const Route = createFileRoute("/api/vapi/token")({
           const now = new Date().toISOString();
           const { data: subscriptions, error: subscriptionError } = await supabase
             .from("subscriptions")
-            .select("id")
+            .select("id,paddle_subscription_id,current_period_end,business_id")
             .eq("user_id", userId)
             .eq("business_id", businesses[0].id)
             .eq("status", "active")
@@ -93,7 +93,17 @@ export const Route = createFileRoute("/api/vapi/token")({
 
           if (subscriptions.length !== 1) {
             return json(
-              { error: `The connected database returned ${subscriptions.length} eligible active subscriptions for this business; exactly one is required.` },
+              {
+                error: `The connected database returned ${subscriptions.length} eligible active subscriptions for this business; exactly one is required.`,
+                subscriptionDiagnostics: subscriptions.map((subscription) => ({
+                  paddleSubscriptionSuffix:
+                    typeof subscription.paddle_subscription_id === "string"
+                      ? subscription.paddle_subscription_id.slice(-6)
+                      : null,
+                  currentPeriodEnd: subscription.current_period_end,
+                  businessLinkMatches: subscription.business_id === businesses[0].id,
+                })),
+              },
               403,
             );
           }
