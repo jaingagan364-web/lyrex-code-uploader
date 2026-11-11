@@ -62,3 +62,8 @@ Assistant provisioning is not the same as full receptionist activation. The gene
 - staging isolation and subscription lifecycle tests pass.
 
 The current web token endpoint only allows `https://febily.com` and `https://www.febily.com`. Browser calls from a Vercel Preview origin will remain blocked until that exact Preview origin is deliberately added to the allow-list for Preview only.
+
+
+## Vercel environment deployment note
+
+Preview variables are only loaded by a new deployment built for the Preview environment from this feature branch. Redeploying a Production deployment from `main` does not update this Preview's runtime variables. Keep `VAPI_PROVISIONING_ENABLED`, `VAPI_TEMPLATE_ASSISTANT_ID`, `VAPI_PRIVATE_KEY`, and `VAPI_ORG_ID` scoped to Preview for this staging test, and keep `VAPI_LAUNCH_ENABLED=false`.
