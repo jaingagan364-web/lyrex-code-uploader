@@ -1,4 +1,11 @@
-import { createServerSupabase, encryptRefreshToken, googleOAuthConfig, sha256 } from "@/lib/google-calendar-server";
+import {
+  createServerSupabase,
+  encryptRefreshToken,
+  googleOAuthConfig,
+  GOOGLE_CALENDAR_SCOPES,
+  requireOneActiveSubscription,
+  sha256,
+} from "@/lib/google-calendar-server";
 import { createFileRoute } from "@tanstack/react-router";
 
 type GoogleTokenResponse = {
@@ -49,6 +56,23 @@ export const Route = createFileRoute("/api/calendar/google/callback")({
           if (stateError || !stateRecord) return appRedirect("error");
           if (googleError || !code || code.length > 4096) return appRedirect("cancelled");
 
+          // The business owner or subscription may have changed while the
+          // customer was on Google's consent screen. Re-check both before
+          // storing any refresh token.
+          const { data: ownedBusiness, error: ownershipError } = await supabase
+            .from("businesses")
+            .select("id")
+            .eq("id", stateRecord.business_id)
+            .eq("owner_id", stateRecord.owner_id)
+            .maybeSingle();
+          if (ownershipError || !ownedBusiness) return appRedirect("error");
+          const stillSubscribed = await requireOneActiveSubscription(
+            supabase,
+            stateRecord.owner_id,
+            stateRecord.business_id,
+          );
+          if (!stillSubscribed) return appRedirect("error");
+
           const config = googleOAuthConfig();
           const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
             method: "POST",
@@ -68,28 +92,6 @@ export const Route = createFileRoute("/api/calendar/google/callback")({
             return appRedirect("error");
           }
 
-          let refreshToken = tokens.refresh_token;
-          if (!refreshToken) {
-            // Google may omit a refresh token on an account that has already
-            // granted consent. Preserve its existing encrypted token; never
-            // replace a working connection with an empty refresh credential.
-            const { data: existing, error: existingError } = await supabase
-              .from("business_calendar_connections")
-              .select("refresh_token_encrypted")
-              .eq("business_id", stateRecord.business_id)
-              .maybeSingle();
-            if (existingError) throw existingError;
-            if (existing?.refresh_token_encrypted) {
-              const helper = await import("@/lib/google-calendar-server");
-              // Re-encrypt is not required; the ciphertext remains bound to this business.
-              refreshToken = helper.decryptRefreshToken(existing.refresh_token_encrypted);
-            }
-          }
-          if (!refreshToken) {
-            console.error("[google-calendar-callback] Google did not return an offline refresh token");
-            return appRedirect("error");
-          }
-
           const identityResponse = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
             headers: { authorization: `Bearer ${tokens.access_token}` },
             signal: AbortSignal.timeout(10000),
@@ -100,15 +102,43 @@ export const Route = createFileRoute("/api/calendar/google/callback")({
             return appRedirect("error");
           }
 
+          const grantedScopes = tokens.scope?.split(" ").filter(Boolean) ?? [];
+          const missingScopes = GOOGLE_CALENDAR_SCOPES.filter((scope) => !grantedScopes.includes(scope));
+          if (missingScopes.length > 0) {
+            console.error("[google-calendar-callback] Google did not grant the required Calendar scopes");
+            return appRedirect("error");
+          }
+
+          const { data: existingConnection, error: existingError } = await supabase
+            .from("business_calendar_connections")
+            .select("refresh_token_encrypted,calendar_id,account_email")
+            .eq("business_id", stateRecord.business_id)
+            .maybeSingle();
+          if (existingError) throw existingError;
+
+          let refreshToken = tokens.refresh_token;
+          const sameGoogleAccount = existingConnection?.account_email?.toLowerCase() === identity.email.toLowerCase();
+          if (!refreshToken && sameGoogleAccount && existingConnection?.refresh_token_encrypted) {
+            const helper = await import("@/lib/google-calendar-server");
+            refreshToken = helper.decryptRefreshToken(existingConnection.refresh_token_encrypted);
+          }
+          if (!refreshToken) {
+            console.error("[google-calendar-callback] Google did not return an offline refresh token for this account");
+            return appRedirect("error");
+          }
+          const selectedCalendarId = sameGoogleAccount && existingConnection?.calendar_id
+            ? existingConnection.calendar_id
+            : "primary";
+
           const { error: saveError } = await supabase
             .from("business_calendar_connections")
             .upsert({
               business_id: stateRecord.business_id,
               provider: "google",
-              calendar_id: "primary",
+              calendar_id: selectedCalendarId,
               account_email: identity.email,
               refresh_token_encrypted: encryptRefreshToken(refreshToken),
-              granted_scopes: tokens.scope?.split(" ").filter(Boolean) ?? [],
+              granted_scopes: grantedScopes,
               connection_status: "connected",
               connected_at: new Date().toISOString(),
               last_verified_at: new Date().toISOString(),
