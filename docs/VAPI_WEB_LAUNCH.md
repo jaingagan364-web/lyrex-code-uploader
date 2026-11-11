@@ -32,3 +32,33 @@ This change does not provision Vapi assistants, connect each salon's Google Cale
 6. Verify call-end cleans up the SDK session and transcript remains client-session-only.
 
 Never expose `VAPI_PRIVATE_KEY` or a full JWT in browser logs, screenshots, or source control.
+
+
+## Business-specific assistant provisioning
+
+The authenticated endpoint `POST /api/vapi/provision` creates one assistant for the signed-in business.
+
+Apply migration `supabase/migrations/20261111000000_vapi_provisioning_lease.sql` before enabling the endpoint. It adds a 15-minute provisioning lease and service-role-only RPCs that prevent concurrent duplicate creation and recover a Vapi assistant if the first request created it but did not finish saving the database link.
+
+Configure these **Preview-only** Vercel server variables before testing:
+
+- `VAPI_PROVISIONING_ENABLED=true`
+- `VAPI_TEMPLATE_ASSISTANT_ID=<the existing demo assistant UUID>`
+- `VAPI_PRIVATE_KEY` and `VAPI_ORG_ID` from the same Vapi organization.
+
+Do not put any Vapi private key in a `VITE_*` variable. Use a separate Vapi organization/API key for Preview and Production.
+
+The provisioning endpoint copies only the template's model provider/model, selected non-secret model settings, voice, transcriber, and selected call behavior. It deliberately does **not** copy the demo assistant's tools, server URL/secret, credential IDs, phone number, transport configuration, custom recording storage settings, or demo prompt. The generated prompt uses the saved business profile and explicitly says booking is not live.
+
+The generated assistant metadata contains the Febily business ID and template ID. Retries first search the authenticated Vapi organization for an assistant with matching metadata before creating another one.
+
+## Calendar and phone readiness
+
+Assistant provisioning is not the same as full receptionist activation. The generated assistant has no calendar tools and must not confirm or create appointments. Do not enable `VAPI_LAUNCH_ENABLED` or attach a customer phone number until:
+- the tenant-specific calendar connection and availability/booking service are implemented and tested;
+- timezone-safe conversion uses the business's saved IANA timezone;
+- booking operations enforce business ownership and prevent double-booking;
+- a real inbound phone number has been assigned to the correct business; and
+- staging isolation and subscription lifecycle tests pass.
+
+The current web token endpoint only allows `https://febily.com` and `https://www.febily.com`. Browser calls from a Vercel Preview origin will remain blocked until that exact Preview origin is deliberately added to the allow-list for Preview only.
