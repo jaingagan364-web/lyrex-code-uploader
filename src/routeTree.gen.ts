@@ -12,11 +12,19 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ThankYouRouteImport } from './routes/thank-you'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SetupRouteImport } from './routes/setup'
+import { Route as ReceptionistRouteImport } from './routes/receptionist'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiVapiTokenRouteImport } from './routes/api/vapi/token'
+import { Route as ApiVapiProvisionRouteImport } from './routes/api/vapi/provision'
+import { Route as ApiVapiSyncProfileRouteImport } from './routes/api/vapi/sync-profile'
+import { Route as GoogleCalendarSelectRouteImport } from './routes/api/calendar/google/select'
+import { Route as GoogleCalendarCalendarsRouteImport } from './routes/api/calendar/google/calendars'
+import { Route as GoogleCalendarStatusRouteImport } from './routes/api/calendar/google/status'
+import { Route as GoogleCalendarCallbackRouteImport } from './routes/api/calendar/google/callback'
+import { Route as GoogleCalendarConnectRouteImport } from './routes/api/calendar/google/connect'
 import { Route as ApiPaddleWebhookRouteImport } from './routes/api/paddle/webhook'
 
 const ThankYouRoute = ThankYouRouteImport.update({
@@ -32,6 +40,11 @@ const TermsRoute = TermsRouteImport.update({
 const SetupRoute = SetupRouteImport.update({
   id: '/setup',
   path: '/setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReceptionistRoute = ReceptionistRouteImport.update({
+  id: '/receptionist',
+  path: '/receptionist',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RefundRoute = RefundRouteImport.update({
@@ -59,6 +72,41 @@ const ApiVapiTokenRoute = ApiVapiTokenRouteImport.update({
   path: '/api/vapi/token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiVapiProvisionRoute = ApiVapiProvisionRouteImport.update({
+  id: '/api/vapi/provision',
+  path: '/api/vapi/provision',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVapiSyncProfileRoute = ApiVapiSyncProfileRouteImport.update({
+  id: '/api/vapi/sync-profile',
+  path: '/api/vapi/sync-profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoogleCalendarSelectRoute = GoogleCalendarSelectRouteImport.update({
+  id: '/api/calendar/google/select',
+  path: '/api/calendar/google/select',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoogleCalendarCalendarsRoute = GoogleCalendarCalendarsRouteImport.update({
+  id: '/api/calendar/google/calendars',
+  path: '/api/calendar/google/calendars',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoogleCalendarStatusRoute = GoogleCalendarStatusRouteImport.update({
+  id: '/api/calendar/google/status',
+  path: '/api/calendar/google/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoogleCalendarCallbackRoute = GoogleCalendarCallbackRouteImport.update({
+  id: '/api/calendar/google/callback',
+  path: '/api/calendar/google/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoogleCalendarConnectRoute = GoogleCalendarConnectRouteImport.update({
+  id: '/api/calendar/google/connect',
+  path: '/api/calendar/google/connect',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPaddleWebhookRoute = ApiPaddleWebhookRouteImport.update({
   id: '/api/paddle/webhook',
   path: '/api/paddle/webhook',
@@ -70,22 +118,28 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
+  '/receptionist': typeof ReceptionistRoute
   '/setup': typeof SetupRoute
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
   '/api/paddle/webhook': typeof ApiPaddleWebhookRoute
   '/api/vapi/token': typeof ApiVapiTokenRoute
+  '/api/vapi/provision': typeof ApiVapiProvisionRoute
+  '/api/vapi/sync-profile': typeof ApiVapiSyncProfileRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
+  '/receptionist': typeof ReceptionistRoute
   '/setup': typeof SetupRoute
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
   '/api/paddle/webhook': typeof ApiPaddleWebhookRoute
   '/api/vapi/token': typeof ApiVapiTokenRoute
+  '/api/vapi/provision': typeof ApiVapiProvisionRoute
+  '/api/vapi/sync-profile': typeof ApiVapiSyncProfileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,11 +147,14 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
+  '/receptionist': typeof ReceptionistRoute
   '/setup': typeof SetupRoute
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
   '/api/paddle/webhook': typeof ApiPaddleWebhookRoute
   '/api/vapi/token': typeof ApiVapiTokenRoute
+  '/api/vapi/provision': typeof ApiVapiProvisionRoute
+  '/api/vapi/sync-profile': typeof ApiVapiSyncProfileRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -106,33 +163,47 @@ export interface FileRouteTypes {
     | '/account'
     | '/privacy'
     | '/refund'
+    | '/receptionist'
     | '/setup'
     | '/terms'
     | '/thank-you'
     | '/api/paddle/webhook'
     | '/api/vapi/token'
+    | '/api/vapi/provision'
+    | '/api/vapi/sync-profile'
+    | '/api/calendar/google/select'
+    | '/api/calendar/google/calendars'
+    | '/api/calendar/google/status'
+    | '/api/calendar/google/callback'
+    | '/api/calendar/google/connect'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/account'
     | '/privacy'
     | '/refund'
+    | '/receptionist'
     | '/setup'
     | '/terms'
     | '/thank-you'
     | '/api/paddle/webhook'
     | '/api/vapi/token'
+    | '/api/vapi/provision'
+    | '/api/vapi/sync-profile'
   id:
     | '__root__'
     | '/'
     | '/account'
     | '/privacy'
     | '/refund'
+    | '/receptionist'
     | '/setup'
     | '/terms'
     | '/thank-you'
     | '/api/paddle/webhook'
     | '/api/vapi/token'
+    | '/api/vapi/provision'
+    | '/api/vapi/sync-profile'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -140,11 +211,14 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
+  ReceptionistRoute: typeof ReceptionistRoute
   SetupRoute: typeof SetupRoute
   TermsRoute: typeof TermsRoute
   ThankYouRoute: typeof ThankYouRoute
   ApiPaddleWebhookRoute: typeof ApiPaddleWebhookRoute
   ApiVapiTokenRoute: typeof ApiVapiTokenRoute
+  ApiVapiProvisionRoute: typeof ApiVapiProvisionRoute
+  ApiVapiSyncProfileRoute: typeof ApiVapiSyncProfileRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -168,6 +242,13 @@ declare module '@tanstack/react-router' {
       path: '/setup'
       fullPath: '/setup'
       preLoaderRoute: typeof SetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/receptionist': {
+      id: '/receptionist'
+      path: '/receptionist'
+      fullPath: '/receptionist'
+      preLoaderRoute: typeof ReceptionistRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/refund': {
@@ -205,6 +286,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiVapiTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/vapi/provision': {
+      id: '/api/vapi/provision'
+      path: '/api/vapi/provision'
+      fullPath: '/api/vapi/provision'
+      preLoaderRoute: typeof ApiVapiProvisionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/vapi/sync-profile': {
+      id: '/api/vapi/sync-profile'
+      path: '/api/vapi/sync-profile'
+      fullPath: '/api/vapi/sync-profile'
+      preLoaderRoute: typeof ApiVapiSyncProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/calendar/google/select': {
+      id: '/api/calendar/google/select'
+      path: '/api/calendar/google/select'
+      fullPath: '/api/calendar/google/select'
+      preLoaderRoute: typeof GoogleCalendarSelectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/calendar/google/calendars': {
+      id: '/api/calendar/google/calendars'
+      path: '/api/calendar/google/calendars'
+      fullPath: '/api/calendar/google/calendars'
+      preLoaderRoute: typeof GoogleCalendarCalendarsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/calendar/google/status': {
+      id: '/api/calendar/google/status'
+      path: '/api/calendar/google/status'
+      fullPath: '/api/calendar/google/status'
+      preLoaderRoute: typeof GoogleCalendarStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/calendar/google/callback': {
+      id: '/api/calendar/google/callback'
+      path: '/api/calendar/google/callback'
+      fullPath: '/api/calendar/google/callback'
+      preLoaderRoute: typeof GoogleCalendarCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/calendar/google/connect': {
+      id: '/api/calendar/google/connect'
+      path: '/api/calendar/google/connect'
+      fullPath: '/api/calendar/google/connect'
+      preLoaderRoute: typeof GoogleCalendarConnectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/paddle/webhook': {
       id: '/api/paddle/webhook'
       path: '/api/paddle/webhook'
@@ -221,10 +351,18 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,
   SetupRoute: SetupRoute,
+  ReceptionistRoute: ReceptionistRoute,
   TermsRoute: TermsRoute,
   ThankYouRoute: ThankYouRoute,
   ApiPaddleWebhookRoute: ApiPaddleWebhookRoute,
   ApiVapiTokenRoute: ApiVapiTokenRoute,
+  ApiVapiProvisionRoute: ApiVapiProvisionRoute,
+  ApiVapiSyncProfileRoute: ApiVapiSyncProfileRoute,
+  GoogleCalendarSelectRoute: GoogleCalendarSelectRoute,
+  GoogleCalendarCalendarsRoute: GoogleCalendarCalendarsRoute,
+  GoogleCalendarStatusRoute: GoogleCalendarStatusRoute,
+  GoogleCalendarCallbackRoute: GoogleCalendarCallbackRoute,
+  GoogleCalendarConnectRoute: GoogleCalendarConnectRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

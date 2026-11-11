@@ -3,7 +3,40 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SignJWT } from "jose";
 
 const RESPONSE_HEADERS = { "cache-control": "no-store" };
-const ALLOWED_ORIGINS = ["https://www.febily.com", "https://febily.com"];
+const PRODUCTION_ALLOWED_ORIGINS = ["https://www.febily.com", "https://febily.com"];
+
+function getAllowedOrigins(): string[] {
+  const origins = new Set(PRODUCTION_ALLOWED_ORIGINS);
+
+  // Vercel supplies the branch alias and unique deployment hostname at runtime.
+  // Permit those exact HTTPS hosts only in Preview. Production JWTs never trust
+  // arbitrary request Origin values or Vercel preview domains.
+  if (process.env["VERCEL_ENV"] === "preview") {
+    for (const hostname of [
+      process.env["VERCEL_BRANCH_URL"],
+      process.env["VERCEL_URL"],
+    ]) {
+      if (!hostname) continue;
+      try {
+        const url = new URL(hostname.startsWith("https://") ? hostname : `https://${hostname}`);
+        if (
+          url.protocol === "https:" &&
+          url.hostname.endsWith(".vercel.app") &&
+          !url.port &&
+          url.pathname === "/" &&
+          !url.search &&
+          !url.hash
+        ) {
+          origins.add(url.origin);
+        }
+      } catch {
+        // Ignore malformed system values; canonical production origins remain.
+      }
+    }
+  }
+
+  return [...origins];
+}
 
 function json(body: Record<string, unknown>, status: number) {
   return Response.json(body, { status, headers: RESPONSE_HEADERS });
@@ -27,6 +60,16 @@ export const Route = createFileRoute("/api/vapi/token")({
           return json({ error: "Receptionist access is temporarily unavailable." }, 503);
         }
 
+        // Safe diagnostic: this public project reference lets us verify that
+        // the Preview server and the Supabase dashboard point to the same
+        // project without exposing any credentials.
+        let databaseProjectRef: string | null = null;
+        try {
+          databaseProjectRef = new URL(supabaseUrl).hostname.split(".")[0] || null;
+        } catch {
+          databaseProjectRef = null;
+        }
+
         try {
           const supabase = createClient(supabaseUrl, supabaseSecretKey, {
             auth: {
@@ -39,13 +82,6 @@ export const Route = createFileRoute("/api/vapi/token")({
           const { data: authData, error: authError } = await supabase.auth.getUser(accessToken);
           if (authError || !authData.user) {
             return json({ error: "Your sign-in session is invalid or expired." }, 401);
-          }
-
-          if (process.env["VAPI_LAUNCH_ENABLED"] !== "true") {
-            return json(
-              { error: "Receptionist activation is still being configured." },
-              503,
-            );
           }
 
           const userId = authData.user.id;
@@ -71,7 +107,7 @@ export const Route = createFileRoute("/api/vapi/token")({
           const now = new Date().toISOString();
           const { data: subscriptions, error: subscriptionError } = await supabase
             .from("subscriptions")
-            .select("id")
+            .select("id,paddle_subscription_id,current_period_end,business_id")
             .eq("user_id", userId)
             .eq("business_id", businesses[0].id)
             .eq("status", "active")
@@ -93,7 +129,18 @@ export const Route = createFileRoute("/api/vapi/token")({
 
           if (subscriptions.length !== 1) {
             return json(
-              { error: "Could not verify exactly one active subscription for this business." },
+              {
+                error: `The connected database returned ${subscriptions.length} eligible active subscriptions for this business; exactly one is required.`,
+                databaseProjectRef,
+                subscriptionDiagnostics: subscriptions.map((subscription) => ({
+                  paddleSubscriptionSuffix:
+                    typeof subscription.paddle_subscription_id === "string"
+                      ? subscription.paddle_subscription_id.slice(-6)
+                      : null,
+                  currentPeriodEnd: subscription.current_period_end,
+                  businessLinkMatches: subscription.business_id === businesses[0].id,
+                })),
+              },
               403,
             );
           }
@@ -113,6 +160,13 @@ export const Route = createFileRoute("/api/vapi/token")({
             );
           }
 
+          if (process.env["VAPI_LAUNCH_ENABLED"] !== "true") {
+            return json(
+              { error: "Your receptionist is provisioned, but voice launch is not enabled yet." },
+              503,
+            );
+          }
+
           const vapiPrivateKey = process.env["VAPI_PRIVATE_KEY"];
           const orgId = process.env["VAPI_ORG_ID"];
           if (!vapiPrivateKey || !orgId) {
@@ -127,7 +181,7 @@ export const Route = createFileRoute("/api/vapi/token")({
               tag: "public",
               restrictions: {
                 enabled: true,
-                allowedOrigins: ALLOWED_ORIGINS,
+                allowedOrigins: getAllowedOrigins(),
                 allowedAssistantIds: [assistantId],
                 allowTransientAssistant: false,
               },
