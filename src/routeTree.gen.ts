@@ -18,6 +18,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiVapiTokenRouteImport } from './routes/api/vapi/token'
+import { Route as ApiVapiProvisionRouteImport } from './routes/api/vapi/provision'
 import { Route as ApiPaddleWebhookRouteImport } from './routes/api/paddle/webhook'
 
 const ThankYouRoute = ThankYouRouteImport.update({
@@ -65,6 +66,11 @@ const ApiVapiTokenRoute = ApiVapiTokenRouteImport.update({
   path: '/api/vapi/token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiVapiProvisionRoute = ApiVapiProvisionRouteImport.update({
+  id: '/api/vapi/provision',
+  path: '/api/vapi/provision',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPaddleWebhookRoute = ApiPaddleWebhookRouteImport.update({
   id: '/api/paddle/webhook',
   path: '/api/paddle/webhook',
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/thank-you': typeof ThankYouRoute
   '/api/paddle/webhook': typeof ApiPaddleWebhookRoute
   '/api/vapi/token': typeof ApiVapiTokenRoute
+  '/api/vapi/provision': typeof ApiVapiProvisionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -158,6 +165,7 @@ export interface RootRouteChildren {
   ThankYouRoute: typeof ThankYouRoute
   ApiPaddleWebhookRoute: typeof ApiPaddleWebhookRoute
   ApiVapiTokenRoute: typeof ApiVapiTokenRoute
+  ApiVapiProvisionRoute: typeof ApiVapiProvisionRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -225,6 +233,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiVapiTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/vapi/provision': {
+      id: '/api/vapi/provision'
+      path: '/api/vapi/provision'
+      fullPath: '/api/vapi/provision'
+      preLoaderRoute: typeof ApiVapiProvisionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/paddle/webhook': {
       id: '/api/paddle/webhook'
       path: '/api/paddle/webhook'
@@ -246,6 +261,7 @@ const rootRouteChildren: RootRouteChildren = {
   ThankYouRoute: ThankYouRoute,
   ApiPaddleWebhookRoute: ApiPaddleWebhookRoute,
   ApiVapiTokenRoute: ApiVapiTokenRoute,
+  ApiVapiProvisionRoute: ApiVapiProvisionRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
