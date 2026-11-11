@@ -3,7 +3,40 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SignJWT } from "jose";
 
 const RESPONSE_HEADERS = { "cache-control": "no-store" };
-const ALLOWED_ORIGINS = ["https://www.febily.com", "https://febily.com"];
+const PRODUCTION_ALLOWED_ORIGINS = ["https://www.febily.com", "https://febily.com"];
+
+function getAllowedOrigins(): string[] {
+  const origins = new Set(PRODUCTION_ALLOWED_ORIGINS);
+
+  // Vercel supplies the branch alias and unique deployment hostname at runtime.
+  // Permit those exact HTTPS hosts only in Preview. Production JWTs never trust
+  // arbitrary request Origin values or Vercel preview domains.
+  if (process.env["VERCEL_ENV"] === "preview") {
+    for (const hostname of [
+      process.env["VERCEL_BRANCH_URL"],
+      process.env["VERCEL_URL"],
+    ]) {
+      if (!hostname) continue;
+      try {
+        const url = new URL(hostname.startsWith("https://") ? hostname : `https://${hostname}`);
+        if (
+          url.protocol === "https:" &&
+          url.hostname.endsWith(".vercel.app") &&
+          !url.port &&
+          url.pathname === "/" &&
+          !url.search &&
+          !url.hash
+        ) {
+          origins.add(url.origin);
+        }
+      } catch {
+        // Ignore malformed system values; canonical production origins remain.
+      }
+    }
+  }
+
+  return [...origins];
+}
 
 function json(body: Record<string, unknown>, status: number) {
   return Response.json(body, { status, headers: RESPONSE_HEADERS });
@@ -148,7 +181,7 @@ export const Route = createFileRoute("/api/vapi/token")({
               tag: "public",
               restrictions: {
                 enabled: true,
-                allowedOrigins: ALLOWED_ORIGINS,
+                allowedOrigins: getAllowedOrigins(),
                 allowedAssistantIds: [assistantId],
                 allowTransientAssistant: false,
               },
