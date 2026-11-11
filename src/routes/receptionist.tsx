@@ -68,7 +68,9 @@ function ReceptionistPage() {
 
     void supabase.auth.getUser().then(({ data, error }) => {
       if (cancelled) return;
-      setPhase(error || !data.user ? "signed-out" : "idle");
+      const signedIn = !error && Boolean(data.user);
+      setPhase(signedIn ? "idle" : "signed-out");
+      setCanSyncProfile(signedIn);
     });
 
     return () => {
