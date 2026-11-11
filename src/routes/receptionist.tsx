@@ -53,6 +53,7 @@ function ReceptionistPage() {
   const vapiRef = useRef<VapiClient | null>(null);
   const isMountedRef = useRef(true);
   const transcriptIdRef = useRef(0);
+  const callStartFailureRef = useRef<string | null>(null);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -142,6 +143,17 @@ function ReceptionistPage() {
 
       const client = new Vapi(result.token);
       vapiRef.current = client;
+      callStartFailureRef.current = null;
+
+      client.on("call-start-failed", (event) => {
+        const stage =
+          typeof event?.stage === "string" ? event.stage : "call setup";
+        const reason =
+          typeof event?.error === "string" && event.error.trim()
+            ? event.error.trim().slice(0, 240)
+            : "Vapi could not complete the browser call setup.";
+        callStartFailureRef.current = `Vapi failed during ${stage}: ${reason}`;
+      });
 
       client.on("call-start", () => {
         if (!isMountedRef.current) return;
@@ -196,7 +208,10 @@ function ReceptionistPage() {
       setPhase("connecting");
       const call = await client.start(result.assistantId);
       if (!call && isMountedRef.current) {
-        throw new Error("Vapi did not create a voice session.");
+        throw new Error(
+          callStartFailureRef.current ||
+            "Vapi could not create a browser voice session. Check the Preview origin allowlist and Vapi call-start logs.",
+        );
       }
     } catch (error) {
       const client = vapiRef.current;
