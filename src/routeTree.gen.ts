@@ -19,6 +19,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiVapiTokenRouteImport } from './routes/api/vapi/token'
 import { Route as ApiVapiProvisionRouteImport } from './routes/api/vapi/provision'
+import { Route as ApiVapiSyncProfileRouteImport } from './routes/api/vapi/sync-profile'
 import { Route as ApiPaddleWebhookRouteImport } from './routes/api/paddle/webhook'
 
 const ThankYouRoute = ThankYouRouteImport.update({
@@ -71,6 +72,11 @@ const ApiVapiProvisionRoute = ApiVapiProvisionRouteImport.update({
   path: '/api/vapi/provision',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiVapiSyncProfileRoute = ApiVapiSyncProfileRouteImport.update({
+  id: '/api/vapi/sync-profile',
+  path: '/api/vapi/sync-profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPaddleWebhookRoute = ApiPaddleWebhookRouteImport.update({
   id: '/api/paddle/webhook',
   path: '/api/paddle/webhook',
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/api/paddle/webhook': typeof ApiPaddleWebhookRoute
   '/api/vapi/token': typeof ApiVapiTokenRoute
   '/api/vapi/provision': typeof ApiVapiProvisionRoute
+  '/api/vapi/sync-profile': typeof ApiVapiSyncProfileRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,6 +108,8 @@ export interface FileRoutesByTo {
   '/thank-you': typeof ThankYouRoute
   '/api/paddle/webhook': typeof ApiPaddleWebhookRoute
   '/api/vapi/token': typeof ApiVapiTokenRoute
+  '/api/vapi/provision': typeof ApiVapiProvisionRoute
+  '/api/vapi/sync-profile': typeof ApiVapiSyncProfileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,6 +123,8 @@ export interface FileRoutesById {
   '/thank-you': typeof ThankYouRoute
   '/api/paddle/webhook': typeof ApiPaddleWebhookRoute
   '/api/vapi/token': typeof ApiVapiTokenRoute
+  '/api/vapi/provision': typeof ApiVapiProvisionRoute
+  '/api/vapi/sync-profile': typeof ApiVapiSyncProfileRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -128,6 +139,8 @@ export interface FileRouteTypes {
     | '/thank-you'
     | '/api/paddle/webhook'
     | '/api/vapi/token'
+    | '/api/vapi/provision'
+    | '/api/vapi/sync-profile'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -140,6 +153,8 @@ export interface FileRouteTypes {
     | '/thank-you'
     | '/api/paddle/webhook'
     | '/api/vapi/token'
+    | '/api/vapi/provision'
+    | '/api/vapi/sync-profile'
   id:
     | '__root__'
     | '/'
@@ -152,6 +167,8 @@ export interface FileRouteTypes {
     | '/thank-you'
     | '/api/paddle/webhook'
     | '/api/vapi/token'
+    | '/api/vapi/provision'
+    | '/api/vapi/sync-profile'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -166,6 +183,7 @@ export interface RootRouteChildren {
   ApiPaddleWebhookRoute: typeof ApiPaddleWebhookRoute
   ApiVapiTokenRoute: typeof ApiVapiTokenRoute
   ApiVapiProvisionRoute: typeof ApiVapiProvisionRoute
+  ApiVapiSyncProfileRoute: typeof ApiVapiSyncProfileRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -240,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiVapiProvisionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/vapi/sync-profile': {
+      id: '/api/vapi/sync-profile'
+      path: '/api/vapi/sync-profile'
+      fullPath: '/api/vapi/sync-profile'
+      preLoaderRoute: typeof ApiVapiSyncProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/paddle/webhook': {
       id: '/api/paddle/webhook'
       path: '/api/paddle/webhook'
@@ -262,6 +287,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPaddleWebhookRoute: ApiPaddleWebhookRoute,
   ApiVapiTokenRoute: ApiVapiTokenRoute,
   ApiVapiProvisionRoute: ApiVapiProvisionRoute,
+  ApiVapiSyncProfileRoute: ApiVapiSyncProfileRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
