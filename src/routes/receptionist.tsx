@@ -34,6 +34,12 @@ type ProvisionResponse = {
   error?: string;
 };
 
+type SyncProfileResponse = {
+  success?: boolean;
+  message?: string;
+  error?: string;
+};
+
 type TranscriptLine = {
   id: number;
   role: "user" | "assistant";
@@ -49,6 +55,7 @@ function ReceptionistPage() {
   const [message, setMessage] = useState("");
   const [muted, setMuted] = useState(false);
   const [canProvision, setCanProvision] = useState(false);
+  const [canSyncProfile, setCanSyncProfile] = useState(false);
   const [transcript, setTranscript] = useState<TranscriptLine[]>([]);
   const vapiRef = useRef<VapiClient | null>(null);
   const isMountedRef = useRef(true);
@@ -134,6 +141,7 @@ function ReceptionistPage() {
       if (!result.token || !result.assistantId) {
         throw new Error("The secure voice session response was incomplete.");
       }
+      setCanSyncProfile(true);
 
       // Load the SDK only after an authenticated user explicitly starts a call.
       // The browser receives a short-lived, assistant-restricted public JWT,
@@ -167,6 +175,7 @@ function ReceptionistPage() {
         if (vapiRef.current === client) vapiRef.current = null;
         setPhase("idle");
         setMuted(false);
+        setCanSyncProfile(true);
         setMessage("The voice session has ended.");
       });
 
@@ -257,6 +266,7 @@ function ReceptionistPage() {
       }
 
       setCanProvision(false);
+      setCanSyncProfile(true);
       setPhase("idle");
       setMessage(
         result.message ||
@@ -270,6 +280,49 @@ function ReceptionistPage() {
           : "Could not create your receptionist. Please try again.",
       );
       setCanProvision(true);
+    }
+  }
+
+  async function syncReceptionistProfile() {
+    if (phase === "in-call" || phase === "connecting" || phase === "ending") {
+      return;
+    }
+
+    setPhase("loading");
+    setMessage("Updating your receptionist with the latest saved business details...");
+    try {
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
+      if (sessionError || !sessionData.session?.access_token) {
+        setPhase("signed-out");
+        return;
+      }
+
+      const response = await fetch("/api/vapi/sync-profile", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+        body: "{}",
+      });
+      const result = (await response.json().catch(() => ({}))) as SyncProfileResponse;
+      if (!response.ok) {
+        throw new Error(result.error || "Could not sync the receptionist profile.");
+      }
+
+      setPhase("idle");
+      setMessage(
+        result.message ||
+          "The existing receptionist was updated with the saved business profile.",
+      );
+    } catch (error) {
+      setPhase("error");
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Could not sync the receptionist profile. Please try again.",
+      );
     }
   }
 
@@ -390,6 +443,18 @@ function ReceptionistPage() {
                 {phase === "provisioning"
                   ? "Creating receptionist..."
                   : "Create my receptionist"}
+              </button>
+            )}
+            {canSyncProfile && phase !== "signed-out" && !isInCall && (
+              <button
+                type="button"
+                onClick={syncReceptionistProfile}
+                disabled={isBusy}
+                className="rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {phase === "loading"
+                  ? "Updating profile..."
+                  : "Sync saved business details"}
               </button>
             )}
             {phase === "signed-out" && (
