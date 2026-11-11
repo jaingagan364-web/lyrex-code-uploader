@@ -6,12 +6,14 @@
 - Adds a signed-in `/receptionist` page that requests a short-lived public JWT from `POST /api/vapi/token`.
 - Starts only the assistant ID returned by the server. The browser never receives the private Vapi API key.
 - Displays a session-only transcript and controls for ending or muting the browser call.
+- Creates a dedicated Vapi assistant per paid business and links it to that business record.
+- Uses one shared strict prompt for initial assistant provisioning and safe in-place profile synchronization.
 
 ## Server-side requirements
 
 The secure token route must be deployed with:
 
-- `VAPI_LAUNCH_ENABLED=true` only after the business assistant is provisioned and the rest of the launch checks have passed.
+- `VAPI_LAUNCH_ENABLED=true` only for a deliberately enabled environment. Keep it false in Production until calendar isolation, timezone handling, booking enforcement, and phone routing are complete. Preview may be enabled for internal browser-call testing, but the assistant must clearly state that bookings are unavailable.
 - `VAPI_PRIVATE_KEY` and `VAPI_ORG_ID` configured as server-side Vercel environment variables.
 - The migration `20261106000000_business_vapi_assistant.sql` applied.
 - Exactly one business owned by the signed-in user, exactly one active/unexpired Paddle subscription linked to that business, and a non-empty business-specific `vapi_assistant_id` with `vapi_provisioning_status='provisioned'`.
@@ -25,11 +27,13 @@ This change does not provision Vapi assistants, connect each salon's Google Cale
 ## Test plan
 
 1. Deploy the branch as a Vercel Preview and confirm the route builds.
-2. Keep `VAPI_LAUNCH_ENABLED` disabled and verify the page reports the server's activation-pending response without starting a call.
-3. In a staging Supabase/Paddle environment, provision a dedicated test assistant for a test business and link one verified active Sandbox subscription.
-4. Test from an allowed HTTPS origin; verify calls start only the assistant ID returned by the backend.
-5. Verify signed-out, unlinked, expired, duplicate-subscription, and unprovisioned states are denied.
-6. Verify call-end cleans up the SDK session and transcript remains client-session-only.
+2. Apply the Vapi provisioning lease migration.
+3. Configure Preview-only `VAPI_PROVISIONING_ENABLED`, `VAPI_TEMPLATE_ASSISTANT_ID`, `VAPI_PRIVATE_KEY`, and `VAPI_ORG_ID`.
+4. In staging Supabase/Paddle, verify exactly one active/unexpired Sandbox subscription and provision one dedicated assistant.
+5. Test the browser call from the exact Preview domain and confirm the token permits only that business's assistant.
+6. Sync the business profile and verify the assistant no longer invents contact information, location, timezone, appointment availability, or request submission.
+7. Verify signed-out, unlinked, expired, duplicate-subscription, unprovisioned, and assistant-ownership-mismatch states are denied.
+8. Verify call-end cleans up the SDK session and the transcript remains client-session-only.
 
 Never expose `VAPI_PRIVATE_KEY` or a full JWT in browser logs, screenshots, or source control.
 
@@ -61,7 +65,7 @@ Assistant provisioning is not the same as full receptionist activation. The gene
 - a real inbound phone number has been assigned to the correct business; and
 - staging isolation and subscription lifecycle tests pass.
 
-The current web token endpoint only allows `https://febily.com` and `https://www.febily.com`. Browser calls from a Vercel Preview origin will remain blocked until that exact Preview origin is deliberately added to the allow-list for Preview only.
+The web token endpoint allows the two canonical production origins and adds exact Vercel Preview runtime hostnames only when `VERCEL_ENV=preview`. Production tokens never trust Preview origins.
 
 
 ## Vercel environment deployment note
