@@ -99,6 +99,19 @@ function copyIfDefined(source: JsonRecord, target: JsonRecord, key: string) {
   if (value !== undefined && value !== null) target[key] = value;
 }
 
+function stripProviderSecrets(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(stripProviderSecrets);
+  if (!isRecord(value)) return value;
+  const safe: JsonRecord = {};
+  for (const [key, child] of Object.entries(value)) {
+    if (/^(credentialIds?|api[_-]?key|access[_-]?token|refresh[_-]?token|secret|password)$/i.test(key)) {
+      continue;
+    }
+    safe[key] = stripProviderSecrets(child);
+  }
+  return safe;
+}
+
 function createAssistantPayload(
   template: VapiAssistant,
   business: BusinessForProvisioning,
@@ -128,9 +141,17 @@ function createAssistantPayload(
     copyIfDefined(templateModel, model, key);
   }
 
+  const safeTranscriber = stripProviderSecrets(template.transcriber);
+  const safeVoice = stripProviderSecrets(template.voice);
+  if (!isRecord(safeTranscriber) || !isRecord(safeVoice)) {
+    throw new Error("The Vapi template must include a valid voice and transcriber configuration.");
+  }
+
   const payload: JsonRecord = {
     name: assistantName(business.business_name),
     model,
+    transcriber: safeTranscriber,
+    voice: safeVoice,
     firstMessage: `Thanks for calling ${business.business_name}. How can I help you today?`,
     firstMessageMode:
       typeof template.firstMessageMode === "string"
@@ -153,8 +174,6 @@ function createAssistantPayload(
   };
 
   for (const key of [
-    "transcriber",
-    "voice",
     "maxDurationSeconds",
     "backgroundSound",
     "startSpeakingPlan",
@@ -166,10 +185,6 @@ function createAssistantPayload(
     "endCallPhrases",
   ]) {
     copyIfDefined(template, payload, key);
-  }
-
-  if (!isRecord(payload.voice) || !isRecord(payload.transcriber)) {
-    throw new Error("The Vapi template must include a valid voice and transcriber configuration.");
   }
 
   return payload;
