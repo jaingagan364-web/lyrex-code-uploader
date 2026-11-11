@@ -71,3 +71,15 @@ Preview variables are only loaded by a new deployment built for the Preview envi
 ## Preview browser-call origin
 
 The server-side public JWT allows the two canonical Febily production origins. For Vercel Preview deployments only, it additionally includes the exact HTTPS hostnames supplied by Vercel's runtime `VERCEL_BRANCH_URL` and `VERCEL_URL`, and only when they end in `.vercel.app`. It does not trust the incoming request's Origin header as an allowlist source. Production tokens never include Vercel Preview origins.
+
+
+## Strict receptionist accuracy and profile sync
+
+The shared prompt module `src/lib/vapi-assistant-prompt.ts` is used by both initial provisioning and profile sync. It explicitly:
+- forbids invented phone, email, street address, ZIP/postal code, location, timezone, prices, staff, policies, and opening hours;
+- treats missing business contact details and timezone as `NOT CONFIGURED`;
+- forbids asking a caller for personal details when no secure request-submission workflow exists;
+- forbids claiming that a request, callback, message, or appointment was saved, sent, or forwarded; and
+- keeps live appointment booking disabled until a tenant-specific calendar integration is actually connected.
+
+The authenticated `POST /api/vapi/sync-profile` endpoint updates the existing business assistant in place. It verifies the active subscription, assistant ID, Vapi organization, and `febilyBusinessId` metadata. It refuses to update if the assistant has any tools, tool IDs, server URL/credentials, or attached credential IDs, so it cannot overwrite a live calendar integration. It fetches the complete existing nested model object before PATCHing because Vapi replaces nested model configuration on update. See the [Vapi Update Assistant API](https://docs.vapi.ai/api-reference/assistants/update) and [Vapi nested model update guidance](https://docs.vapi.ai/knowledge-base/custom-knowledge-base).
