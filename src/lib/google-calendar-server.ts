@@ -214,10 +214,14 @@ export async function getBusinessCalendarAccess(
   }
 }
 
-export const GOOGLE_CALENDAR_SCOPES = [
-  "openid",
-  "email",
+export const GOOGLE_CALENDAR_REQUIRED_SCOPES = [
   "https://www.googleapis.com/auth/calendar.events",
   "https://www.googleapis.com/auth/calendar.events.freebusy",
   "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
+];
+
+export const GOOGLE_CALENDAR_SCOPES = [
+  "openid",
+  "email",
+  ...GOOGLE_CALENDAR_REQUIRED_SCOPES,
 ];
