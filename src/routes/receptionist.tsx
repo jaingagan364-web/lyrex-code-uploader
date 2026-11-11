@@ -8,6 +8,7 @@ type Phase =
   | "signed-out"
   | "idle"
   | "loading"
+  | "provisioning"
   | "connecting"
   | "in-call"
   | "ending"
@@ -23,6 +24,14 @@ type TokenResponse = {
     currentPeriodEnd: string | null;
     businessLinkMatches: boolean;
   }>;
+  provisioningStatus?: string;
+};
+
+type ProvisionResponse = {
+  success?: boolean;
+  provisioningStatus?: string;
+  message?: string;
+  error?: string;
 };
 
 type TranscriptLine = {
@@ -39,6 +48,7 @@ function ReceptionistPage() {
   const [phase, setPhase] = useState<Phase>("checking");
   const [message, setMessage] = useState("");
   const [muted, setMuted] = useState(false);
+  const [canProvision, setCanProvision] = useState(false);
   const [transcript, setTranscript] = useState<TranscriptLine[]>([]);
   const vapiRef = useRef<VapiClient | null>(null);
   const isMountedRef = useRef(true);
@@ -95,6 +105,12 @@ function ReceptionistPage() {
 
       const result = (await response.json().catch(() => ({}))) as TokenResponse;
       if (!response.ok) {
+        if (
+          result.provisioningStatus === "pending" ||
+          result.provisioningStatus === "failed"
+        ) {
+          setCanProvision(true);
+        }
         const subscriptionDetails = result.subscriptionDiagnostics?.map((item, index) => {
           const suffix = item.paddleSubscriptionSuffix
             ? `Paddle ID ending ${item.paddleSubscriptionSuffix}`
@@ -199,6 +215,49 @@ function ReceptionistPage() {
     }
   }
 
+  async function createReceptionist() {
+    if (phase === "provisioning") return;
+
+    setPhase("provisioning");
+    setMessage("Creating your business-specific receptionist...");
+    try {
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
+      if (sessionError || !sessionData.session?.access_token) {
+        setPhase("signed-out");
+        return;
+      }
+
+      const response = await fetch("/api/vapi/provision", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+        body: "{}",
+      });
+      const result = (await response.json().catch(() => ({}))) as ProvisionResponse;
+      if (!response.ok) {
+        throw new Error(result.error || "Could not create your receptionist.");
+      }
+
+      setCanProvision(false);
+      setPhase("idle");
+      setMessage(
+        result.message ||
+          "Your dedicated receptionist has been created. Live calendar booking is not connected yet.",
+      );
+    } catch (error) {
+      setPhase("error");
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Could not create your receptionist. Please try again.",
+      );
+      setCanProvision(true);
+    }
+  }
+
   function endCall() {
     const client = vapiRef.current;
     if (!client) {
@@ -219,7 +278,10 @@ function ReceptionistPage() {
   }
 
   const isBusy =
-    phase === "checking" || phase === "loading" || phase === "connecting";
+    phase === "checking" ||
+    phase === "loading" ||
+    phase === "provisioning" ||
+    phase === "connecting";
   const isInCall = phase === "in-call" || phase === "ending";
 
   return (
@@ -298,7 +360,21 @@ function ReceptionistPage() {
                     ? "Checking access..."
                     : phase === "connecting"
                       ? "Connecting..."
-                      : "Start voice session"}
+                      : phase === "provisioning"
+                        ? "Creating receptionist..."
+                        : "Start voice session"}
+              </button>
+            )}
+            {canProvision && phase !== "signed-out" && !isInCall && (
+              <button
+                type="button"
+                onClick={createReceptionist}
+                disabled={isBusy}
+                className="rounded-xl border border-emerald-300/40 px-5 py-3 text-sm font-semibold text-emerald-200 hover:bg-emerald-300/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {phase === "provisioning"
+                  ? "Creating receptionist..."
+                  : "Create my receptionist"}
               </button>
             )}
             {phase === "signed-out" && (
