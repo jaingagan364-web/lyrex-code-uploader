@@ -20,6 +20,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiVapiTokenRouteImport } from './routes/api/vapi/token'
 import { Route as ApiVapiProvisionRouteImport } from './routes/api/vapi/provision'
 import { Route as ApiVapiSyncProfileRouteImport } from './routes/api/vapi/sync-profile'
+import { Route as GoogleCalendarSelectRouteImport } from './routes/api/calendar/google/select'
+import { Route as GoogleCalendarCalendarsRouteImport } from './routes/api/calendar/google/calendars'
+import { Route as GoogleCalendarStatusRouteImport } from './routes/api/calendar/google/status'
+import { Route as GoogleCalendarCallbackRouteImport } from './routes/api/calendar/google/callback'
+import { Route as GoogleCalendarConnectRouteImport } from './routes/api/calendar/google/connect'
 import { Route as ApiPaddleWebhookRouteImport } from './routes/api/paddle/webhook'
 
 const ThankYouRoute = ThankYouRouteImport.update({
@@ -75,6 +80,31 @@ const ApiVapiProvisionRoute = ApiVapiProvisionRouteImport.update({
 const ApiVapiSyncProfileRoute = ApiVapiSyncProfileRouteImport.update({
   id: '/api/vapi/sync-profile',
   path: '/api/vapi/sync-profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoogleCalendarSelectRoute = GoogleCalendarSelectRouteImport.update({
+  id: '/api/calendar/google/select',
+  path: '/api/calendar/google/select',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoogleCalendarCalendarsRoute = GoogleCalendarCalendarsRouteImport.update({
+  id: '/api/calendar/google/calendars',
+  path: '/api/calendar/google/calendars',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoogleCalendarStatusRoute = GoogleCalendarStatusRouteImport.update({
+  id: '/api/calendar/google/status',
+  path: '/api/calendar/google/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoogleCalendarCallbackRoute = GoogleCalendarCallbackRouteImport.update({
+  id: '/api/calendar/google/callback',
+  path: '/api/calendar/google/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoogleCalendarConnectRoute = GoogleCalendarConnectRouteImport.update({
+  id: '/api/calendar/google/connect',
+  path: '/api/calendar/google/connect',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPaddleWebhookRoute = ApiPaddleWebhookRouteImport.update({
@@ -141,6 +171,11 @@ export interface FileRouteTypes {
     | '/api/vapi/token'
     | '/api/vapi/provision'
     | '/api/vapi/sync-profile'
+    | '/api/calendar/google/select'
+    | '/api/calendar/google/calendars'
+    | '/api/calendar/google/status'
+    | '/api/calendar/google/callback'
+    | '/api/calendar/google/connect'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -265,6 +300,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiVapiSyncProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/calendar/google/select': {
+      id: '/api/calendar/google/select'
+      path: '/api/calendar/google/select'
+      fullPath: '/api/calendar/google/select'
+      preLoaderRoute: typeof GoogleCalendarSelectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/calendar/google/calendars': {
+      id: '/api/calendar/google/calendars'
+      path: '/api/calendar/google/calendars'
+      fullPath: '/api/calendar/google/calendars'
+      preLoaderRoute: typeof GoogleCalendarCalendarsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/calendar/google/status': {
+      id: '/api/calendar/google/status'
+      path: '/api/calendar/google/status'
+      fullPath: '/api/calendar/google/status'
+      preLoaderRoute: typeof GoogleCalendarStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/calendar/google/callback': {
+      id: '/api/calendar/google/callback'
+      path: '/api/calendar/google/callback'
+      fullPath: '/api/calendar/google/callback'
+      preLoaderRoute: typeof GoogleCalendarCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/calendar/google/connect': {
+      id: '/api/calendar/google/connect'
+      path: '/api/calendar/google/connect'
+      fullPath: '/api/calendar/google/connect'
+      preLoaderRoute: typeof GoogleCalendarConnectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/paddle/webhook': {
       id: '/api/paddle/webhook'
       path: '/api/paddle/webhook'
@@ -288,6 +358,11 @@ const rootRouteChildren: RootRouteChildren = {
   ApiVapiTokenRoute: ApiVapiTokenRoute,
   ApiVapiProvisionRoute: ApiVapiProvisionRoute,
   ApiVapiSyncProfileRoute: ApiVapiSyncProfileRoute,
+  GoogleCalendarSelectRoute: GoogleCalendarSelectRoute,
+  GoogleCalendarCalendarsRoute: GoogleCalendarCalendarsRoute,
+  GoogleCalendarStatusRoute: GoogleCalendarStatusRoute,
+  GoogleCalendarCallbackRoute: GoogleCalendarCallbackRoute,
+  GoogleCalendarConnectRoute: GoogleCalendarConnectRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
