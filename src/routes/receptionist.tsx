@@ -17,6 +17,11 @@ type TokenResponse = {
   token?: string;
   assistantId?: string;
   error?: string;
+  subscriptionDiagnostics?: Array<{
+    paddleSubscriptionSuffix: string | null;
+    currentPeriodEnd: string | null;
+    businessLinkMatches: boolean;
+  }>;
 };
 
 type TranscriptLine = {
@@ -89,7 +94,21 @@ function ReceptionistPage() {
 
       const result = (await response.json().catch(() => ({}))) as TokenResponse;
       if (!response.ok) {
-        throw new Error(result.error || "Your receptionist is not ready to launch yet.");
+        const subscriptionDetails = result.subscriptionDiagnostics?.map((item, index) => {
+          const suffix = item.paddleSubscriptionSuffix
+            ? `Paddle ID ending ${item.paddleSubscriptionSuffix}`
+            : "No Paddle subscription ID";
+          const expiry = item.currentPeriodEnd
+            ? `expires ${item.currentPeriodEnd}`
+            : "no period-end date";
+          const link = item.businessLinkMatches
+            ? "linked to this business"
+            : "business link mismatch";
+          return `Record ${index + 1}: ${suffix}, ${expiry}, ${link}.`;
+        }) ?? [];
+        throw new Error(
+          [result.error || "Your receptionist is not ready to launch yet.", ...subscriptionDetails].join("\\n"),
+        );
       }
       if (!result.token || !result.assistantId) {
         throw new Error("The secure voice session response was incomplete.");
