@@ -27,6 +27,16 @@ export const Route = createFileRoute("/api/vapi/token")({
           return json({ error: "Receptionist access is temporarily unavailable." }, 503);
         }
 
+        // Safe diagnostic: this public project reference lets us verify that
+        // the Preview server and the Supabase dashboard point to the same
+        // project without exposing any credentials.
+        let databaseProjectRef: string | null = null;
+        try {
+          databaseProjectRef = new URL(supabaseUrl).hostname.split(".")[0] || null;
+        } catch {
+          databaseProjectRef = null;
+        }
+
         try {
           const supabase = createClient(supabaseUrl, supabaseSecretKey, {
             auth: {
@@ -95,6 +105,7 @@ export const Route = createFileRoute("/api/vapi/token")({
             return json(
               {
                 error: `The connected database returned ${subscriptions.length} eligible active subscriptions for this business; exactly one is required.`,
+                databaseProjectRef,
                 subscriptionDiagnostics: subscriptions.map((subscription) => ({
                   paddleSubscriptionSuffix:
                     typeof subscription.paddle_subscription_id === "string"
