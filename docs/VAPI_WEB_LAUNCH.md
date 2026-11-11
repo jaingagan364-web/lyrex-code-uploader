@@ -67,3 +67,7 @@ The current web token endpoint only allows `https://febily.com` and `https://www
 ## Vercel environment deployment note
 
 Preview variables are only loaded by a new deployment built for the Preview environment from this feature branch. Redeploying a Production deployment from `main` does not update this Preview's runtime variables. Keep `VAPI_PROVISIONING_ENABLED`, `VAPI_TEMPLATE_ASSISTANT_ID`, `VAPI_PRIVATE_KEY`, and `VAPI_ORG_ID` scoped to Preview for this staging test, and keep `VAPI_LAUNCH_ENABLED=false`.
+
+## Preview browser-call origin
+
+The server-side public JWT allows the two canonical Febily production origins. For Vercel Preview deployments only, it additionally includes the exact HTTPS hostnames supplied by Vercel's runtime `VERCEL_BRANCH_URL` and `VERCEL_URL`, and only when they end in `.vercel.app`. It does not trust the incoming request's Origin header as an allowlist source. Production tokens never include Vercel Preview origins.
