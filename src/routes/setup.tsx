@@ -82,9 +82,129 @@ const [faqs, setFaqs] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [calendarStatus, setCalendarStatus] = useState<"loading" | "not_connected" | "connected" | "reconnect_required">("loading");
+  const [calendarEmail, setCalendarEmail] = useState("");
+  const [calendars, setCalendars] = useState<Array<{ id: string; name: string; primary: boolean; timeZone: string | null; selected: boolean }>>([]);
+  const [calendarBusy, setCalendarBusy] = useState(false);
+  const [calendarMessage, setCalendarMessage] = useState("");
+
+  async function loadCalendarConnection() {
+    try {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !sessionData.session?.access_token) {
+        setCalendarStatus("not_connected");
+        return;
+      }
+      const headers = { authorization: `Bearer ${sessionData.session.access_token}` };
+      const statusResponse = await fetch("/api/calendar/google/status", { headers });
+      const status = await statusResponse.json().catch(() => ({})) as {
+        connected?: boolean;
+        accountEmail?: string | null;
+        connectionStatus?: string;
+        error?: string;
+      };
+      if (!statusResponse.ok) throw new Error(status.error || "Could not check Google Calendar status.");
+      setCalendarEmail(status.accountEmail ?? "");
+      if (!status.connected) {
+        setCalendarStatus(status.connectionStatus === "reconnect_required" ? "reconnect_required" : "not_connected");
+        setCalendars([]);
+        return;
+      }
+      setCalendarStatus("connected");
+      const calendarsResponse = await fetch("/api/calendar/google/calendars", { headers });
+      const calendarResult = await calendarsResponse.json().catch(() => ({})) as {
+        calendars?: Array<{ id: string; name: string; primary: boolean; timeZone: string | null; selected: boolean }>;
+        error?: string;
+        reconnectRequired?: boolean;
+      };
+      if (!calendarsResponse.ok) {
+        if (calendarResult.reconnectRequired) {
+          setCalendarStatus("reconnect_required");
+          setCalendarMessage("Reconnect Google Calendar to restore access.");
+          return;
+        }
+        throw new Error(calendarResult.error || "Could not load calendars.");
+      }
+      setCalendars(calendarResult.calendars ?? []);
+      setCalendarMessage("");
+    } catch (error) {
+      setCalendarMessage(error instanceof Error ? error.message : "Could not load Google Calendar.");
+      setCalendarStatus("not_connected");
+    }
+  }
+
+  async function connectGoogleCalendar() {
+    if (!businessId) {
+      setCalendarMessage("Save your business details first, then connect its calendar.");
+      return;
+    }
+    setCalendarBusy(true);
+    setCalendarMessage("");
+    try {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !sessionData.session?.access_token) {
+        window.location.href = "/account";
+        return;
+      }
+      const response = await fetch("/api/calendar/google/connect", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+        body: "{}",
+      });
+      const result = await response.json().catch(() => ({})) as { authorizationUrl?: string; error?: string };
+      if (!response.ok || !result.authorizationUrl) {
+        throw new Error(result.error || "Could not start Google Calendar connection.");
+      }
+      window.location.assign(result.authorizationUrl);
+    } catch (error) {
+      setCalendarMessage(error instanceof Error ? error.message : "Could not connect Google Calendar.");
+      setCalendarBusy(false);
+    }
+  }
+
+  async function selectGoogleCalendar(calendarId: string) {
+    setCalendarBusy(true);
+    setCalendarMessage("");
+    try {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !sessionData.session?.access_token) {
+        window.location.href = "/account";
+        return;
+      }
+      const response = await fetch("/api/calendar/google/select", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+        body: JSON.stringify({ calendarId }),
+      });
+      const result = await response.json().catch(() => ({})) as { error?: string };
+      if (!response.ok) throw new Error(result.error || "Could not select this calendar.");
+      setCalendars((current) => current.map((item) => ({ ...item, selected: item.id === calendarId })));
+      setCalendarMessage("Calendar selection saved for this business.");
+    } catch (error) {
+      setCalendarMessage(error instanceof Error ? error.message : "Could not select this calendar.");
+    } finally {
+      setCalendarBusy(false);
+    }
+  }
 
   useEffect(() => {
     let cancelled = false;
+
+    const calendarParam = new URLSearchParams(window.location.search).get("calendar");
+    if (calendarParam === "connected") {
+      setCalendarMessage("Google Calendar connected. Choose which calendar this business should use.");
+    } else if (calendarParam === "error") {
+      setCalendarMessage("Google Calendar could not be connected. Check the OAuth configuration and try again.");
+    } else if (calendarParam === "cancelled") {
+      setCalendarMessage("Google Calendar connection was cancelled.");
+    }
+    void loadCalendarConnection();
 
     async function loadBusiness() {
       try {
@@ -375,7 +495,72 @@ faqs: parseFaqsField(faqs),
     className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 outline-none focus:border-emerald-400"
     placeholder={"Do you accept walk-ins? | Yes, subject to availability."}
   />
-</label><button
+</label>
+
+            <section className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-base font-semibold">Google Calendar</h2>
+                  <p className="mt-1 text-sm text-white/60">
+                    Connect the calendar owned by this business. Febily keeps each business connection separate.
+                  </p>
+                </div>
+                <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-white/70">
+                  {calendarStatus === "loading"
+                    ? "Checking"
+                    : calendarStatus === "connected"
+                      ? "Connected"
+                      : calendarStatus === "reconnect_required"
+                        ? "Reconnect required"
+                        : "Not connected"}
+                </span>
+              </div>
+              {calendarEmail && (
+                <p className="mt-3 text-sm text-emerald-300">{calendarEmail}</p>
+              )}
+              {calendarStatus === "connected" && calendars.length > 0 && (
+                <label className="mt-4 block text-sm">
+                  Calendar used for this business
+                  <select
+                    value={calendars.find((item) => item.selected)?.id ?? ""}
+                    onChange={(event) => void selectGoogleCalendar(event.target.value)}
+                    disabled={calendarBusy}
+                    className="mt-2 w-full rounded-xl border border-white/15 bg-[#101014] px-4 py-3 outline-none focus:border-emerald-400 disabled:opacity-50"
+                  >
+                    {calendars.map((calendar) => (
+                      <option key={calendar.id} value={calendar.id}>
+                        {calendar.name}{calendar.primary ? " (Primary)" : ""}
+                        {calendar.timeZone ? ` — ${calendar.timeZone}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={connectGoogleCalendar}
+                  disabled={calendarBusy || calendarStatus === "loading"}
+                  className="rounded-xl border border-emerald-300/40 px-4 py-2.5 text-sm font-semibold text-emerald-200 hover:bg-emerald-300/10 disabled:opacity-50"
+                >
+                  {calendarBusy
+                    ? "Please wait..."
+                    : calendarStatus === "connected"
+                      ? "Reconnect Google Calendar"
+                      : "Connect Google Calendar"}
+                </button>
+              </div>
+              {calendarMessage && (
+                <p role="status" className="mt-3 text-sm leading-6 text-emerald-300">
+                  {calendarMessage}
+                </p>
+              )}
+              <p className="mt-3 text-xs leading-5 text-white/45">
+                Calendar connection allows Febily to read availability and create events only in the calendar you select. Appointment booking remains disabled until calendar access and booking safeguards are tested.
+              </p>
+            </section>
+
+            <button
               type="submit"
               disabled={saving}
               className="w-full rounded-xl bg-white px-4 py-3 font-semibold text-black disabled:opacity-50"
