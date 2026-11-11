@@ -87,3 +87,64 @@ The shared prompt module `src/lib/vapi-assistant-prompt.ts` is used by both init
 - keeps live appointment booking disabled until a tenant-specific calendar integration is actually connected.
 
 The authenticated `POST /api/vapi/sync-profile` endpoint updates the existing business assistant in place. It verifies the active subscription, assistant ID, Vapi organization, and `febilyBusinessId` metadata. It refuses to update if the assistant has any tools, tool IDs, server URL/credentials, or attached credential IDs, so it cannot overwrite a live calendar integration. It fetches the complete existing nested model object before PATCHing because Vapi replaces nested model configuration on update. See the [Vapi Update Assistant API](https://docs.vapi.ai/api-reference/assistants/update) and [Vapi nested model update guidance](https://docs.vapi.ai/knowledge-base/custom-knowledge-base).
+
+
+## Per-business Google Calendar connection
+
+This branch adds the first calendar-connection layer. It does **not** enable appointment booking yet.
+
+Apply migration:
+`supabase/migrations/20261112000000_business_google_calendar_connections.sql`
+
+It creates:
+- `business_calendar_connections`: one row per business, with AES-256-GCM encrypted Google refresh token, connected account email, selected calendar ID, granted scopes, and reconnect state.
+- `business_calendar_oauth_states`: hashed, single-use OAuth state challenges bound to the authenticated business owner and expiring after 10 minutes.
+- RLS enabled with table access revoked from browser roles; only server-side service-role routes can read or write refresh-token data.
+
+The owner-only `/setup` page now supports Google Calendar connection and selecting a writable calendar. Server endpoints:
+- `POST /api/calendar/google/connect`
+- `GET /api/calendar/google/callback`
+- `GET /api/calendar/google/status`
+- `GET /api/calendar/google/calendars`
+- `POST /api/calendar/google/select`
+
+The OAuth callback rechecks business ownership and the active subscription after consent, requires the Calendar event read/write, free/busy, and calendar-list read-only scopes, encrypts the refresh token before storage, and does not return any token to the browser. A reconnect to the same Google account preserves the selected calendar. Switching Google accounts defaults to `primary`.
+
+### Google Cloud setup (Preview only)
+
+1. In Google Cloud Console, select/create a dedicated Febily staging project and enable **Google Calendar API**.
+2. Configure the OAuth consent screen. While the app is in Testing, add the exact Google account used for the first salon's test calendar as a test user.
+3. Create an OAuth client of type **Web application**.
+4. Add this exact Authorized redirect URI:
+   `https://febily-code-uploader-git-feat-vapi-receptionist-w-f2c619-febily.vercel.app/api/calendar/google/callback`
+5. Use the client credentials only in Vercel Preview variables. Do not put a client secret or token in browser code.
+
+Preview-only Vercel variables:
+- `GOOGLE_CALENDAR_CONNECT_ENABLED=true` (Config)
+- `GOOGLE_OAUTH_CLIENT_ID` (Config)
+- `GOOGLE_OAUTH_CLIENT_SECRET` (Secret)
+- `GOOGLE_OAUTH_REDIRECT_URI=https://febily-code-uploader-git-feat-vapi-receptionist-w-f2c619-febily.vercel.app/api/calendar/google/callback` (Config)
+- `APP_BASE_URL=https://febily-code-uploader-git-feat-vapi-receptionist-w-f2c619-febily.vercel.app` (Config)
+- `GOOGLE_TOKEN_ENCRYPTION_KEY` (Secret): Base64 encoding of exactly 32 cryptographically random bytes.
+
+Generate an encryption key locally in PowerShell:
+`[Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))`
+Create it once, store it as a Preview Secret, and keep a separate key for Production. Do not paste the key in chat, GitHub, SQL, or a `VITE_*` variable.
+
+The OAuth scopes requested are:
+- `openid` and `email` for verified Google account identity;
+- `calendar.events` to read and edit events;
+- `calendar.events.freebusy` to check availability; and
+- `calendar.calendarlist.readonly` to list calendars the owner can access.
+
+Google recommends offline access and a state parameter for server-side authorization-code flows. Febily uses offline access so the server can refresh access tokens without the owner being present, and a hashed, single-use state bound to the business owner to mitigate CSRF. See [Google OAuth web-server flow](https://developers.google.com/identity/protocols/oauth2/web-server) and [Calendar API scopes](https://developers.google.com/workspace/calendar/api/auth).
+
+### Not yet enabled
+
+- No Vapi calendar tools are attached by this connection step.
+- No free/busy or event creation endpoint is activated for callers.
+- No appointment is confirmed or submitted.
+- The existing demo n8n workflow is not reused for customer businesses.
+- A business must explicitly connect and select its own calendar before the next booking integration phase.
+
+The next development phase is to add server-side availability and booking endpoints, then attach authenticated Vapi function tools that resolve the business from the assistant ID and use only that business's stored calendar connection. Add conflict protection and end-to-end tenant-isolation tests before enabling booking.
