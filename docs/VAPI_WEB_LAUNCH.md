@@ -139,6 +139,8 @@ The OAuth scopes requested are:
 
 Google recommends offline access and a state parameter for server-side authorization-code flows. Febily uses offline access so the server can refresh access tokens without the owner being present, and a hashed, single-use state bound to the business owner to mitigate CSRF. See [Google OAuth web-server flow](https://developers.google.com/identity/protocols/oauth2/web-server) and [Calendar API scopes](https://developers.google.com/workspace/calendar/api/auth).
 
+Google classifies access to calendar event data as a sensitive-data use case for OAuth review. Google recommends a separate project for testing/staging; testing-stage apps can use allow-listed test accounts without completing public production verification. Before opening this connection to arbitrary salon customers, check the consent-screen scope classifications and complete any required Google brand/sensitive-scope verification. See [Google sensitive-scope verification](https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification).
+
 ### Not yet enabled
 
 - No Vapi calendar tools are attached by this connection step.
