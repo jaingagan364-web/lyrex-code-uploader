@@ -93,7 +93,7 @@ export const Route = createFileRoute("/api/vapi/token")({
 
           if (subscriptions.length !== 1) {
             return json(
-              { error: "Could not verify exactly one active subscription for this business." },
+              { error: `The connected database returned ${subscriptions.length} eligible active subscriptions for this business; exactly one is required.` },
               403,
             );
           }
