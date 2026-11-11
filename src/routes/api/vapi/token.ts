@@ -51,13 +51,6 @@ export const Route = createFileRoute("/api/vapi/token")({
             return json({ error: "Your sign-in session is invalid or expired." }, 401);
           }
 
-          if (process.env["VAPI_LAUNCH_ENABLED"] !== "true") {
-            return json(
-              { error: "Receptionist activation is still being configured." },
-              503,
-            );
-          }
-
           const userId = authData.user.id;
           const { data: businesses, error: businessError } = await supabase
             .from("businesses")
@@ -130,6 +123,13 @@ export const Route = createFileRoute("/api/vapi/token")({
                 error: "Your receptionist is not provisioned yet. Your subscription and business setup are saved; activation is pending.",
                 provisioningStatus: business.vapi_provisioning_status ?? "pending",
               },
+              503,
+            );
+          }
+
+          if (process.env["VAPI_LAUNCH_ENABLED"] !== "true") {
+            return json(
+              { error: "Your receptionist is provisioned, but voice launch is not enabled yet." },
               503,
             );
           }
