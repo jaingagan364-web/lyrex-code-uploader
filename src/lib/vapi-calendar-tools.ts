@@ -202,7 +202,7 @@ function parseHoursRange(value: unknown): { open: number; close: number } | null
 function openingHoursForDate(openingHours: unknown, date: string, timeZone: string) {
   if (!isRecord(openingHours)) return null;
   const dayName = new Intl.DateTimeFormat("en-US", {
-    timeZone,
+    timeZone: "UTC",
     weekday: "long",
   }).format(new Date(date + "T12:00:00Z"));
   const key = Object.keys(openingHours).find(
@@ -363,6 +363,7 @@ function formatSlots(slots: Array<{ time: string; label: string }>) {
 }
 
 export function calendarToolConfiguration() {
+  if (process.env["VAPI_CALENDAR_TOOLS_ENABLED"] !== "true") return null;
   const credentialId = safeString(process.env["VAPI_CALENDAR_TOOL_CREDENTIAL_ID"], 200);
   const appBaseUrl = safeString(
     process.env["APP_BASE_URL"],
