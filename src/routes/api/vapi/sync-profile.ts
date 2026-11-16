@@ -208,6 +208,13 @@ export const Route = createFileRoute("/api/vapi/sync-profile")({
             tools: calendarTools ?? [],
           };
 
+          const currentServerMessages = Array.isArray(assistant.serverMessages)
+            ? assistant.serverMessages.filter((item): item is string => typeof item === "string")
+            : [];
+          const currentClientMessages = Array.isArray(assistant.clientMessages)
+            ? assistant.clientMessages.filter((item): item is string => typeof item === "string")
+            : [];
+
           const updated = await vapiRequest<JsonRecord>(
             `/assistant/${encodeURIComponent(business.vapi_assistant_id)}`,
             privateKey,
@@ -216,6 +223,11 @@ export const Route = createFileRoute("/api/vapi/sync-profile")({
               body: JSON.stringify({
                 model: updatedModel,
                 firstMessage: buildBusinessFirstMessage(business.business_name),
+                // Vapi requires these message subscriptions for server-based
+                // Function tools to reach tool.server.url and for the Web SDK
+                // to receive the associated tool-calls client message.
+                serverMessages: [...new Set([...currentServerMessages, "tool-calls"])],
+                clientMessages: [...new Set([...currentClientMessages, "tool-calls"])],
               }),
             },
           );
