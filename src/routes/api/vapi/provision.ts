@@ -125,9 +125,10 @@ function createAssistantPayload(
       "speech-update",
       "status-update",
       "transcript",
+      "tool-calls",
       "user-interrupted",
     ],
-    serverMessages: [],
+    serverMessages: ["tool-calls"],
     metadata: {
       febilyBusinessId: business.id,
       febilyProvisioningVersion: 1,
