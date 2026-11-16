@@ -4,6 +4,8 @@ import {
   buildBusinessFirstMessage,
   buildBusinessReceptionistPrompt,
 } from "@/lib/vapi-assistant-prompt";
+import { getBusinessCalendarAccess } from "@/lib/google-calendar-server";
+import { buildCalendarFunctionTools } from "@/lib/vapi-calendar-tools";
 
 const RESPONSE_HEADERS = { "cache-control": "no-store" };
 const VAPI_API_BASE = "https://api.vapi.ai";
@@ -166,15 +168,33 @@ export const Route = createFileRoute("/api/vapi/sync-profile")({
           const modelToolIds = Array.isArray(model.toolIds) ? model.toolIds : [];
           const server = assistant.server;
           const credentialIds = Array.isArray(assistant.credentialIds) ? assistant.credentialIds : [];
+          const febilyCalendarToolNames = new Set([
+            "calendar_availability",
+            "calendar_slots",
+            "calendar_set_appointment",
+          ]);
+          const unexpectedTools = modelTools.filter((tool) => {
+            if (!isRecord(tool) || !isRecord(tool.function)) return true;
+            return !febilyCalendarToolNames.has(String(tool.function.name ?? ""));
+          });
           if (
-            modelTools.length > 0 ||
+            unexpectedTools.length > 0 ||
             modelToolIds.length > 0 ||
             (server !== null && server !== undefined) ||
             credentialIds.length > 0
           ) {
             return json({
-              error: "This assistant has tools or server credentials attached. Automatic profile sync was stopped to protect calendar and business isolation.",
+              error: "This assistant has an unrecognized tool or server credential attached. Automatic synchronization was stopped to protect calendar and business isolation.",
             }, 409);
+          }
+
+          let calendarTools = buildCalendarFunctionTools();
+          if (calendarTools) {
+            try {
+              await getBusinessCalendarAccess(supabase, business.id);
+            } catch {
+              calendarTools = null;
+            }
           }
 
           const updatedModel: JsonRecord = {
@@ -182,9 +202,10 @@ export const Route = createFileRoute("/api/vapi/sync-profile")({
             messages: [
               {
                 role: "system",
-                content: buildBusinessReceptionistPrompt(business),
+                content: buildBusinessReceptionistPrompt(business, Boolean(calendarTools?.length)),
               },
             ],
+            tools: calendarTools ?? [],
           };
 
           const updated = await vapiRequest<JsonRecord>(
@@ -205,7 +226,9 @@ export const Route = createFileRoute("/api/vapi/sync-profile")({
 
           return json({
             success: true,
-            message: "Your existing receptionist has been updated with the latest saved business details and stricter contact, timezone, and booking safeguards.",
+            message: calendarTools?.length
+              ? "Your receptionist profile and live business calendar tools are synchronized."
+              : "Your receptionist profile is synchronized. Booking remains disabled until the Google Calendar connection and Vapi tool credential are both ready.",
           });
         } catch (error) {
           console.error(
