@@ -312,6 +312,7 @@ export const Route = createFileRoute("/api/vapi/provision")({
             // completion was interrupted. Metadata is the idempotency marker.
             const existing = await findExistingProvisionedAssistant(business.id, privateKey, orgId);
             let assistant = existing;
+            let calendarToolsEnabled = false;
 
             if (!assistant) {
               const template = await vapiRequest<VapiAssistant>(
@@ -334,6 +335,7 @@ export const Route = createFileRoute("/api/vapi/provision")({
                 }
               }
 
+              calendarToolsEnabled = Boolean(calendarTools?.length);
               const payload = createAssistantPayload(template, business, calendarTools);
               assistant = await vapiRequest<VapiAssistant>("/assistant", privateKey, {
                 method: "POST",
@@ -361,7 +363,7 @@ export const Route = createFileRoute("/api/vapi/provision")({
               success: true,
               provisioningStatus: "provisioned",
               assistantName: assistant.name ?? assistantName(business.business_name),
-              message: calendarTools?.length
+              message: calendarToolsEnabled
                 ? "Your dedicated receptionist was created with its business calendar tools."
                 : "Your dedicated receptionist was created. Live calendar booking remains disabled until the business calendar and Vapi tool credential are configured.",
             });
