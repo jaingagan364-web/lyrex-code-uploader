@@ -20,6 +20,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiVapiTokenRouteImport } from './routes/api/vapi/token'
 import { Route as ApiVapiProvisionRouteImport } from './routes/api/vapi/provision'
 import { Route as ApiVapiSyncProfileRouteImport } from './routes/api/vapi/sync-profile'
+import { Route as ApiVapiCalendarToolsRouteImport } from './routes/api/vapi/calendar-tools'
 import { Route as GoogleCalendarSelectRouteImport } from './routes/api/calendar/google/select'
 import { Route as GoogleCalendarCalendarsRouteImport } from './routes/api/calendar/google/calendars'
 import { Route as GoogleCalendarStatusRouteImport } from './routes/api/calendar/google/status'
@@ -82,6 +83,11 @@ const ApiVapiSyncProfileRoute = ApiVapiSyncProfileRouteImport.update({
   path: '/api/vapi/sync-profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiVapiCalendarToolsRoute = ApiVapiCalendarToolsRouteImport.update({
+  id: '/api/vapi/calendar-tools',
+  path: '/api/vapi/calendar-tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GoogleCalendarSelectRoute = GoogleCalendarSelectRouteImport.update({
   id: '/api/calendar/google/select',
   path: '/api/calendar/google/select',
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/api/vapi/token': typeof ApiVapiTokenRoute
   '/api/vapi/provision': typeof ApiVapiProvisionRoute
   '/api/vapi/sync-profile': typeof ApiVapiSyncProfileRoute
+  '/api/vapi/calendar-tools': typeof ApiVapiCalendarToolsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByTo {
   '/api/vapi/token': typeof ApiVapiTokenRoute
   '/api/vapi/provision': typeof ApiVapiProvisionRoute
   '/api/vapi/sync-profile': typeof ApiVapiSyncProfileRoute
+  '/api/vapi/calendar-tools': typeof ApiVapiCalendarToolsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -155,6 +163,7 @@ export interface FileRoutesById {
   '/api/vapi/token': typeof ApiVapiTokenRoute
   '/api/vapi/provision': typeof ApiVapiProvisionRoute
   '/api/vapi/sync-profile': typeof ApiVapiSyncProfileRoute
+  '/api/vapi/calendar-tools': typeof ApiVapiCalendarToolsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -171,6 +180,7 @@ export interface FileRouteTypes {
     | '/api/vapi/token'
     | '/api/vapi/provision'
     | '/api/vapi/sync-profile'
+    | '/api/vapi/calendar-tools'
     | '/api/calendar/google/select'
     | '/api/calendar/google/calendars'
     | '/api/calendar/google/status'
@@ -190,6 +200,7 @@ export interface FileRouteTypes {
     | '/api/vapi/token'
     | '/api/vapi/provision'
     | '/api/vapi/sync-profile'
+    | '/api/vapi/calendar-tools'
   id:
     | '__root__'
     | '/'
@@ -204,6 +215,7 @@ export interface FileRouteTypes {
     | '/api/vapi/token'
     | '/api/vapi/provision'
     | '/api/vapi/sync-profile'
+    | '/api/vapi/calendar-tools'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -219,6 +231,7 @@ export interface RootRouteChildren {
   ApiVapiTokenRoute: typeof ApiVapiTokenRoute
   ApiVapiProvisionRoute: typeof ApiVapiProvisionRoute
   ApiVapiSyncProfileRoute: typeof ApiVapiSyncProfileRoute
+  ApiVapiCalendarToolsRoute: typeof ApiVapiCalendarToolsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -300,6 +313,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiVapiSyncProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/vapi/calendar-tools': {
+      id: '/api/vapi/calendar-tools'
+      path: '/api/vapi/calendar-tools'
+      fullPath: '/api/vapi/calendar-tools'
+      preLoaderRoute: typeof ApiVapiCalendarToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/calendar/google/select': {
       id: '/api/calendar/google/select'
       path: '/api/calendar/google/select'
@@ -358,6 +378,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiVapiTokenRoute: ApiVapiTokenRoute,
   ApiVapiProvisionRoute: ApiVapiProvisionRoute,
   ApiVapiSyncProfileRoute: ApiVapiSyncProfileRoute,
+  ApiVapiCalendarToolsRoute: ApiVapiCalendarToolsRoute,
   GoogleCalendarSelectRoute: GoogleCalendarSelectRoute,
   GoogleCalendarCalendarsRoute: GoogleCalendarCalendarsRoute,
   GoogleCalendarStatusRoute: GoogleCalendarStatusRoute,
