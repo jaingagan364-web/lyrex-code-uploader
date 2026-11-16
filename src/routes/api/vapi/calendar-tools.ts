@@ -37,46 +37,64 @@ function parseArguments(value: unknown) {
   return value;
 }
 
+function isRecord(value: unknown): value is JsonRecord {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function toolErrorResponse(toolCalls: unknown, message: string) {
+  const calls = Array.isArray(toolCalls) ? toolCalls.slice(0, 5) : [];
+  return json({
+    results: calls.map((call) => ({
+      toolCallId: isRecord(call) && typeof call.id === "string" ? call.id : "unknown",
+      error: message,
+    })),
+  });
+}
+
 export const Route = createFileRoute("/api/vapi/calendar-tools")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        if (process.env["VAPI_CALENDAR_TOOLS_ENABLED"] !== "true") {
-          return json({ error: "Calendar tools are not enabled for this environment." }, 503);
-        }
-
-        if (!authorizeCalendarToolRequest(request)) {
-          return json({ error: "Unauthorized calendar tool request." }, 401);
-        }
-
-        const orgId = process.env["VAPI_ORG_ID"];
-        if (!orgId) return json({ error: "Calendar tool server configuration is incomplete." }, 503);
-
         let payload: unknown;
         try {
           payload = await request.json();
         } catch {
-          return json({ error: "Invalid Vapi tool request." }, 400);
+          // Function-tool webhooks must receive HTTP 200 with a matching error
+          // result; a non-2xx response is treated as a failed webhook delivery.
+          return json({ results: [] });
         }
 
-        if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-          return json({ error: "Invalid Vapi tool request." }, 400);
-        }
+        if (!isRecord(payload)) return json({ results: [] });
 
-        const root = payload as JsonRecord;
+        const root = payload;
         const message = root["message"];
-        if (!message || typeof message !== "object" || Array.isArray(message)) {
-          return json({ error: "Missing Vapi tool message." }, 400);
+        const messageRecord = isRecord(message) ? message : null;
+        const calls = messageRecord?.["toolCallList"];
+
+        if (!authorizeCalendarToolRequest(request)) {
+          return toolErrorResponse(calls, "Unauthorized calendar tool request.");
         }
 
-        const messageRecord = message as JsonRecord;
-        if (messageRecord["type"] !== "tool-calls" || !Array.isArray(messageRecord["toolCallList"])) {
-          return json({ error: "Unsupported Vapi webhook message." }, 400);
+        if (process.env["VAPI_CALENDAR_TOOLS_ENABLED"] !== "true") {
+          return toolErrorResponse(calls, "Calendar tools are not enabled for this environment.");
+        }
+
+        const orgId = process.env["VAPI_ORG_ID"];
+        if (!orgId) {
+          return toolErrorResponse(calls, "Calendar tool server configuration is incomplete.");
+        }
+
+        if (!messageRecord) {
+          return json({ results: [] });
+        }
+
+        if (messageRecord["type"] !== "tool-calls" || !Array.isArray(calls)) {
+          return toolErrorResponse(calls, "Unsupported Vapi tool message.");
         }
 
         const call = messageRecord["call"];
-        if (!call || typeof call !== "object" || Array.isArray(call)) {
-          return json({ error: "Missing Vapi call context." }, 400);
+        if (!isRecord(call)) {
+          return toolErrorResponse(calls, "Missing Vapi call context.");
         }
 
         const callRecord = call as JsonRecord;
@@ -91,7 +109,7 @@ export const Route = createFileRoute("/api/vapi/calendar-tools")({
           : null;
 
         if (!assistantId || !callId || callOrgId !== orgId) {
-          return json({ error: "Vapi call identity could not be verified." }, 403);
+          return toolErrorResponse(calls, "Vapi call identity could not be verified.");
         }
 
         try {
@@ -101,13 +119,13 @@ export const Route = createFileRoute("/api/vapi/calendar-tools")({
           const supabase = createServerSupabase();
           const business = await getCalendarBusiness(supabase, businessId, assistantId);
 
-          const calls = messageRecord["toolCallList"] as ToolCall[];
-          if (calls.length < 1 || calls.length > 5) {
-            return json({ error: "Invalid number of tool calls." }, 400);
+          const toolCalls = calls as ToolCall[];
+          if (toolCalls.length < 1 || toolCalls.length > 5) {
+            return toolErrorResponse(calls, "Invalid number of tool calls.");
           }
 
           const results: Array<{ toolCallId: string; result?: string; error?: string }> = [];
-          for (const toolCall of calls) {
+          for (const toolCall of toolCalls) {
             const toolCallId = typeof toolCall.id === "string" ? toolCall.id : "";
             // Current Vapi ServerMessageToolCalls uses function.name and
             // function.arguments. Accept the older flattened variant too so
@@ -158,7 +176,7 @@ export const Route = createFileRoute("/api/vapi/calendar-tools")({
             error instanceof Error ? error.message : "Unknown error",
           );
           return json({
-            results: (messageRecord["toolCallList"] as ToolCall[]).map((toolCall) => ({
+            results: (calls as ToolCall[]).map((toolCall) => ({
               toolCallId: typeof toolCall.id === "string" ? toolCall.id : "unknown",
               error: "Febily could not safely complete this calendar request. Do not claim an appointment was booked.",
             })),
