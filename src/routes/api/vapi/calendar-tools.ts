@@ -11,6 +11,10 @@ type ToolCall = {
   id?: unknown;
   name?: unknown;
   arguments?: unknown;
+  function?: {
+    name?: unknown;
+    arguments?: unknown;
+  };
 };
 
 type JsonRecord = Record<string, unknown>;
@@ -105,11 +109,20 @@ export const Route = createFileRoute("/api/vapi/calendar-tools")({
           const results: Array<{ toolCallId: string; result?: string; error?: string }> = [];
           for (const toolCall of calls) {
             const toolCallId = typeof toolCall.id === "string" ? toolCall.id : "";
-            const name = typeof toolCall.name === "string" ? toolCall.name : "";
+            // Current Vapi ServerMessageToolCalls uses function.name and
+            // function.arguments. Accept the older flattened variant too so
+            // deployments during the schema transition remain compatible.
+            const toolFunction = toolCall.function;
+            const name = typeof toolFunction?.name === "string"
+              ? toolFunction.name
+              : typeof toolCall.name === "string"
+                ? toolCall.name
+                : "";
+            const rawArguments = toolFunction?.arguments ?? toolCall.arguments;
             if (!toolCallId || !name) {
               results.push({
                 toolCallId: toolCallId || "unknown",
-                error: "The tool call identifier was missing.",
+                error: "The tool call identifier or function name was missing.",
               });
               continue;
             }
@@ -120,7 +133,7 @@ export const Route = createFileRoute("/api/vapi/calendar-tools")({
               {
                 id: toolCallId,
                 name,
-                arguments: parseArguments(toolCall.arguments),
+                arguments: parseArguments(rawArguments),
               },
               callId,
             );
