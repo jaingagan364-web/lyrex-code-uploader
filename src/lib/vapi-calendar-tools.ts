@@ -29,6 +29,7 @@ type CalendarEvent = {
 
 type CalendarEventsResponse = {
   items?: CalendarEvent[];
+  nextPageToken?: string;
 };
 
 type CalendarFunctionCall = {
@@ -292,19 +293,37 @@ async function listEvents(
   timeMax: Date,
   extraParams: Record<string, string> = {},
 ) {
-  const params = new URLSearchParams({
-    timeMin: timeMin.toISOString(),
-    timeMax: timeMax.toISOString(),
-    singleEvents: "true",
-    orderBy: "startTime",
-    maxResults: "250",
-    ...extraParams,
-  });
-  const response = await googleCalendarRequest<CalendarEventsResponse>(
-    GOOGLE_EVENTS_BASE + encodeURIComponent(calendarId) + "/events?" + params.toString(),
-    accessToken,
-  );
-  return (response.items ?? []).filter((event) => event.status !== "cancelled");
+  const events: CalendarEvent[] = [];
+  let pageToken: string | undefined;
+  let pageCount = 0;
+
+  do {
+    pageCount += 1;
+    if (pageCount > 20) {
+      // Never treat a partially listed day as free. A heavily booked calendar
+      // must fail closed rather than silently omit later pages.
+      throw new Error("Google Calendar returned too many pages for this date.");
+    }
+
+    const params = new URLSearchParams({
+      timeMin: timeMin.toISOString(),
+      timeMax: timeMax.toISOString(),
+      singleEvents: "true",
+      orderBy: "startTime",
+      maxResults: "250",
+      ...extraParams,
+    });
+    if (pageToken) params.set("pageToken", pageToken);
+
+    const response = await googleCalendarRequest<CalendarEventsResponse>(
+      GOOGLE_EVENTS_BASE + encodeURIComponent(calendarId) + "/events?" + params.toString(),
+      accessToken,
+    );
+    events.push(...(response.items ?? []));
+    pageToken = response.nextPageToken;
+  } while (pageToken);
+
+  return events.filter((event) => event.status !== "cancelled");
 }
 
 function eventRange(event: CalendarEvent, timeZone: string) {
@@ -374,7 +393,11 @@ export function calendarToolConfiguration() {
 
   let baseUrl = appBaseUrl;
   if (process.env["VERCEL_ENV"] === "preview") {
-    const runtimeHost = process.env["VERCEL_URL"];
+    // Prefer the stable branch alias so a later deployment does not leave
+    // Vapi tools pinned to a one-off deployment hostname.
+    const runtimeHost =
+      process.env["VERCEL_BRANCH_URL"] ??
+      process.env["VERCEL_URL"];
     if (runtimeHost && runtimeHost.endsWith(".vercel.app")) {
       baseUrl = "https://" + runtimeHost;
     }
