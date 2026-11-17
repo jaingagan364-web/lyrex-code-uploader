@@ -409,7 +409,22 @@ export function calendarToolConfiguration() {
     if (parsed.protocol !== "https:" || !parsed.hostname.endsWith(".vercel.app") && parsed.hostname !== "febily.com" && parsed.hostname !== "www.febily.com") {
       return null;
     }
-    return { credentialId, webhookUrl: parsed.origin + "/api/vapi/calendar-tools", token };
+
+    const webhookUrl = new URL("/api/vapi/calendar-tools", parsed.origin);
+    if (process.env["VERCEL_ENV"] === "preview") {
+      // Vapi calls this endpoint server-to-server, so it cannot carry the
+      // browser's Vercel-auth cookie. Use Vercel's dedicated automation
+      // bypass secret only on Preview deployments. The route still checks
+      // the separate VAPI_CALENDAR_TOOL_TOKEN bearer credential.
+      const bypassSecret = safeString(
+        process.env["VERCEL_AUTOMATION_BYPASS_SECRET"],
+        500,
+      );
+      if (!bypassSecret) return null;
+      webhookUrl.searchParams.set("x-vercel-protection-bypass", bypassSecret);
+    }
+
+    return { credentialId, webhookUrl: webhookUrl.toString(), token };
   } catch {
     return null;
   }
