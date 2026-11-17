@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { createFileRoute } from "@tanstack/react-router";
 import { buildBusinessFirstMessage, buildBusinessReceptionistPrompt } from "@/lib/vapi-assistant-prompt";
+import { getBusinessCalendarAccess } from "@/lib/google-calendar-server";
+import { buildCalendarFunctionTools } from "@/lib/vapi-calendar-tools";
 
 const RESPONSE_HEADERS = { "cache-control": "no-store" };
 const VAPI_API_BASE = "https://api.vapi.ai";
@@ -69,6 +71,7 @@ function stripProviderSecrets(value: unknown): unknown {
 function createAssistantPayload(
   template: VapiAssistant,
   business: BusinessForProvisioning,
+  calendarTools: JsonRecord[] | null,
 ) {
   const templateModel = isRecord(template.model) ? template.model : {};
   if (
@@ -83,8 +86,13 @@ function createAssistantPayload(
   const model: JsonRecord = {
     provider: templateModel.provider,
     model: templateModel.model,
-    messages: [{ role: "system", content: buildBusinessReceptionistPrompt(business) }],
+    messages: [{
+      role: "system",
+      content: buildBusinessReceptionistPrompt(business, Boolean(calendarTools?.length)),
+    }],
   };
+
+  if (calendarTools?.length) model["tools"] = calendarTools;
 
   for (const key of [
     "temperature",
@@ -117,9 +125,10 @@ function createAssistantPayload(
       "speech-update",
       "status-update",
       "transcript",
+      "tool-calls",
       "user-interrupted",
     ],
-    serverMessages: [],
+    serverMessages: ["tool-calls"],
     metadata: {
       febilyBusinessId: business.id,
       febilyProvisioningVersion: 1,
@@ -304,6 +313,7 @@ export const Route = createFileRoute("/api/vapi/provision")({
             // completion was interrupted. Metadata is the idempotency marker.
             const existing = await findExistingProvisionedAssistant(business.id, privateKey, orgId);
             let assistant = existing;
+            let calendarToolsEnabled = false;
 
             if (!assistant) {
               const template = await vapiRequest<VapiAssistant>(
@@ -314,7 +324,20 @@ export const Route = createFileRoute("/api/vapi/provision")({
                 throw new Error("The Vapi template belongs to a different organization.");
               }
 
-              const payload = createAssistantPayload(template, business);
+              let calendarTools = buildCalendarFunctionTools();
+              if (calendarTools) {
+                try {
+                  // Confirm the encrypted refresh token can actually be
+                  // decrypted and refreshed before telling the assistant that
+                  // live booking is available.
+                  await getBusinessCalendarAccess(supabase, business.id);
+                } catch {
+                  calendarTools = null;
+                }
+              }
+
+              calendarToolsEnabled = Boolean(calendarTools?.length);
+              const payload = createAssistantPayload(template, business, calendarTools);
               assistant = await vapiRequest<VapiAssistant>("/assistant", privateKey, {
                 method: "POST",
                 body: JSON.stringify(payload),
@@ -341,7 +364,9 @@ export const Route = createFileRoute("/api/vapi/provision")({
               success: true,
               provisioningStatus: "provisioned",
               assistantName: assistant.name ?? assistantName(business.business_name),
-              message: "Your dedicated receptionist was created. Live calendar booking is not connected yet.",
+              message: calendarToolsEnabled
+                ? "Your dedicated receptionist was created with its business calendar tools."
+                : "Your dedicated receptionist was created. Live calendar booking remains disabled until the business calendar and Vapi tool credential are configured.",
             });
           } catch (error) {
             const safeError = error instanceof Error ? error.message : "Unknown provisioning error";

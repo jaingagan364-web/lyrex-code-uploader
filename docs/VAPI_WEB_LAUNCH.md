@@ -150,3 +150,69 @@ Google classifies access to calendar event data as a sensitive-data use case for
 - A business must explicitly connect and select its own calendar before the next booking integration phase.
 
 The next development phase is to add server-side availability and booking endpoints, then attach authenticated Vapi function tools that resolve the business from the assistant ID and use only that business's stored calendar connection. Add conflict protection and end-to-end tenant-isolation tests before enabling booking.
+
+
+## Tenant-aware Google Calendar function tools (staging)
+
+This development branch adds three Vapi Function tools backed by one authenticated Vercel endpoint:
+
+- `calendar_slots`: returns real open start times for a configured service and business-local date.
+- `calendar_availability`: checks one proposed service/time against opening hours and the selected Google Calendar.
+- `calendar_set_appointment`: rechecks availability, reserves an overlap lock in Supabase, creates the Google Calendar event, and records the confirmed event.
+
+Each tool request is authenticated using a Vapi Custom Credential. The webhook identifies the active assistant from Vapi's server-generated call context, fetches that assistant from the configured Vapi organization, checks its `febilyBusinessId` metadata against the business row, and then reads only that business's encrypted Google Calendar connection. It never accepts a business ID or calendar ID from the caller.
+
+### Required database migration
+
+Apply this migration to the Preview/staging Supabase project only before enabling booking:
+
+`supabase/migrations/20261116000000_business_calendar_booking_holds.sql`
+
+It creates server-only booking holds and PostgreSQL exclusion constraints to prevent two Febily booking requests for the same business from reserving overlapping time ranges. The RPCs require the verified business owner and exactly one current active/unexpired Paddle subscription.
+
+### Required Vapi webhook credential (one-time dashboard action)
+
+In the Vapi staging organization:
+
+1. Open Integrations → Server Configuration → Add Custom Credential.
+2. Choose Bearer Token.
+3. Set the header name to `Authorization` and leave Include Bearer Prefix enabled.
+4. Generate a strong random token locally. Use the same token in the Vapi credential and as the Vercel Preview secret `VAPI_CALENDAR_TOOL_TOKEN`.
+5. Save the credential and copy its credential ID into Vercel Preview as `VAPI_CALENDAR_TOOL_CREDENTIAL_ID`.
+
+Do not paste the token into chat, GitHub, SQL, or a `VITE_*` variable. Do not reuse the Febily Paddle webhook token or Google OAuth client secret.
+
+### Required Vercel Preview variables
+
+- `VAPI_CALENDAR_TOOLS_ENABLED=true` (Config; Preview only)
+- `VAPI_CALENDAR_TOOL_CREDENTIAL_ID` (Config; the ID of the Vapi Custom Credential)
+- `VAPI_CALENDAR_TOOL_TOKEN` (Secret; same token stored in the Vapi Custom Credential)
+- `VAPI_PRIVATE_KEY` and `VAPI_ORG_ID` from the same Vapi organization
+- Existing `SUPABASE_URL` and `SUPABASE_SECRET_KEY`
+- Existing `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REDIRECT_URI`, and `GOOGLE_TOKEN_ENCRYPTION_KEY`
+- Existing `APP_BASE_URL`; Preview Function tools use Vercel's exact runtime deployment hostname when available.
+
+Keep all new calendar-tool variables scoped to Preview. Do not enable tools in Production while the staging test matrix is incomplete. `VAPI_LAUNCH_ENABLED` must remain false in Production.
+
+### Business profile requirements
+
+Every service that can be booked must have an explicit duration. For example, a profile can list `Haircut - $25 - 30 minutes` and `Beard trim - $15 - 15 minutes`. Those are examples only; use the business's actual prices and service durations. The booking API does not guess a missing duration. Opening hours must also be configured for each operating day, and the business timezone must be a valid IANA timezone.
+
+### Activating the tools for the staging assistant
+
+After the migration and Preview variables are configured, open the signed-in business account's `/receptionist` page and click Sync saved business details. This updates the existing assistant with the current saved profile, then adds the three calendar tools only if the Google Calendar refresh token can be decrypted and refreshed and the Vapi webhook credential configuration is present.
+
+A newly provisioned business assistant receives the same tools automatically when those checks pass. If any check fails, the generated prompt continues to say that booking is disabled.
+
+### Required staging tests before customer activation
+
+1. Query slots for a date with no events and compare the result against the selected Google Calendar.
+2. Add an overlapping event directly in Google Calendar and confirm the slot disappears.
+3. Check an exact time and confirm the API returns available only when it is inside business opening hours and the calendar is free.
+4. Book a test appointment and verify the event appears in the selected calendar with the business timezone.
+5. Attempt the same tool call again and confirm no duplicate event is created.
+6. Attempt two overlapping bookings at once and confirm only one can reserve the time.
+7. Confirm that a different assistant cannot read or write this business's calendar.
+8. Test missing service duration, closed days, invalid timezone, daylight-saving gaps/folds, expired subscriptions, revoked Google authorization, and Vapi authentication failures.
+
+Do not enable customer-facing booking or Production launch until these tests pass. The older n8n demo workflow is not a customer tenant calendar and is not used by these new tools.

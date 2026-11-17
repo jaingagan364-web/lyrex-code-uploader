@@ -471,8 +471,11 @@ faqs: parseFaqsField(faqs),
     onChange={(e) => setServices(e.target.value)}
     rows={4}
     className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 outline-none focus:border-emerald-400"
-    placeholder={"Haircut - $25\nBeard trim - $15"}
+    placeholder={"Haircut - $25 - 30 minutes\nBeard trim - $15 - 15 minutes"}
   />
+  <p className="mt-2 text-xs text-white/50">
+    For appointment booking, include the real duration for every service, e.g. Haircut - $25 - 30 minutes. Febily will not guess missing durations.
+  </p>
 </label>
 
 <label className="block text-sm">
