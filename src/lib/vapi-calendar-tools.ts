@@ -57,21 +57,27 @@ function jsonError(message: string) {
 }
 
 /**
- * Normalize a caller-confirmed US/NANP callback number to E.164.
- * Accepts ten national digits, common punctuation, or an optional +1 prefix.
- * It validates NANP number structure; it does not prove the number is assigned
- * or reachable.
+ * Validate a caller-confirmed US/NANP callback number and normalize it to E.164.
+ * Numeric JSON values are accepted defensively, although the Vapi schema is string.
+ * This checks numbering-plan structure and known reserved fictional ranges, not
+ * whether a subscriber has actually been assigned the number.
  */
-function normalizeCustomerPhone(value: unknown): string | null {
-  const raw = safeString(value, 40);
-  if (!raw) return null;
+function normalizeCustomerPhone(
+  value: unknown,
+): { ok: true; phone: string } | { ok: false; reason: "invalid" | "reserved_example" } {
+  const raw = typeof value === "string"
+    ? value.trim()
+    : typeof value === "number" && Number.isSafeInteger(value) && value >= 0
+      ? String(value)
+      : "";
+  if (!raw || raw.length > 40) return { ok: false, reason: "invalid" };
 
-  const compact = raw.replace(/[().\s-]/g, "");
-  if (!/^\+?\d+$/.test(compact)) return null;
+  const compact = raw.replace(/[().\\s.-]/g, "");
+  if (!/^\\+?\\d+$/.test(compact)) return { ok: false, reason: "invalid" };
 
   let nationalNumber: string;
   if (compact.startsWith("+")) {
-    if (!compact.startsWith("+1")) return null;
+    if (!compact.startsWith("+1")) return { ok: false, reason: "invalid" };
     nationalNumber = compact.slice(2);
   } else if (compact.length === 11 && compact.startsWith("1")) {
     nationalNumber = compact.slice(1);
@@ -79,17 +85,23 @@ function normalizeCustomerPhone(value: unknown): string | null {
     nationalNumber = compact;
   }
 
-  if (nationalNumber.length !== 10) return null;
+  if (nationalNumber.length !== 10) return { ok: false, reason: "invalid" };
 
   const areaCode = nationalNumber.slice(0, 3);
   const exchangeCode = nationalNumber.slice(3, 6);
-  const isValidNanpCode = (code: string) => /^[2-9](?!11)\d$/.test(code);
+  const lineNumber = nationalNumber.slice(6);
+  const isValidNanpCode = (code: string) => /^[2-9](?!11)\\d$/.test(code);
 
-  if (!isValidNanpCode(areaCode) || !isValidNanpCode(exchangeCode)) {
-    return null;
+  if (!isValidNanpCode(areaCode) || !isValidNanpCode(exchangeCode) || areaCode === "555") {
+    return { ok: false, reason: "invalid" };
   }
 
-  return "+1" + nationalNumber;
+  // NANPA reserves 555-0100 through 555-0199 as non-working fictional numbers.
+  if (exchangeCode === "555" && lineNumber >= "0100" && lineNumber <= "0199") {
+    return { ok: false, reason: "reserved_example" };
+  }
+
+  return { ok: true, phone: "+1" + nationalNumber };
 }
 
 function localParts(instant: Date, timeZone: string) {
@@ -524,7 +536,7 @@ export function buildCalendarFunctionTools() {
             time: { type: "string", description: "Agreed business-local start time, HH:mm in 24-hour format." },
             service_name: { type: "string", description: "Exact service name as configured by the business." },
             customer_name: { type: "string", description: "Customer name to identify the calendar appointment." },
-            customer_phone: { type: "string", description: "Caller-confirmed US phone number: ten digits with optional punctuation, or an optional +1 prefix. Do not require the caller to say +1." },
+            customer_phone: { type: "string", description: "Caller-confirmed US 10-digit phone number, optionally with +1 and common punctuation. Never require the caller to say +1 or dictate digits one at a time. Do not use reserved fictional 555-0100 through 555-0199 numbers." },
           },
           required: ["date", "time", "service_name", "customer_name", "customer_phone"],
         },
@@ -723,10 +735,15 @@ export async function dispatchCalendarTool(
   const customerName = safeString(args["customer_name"], 100);
   if (!customerName) return jsonError("A customer name is required before booking.");
 
-  const customerPhone = normalizeCustomerPhone(args["customer_phone"]);
-  if (!customerPhone) {
-    return jsonError("That does not look like a valid 10-digit US phone number. Ask the caller to repeat the full 10 digits; do not ask for a country code or +1.");
+  const phoneValidation = normalizeCustomerPhone(args["customer_phone"]);
+  if (!phoneValidation.ok) {
+    return jsonError(
+      phoneValidation.reason === "reserved_example"
+        ? "That is a reserved fictional example number and cannot receive calls. Kindly ask the caller for a real 10-digit US callback number they control. Do not ask for +1 or dictate digits one at a time."
+        : "I may have misheard the callback number. Kindly ask the caller to repeat their 10-digit US number once in their usual way. Do not ask for +1 or dictate digits one at a time. If it is still invalid, stop and offer human assistance.",
+    );
   }
+  const customerPhone = phoneValidation.phone;
 
   const idempotencyKey = createHash("sha256")
     .update(callId + ":" + callToolId)
