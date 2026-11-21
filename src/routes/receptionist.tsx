@@ -157,12 +157,43 @@ function ReceptionistPage() {
 
       client.on("call-start-failed", (event) => {
         const stage =
-          typeof event?.stage === "string" ? event.stage : "call setup";
+          typeof event?.stage === "string" && event.stage.trim()
+            ? event.stage.trim()
+            : "call setup";
+
+        const errorValue = event?.error as unknown;
+        const errorRecord =
+          typeof errorValue === "object" && errorValue !== null
+            ? (errorValue as Record<string, unknown>)
+            : null;
+        const errorMessage =
+          typeof errorValue === "string"
+            ? errorValue.trim()
+            : typeof errorRecord?.message === "string"
+              ? errorRecord.message.trim()
+              : typeof errorRecord?.error === "string"
+                ? errorRecord.error.trim()
+                : "";
+
+        const stackFirstLine =
+          typeof event?.errorStack === "string"
+            ? event.errorStack.split("\\n").find((line) => line.trim())?.trim() ?? ""
+            : "";
+        const stackMessage = stackFirstLine.replace(/^(?:Error|TypeError|ApiError):\\s*/, "");
         const reason =
-          typeof event?.error === "string" && event.error.trim()
-            ? event.error.trim().slice(0, 240)
-            : "Vapi could not complete the browser call setup.";
+          (errorMessage || stackMessage || "Vapi could not complete the browser call setup.")
+            .replace(/[\\r\\n]+/g, " ")
+            .slice(0, 240);
+
         callStartFailureRef.current = `Vapi failed during ${stage}: ${reason}`;
+        console.error("[febily-vapi] Browser call setup failed", {
+          stage,
+          reason,
+          errorName: typeof errorRecord?.name === "string" ? errorRecord.name : undefined,
+          errorCode: typeof errorRecord?.code === "string" || typeof errorRecord?.code === "number"
+            ? errorRecord.code
+            : undefined,
+        });
       });
 
       client.on("call-start", () => {
