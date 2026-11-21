@@ -57,31 +57,39 @@ function jsonError(message: string) {
 }
 
 /**
- * Validate a caller-confirmed international callback number in E.164 format.
- * The country code must be explicit; never infer +1 from the business location.
- * NANP numbers also receive structural area-code and exchange-code checks.
+ * Normalize a caller-confirmed US/NANP callback number to E.164.
+ * Accepts ten national digits, common punctuation, or an optional +1 prefix.
+ * It validates NANP number structure; it does not prove the number is assigned
+ * or reachable.
  */
 function normalizeCustomerPhone(value: unknown): string | null {
   const raw = safeString(value, 40);
   if (!raw) return null;
 
   const compact = raw.replace(/[().\s-]/g, "");
-  if (!/^\+[1-9]\d{7,14}$/.test(compact)) return null;
+  if (!/^\+?\d+$/.test(compact)) return null;
 
-  if (compact.startsWith("+1")) {
-    const nationalNumber = compact.slice(2);
-    if (nationalNumber.length !== 10) return null;
-
-    const areaCode = nationalNumber.slice(0, 3);
-    const exchangeCode = nationalNumber.slice(3, 6);
-    const isValidNanpCode = (code: string) => /^[2-9](?!11)\d$/.test(code);
-
-    if (!isValidNanpCode(areaCode) || !isValidNanpCode(exchangeCode)) {
-      return null;
-    }
+  let nationalNumber: string;
+  if (compact.startsWith("+")) {
+    if (!compact.startsWith("+1")) return null;
+    nationalNumber = compact.slice(2);
+  } else if (compact.length === 11 && compact.startsWith("1")) {
+    nationalNumber = compact.slice(1);
+  } else {
+    nationalNumber = compact;
   }
 
-  return compact;
+  if (nationalNumber.length !== 10) return null;
+
+  const areaCode = nationalNumber.slice(0, 3);
+  const exchangeCode = nationalNumber.slice(3, 6);
+  const isValidNanpCode = (code: string) => /^[2-9](?!11)\d$/.test(code);
+
+  if (!isValidNanpCode(areaCode) || !isValidNanpCode(exchangeCode)) {
+    return null;
+  }
+
+  return "+1" + nationalNumber;
 }
 
 function localParts(instant: Date, timeZone: string) {
@@ -507,7 +515,7 @@ export function buildCalendarFunctionTools() {
       type: "function",
       function: {
         name: "calendar_set_appointment",
-        description: "Book a confirmed appointment in the business's selected Google Calendar. Only call after the caller has agreed to the exact service, date, time, name, and callback phone number. Pass the confirmed phone number in E.164 format. Use an exact configured service name. The function rechecks availability and may refuse a time that has just been taken.",
+        description: "Book a confirmed appointment in the business's selected Google Calendar. Only call after the caller has agreed to the exact service, date, time, name, and callback phone number. Accept a US 10-digit phone number with or without common punctuation, or with an optional +1 prefix; the server normalizes it to E.164. Use an exact configured service name. The function rechecks availability and may refuse a time that has just been taken.",
         parameters: {
           type: "object",
           additionalProperties: false,
@@ -516,7 +524,7 @@ export function buildCalendarFunctionTools() {
             time: { type: "string", description: "Agreed business-local start time, HH:mm in 24-hour format." },
             service_name: { type: "string", description: "Exact service name as configured by the business." },
             customer_name: { type: "string", description: "Customer name to identify the calendar appointment." },
-            customer_phone: { type: "string", description: "Caller-confirmed callback phone number in E.164 format, for example +12125550194." },
+            customer_phone: { type: "string", description: "Caller-confirmed US phone number: ten digits with optional punctuation, or an optional +1 prefix. Do not require the caller to say +1." },
           },
           required: ["date", "time", "service_name", "customer_name", "customer_phone"],
         },
@@ -717,7 +725,7 @@ export async function dispatchCalendarTool(
 
   const customerPhone = normalizeCustomerPhone(args["customer_phone"]);
   if (!customerPhone) {
-    return jsonError("A valid customer callback phone number is required. Ask for the full number, read it back, and get the caller's confirmation before booking.");
+    return jsonError("That does not look like a valid 10-digit US phone number. Ask the caller to repeat the full 10 digits; do not ask for a country code or +1.");
   }
 
   const idempotencyKey = createHash("sha256")
