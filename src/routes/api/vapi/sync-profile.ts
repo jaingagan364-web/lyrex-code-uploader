@@ -225,9 +225,7 @@ export const Route = createFileRoute("/api/vapi/sync-profile")({
 
           return json({
             success: true,
-            message: calendarTools?.length
-              ? "Your receptionist profile and live business calendar tools are synchronized."
-              : "Your receptionist instructions are synchronized without changing its existing calendar tools or credentials.",
+            message: "Your receptionist profile is synchronized. Existing calendar tools and credentials were preserved.",
           });
         } catch (error) {
           console.error(
