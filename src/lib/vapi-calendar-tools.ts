@@ -72,8 +72,8 @@ function normalizeCustomerPhone(
       : "";
   if (!raw || raw.length > 40) return { ok: false, reason: "invalid" };
 
-  const compact = raw.replace(/[().\\s.-]/g, "");
-  if (!/^\\+?\\d+$/.test(compact)) return { ok: false, reason: "invalid" };
+  const compact = raw.replace(/[().\s-]/g, "");
+  if (!/^\+?\d+$/.test(compact)) return { ok: false, reason: "invalid" };
 
   let nationalNumber: string;
   if (compact.startsWith("+")) {
@@ -90,7 +90,7 @@ function normalizeCustomerPhone(
   const areaCode = nationalNumber.slice(0, 3);
   const exchangeCode = nationalNumber.slice(3, 6);
   const lineNumber = nationalNumber.slice(6);
-  const isValidNanpCode = (code: string) => /^[2-9](?!11)\\d$/.test(code);
+  const isValidNanpCode = (code: string) => /^[2-9](?!11)\d$/.test(code);
 
   if (!isValidNanpCode(areaCode) || !isValidNanpCode(exchangeCode) || areaCode === "555") {
     return { ok: false, reason: "invalid" };
