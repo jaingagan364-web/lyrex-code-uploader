@@ -177,12 +177,12 @@ function ReceptionistPage() {
 
         const stackFirstLine =
           typeof event?.errorStack === "string"
-            ? event.errorStack.split("\\n").find((line) => line.trim())?.trim() ?? ""
+            ? event.errorStack.split(/\r?\n/).find((line) => line.trim())?.trim() ?? ""
             : "";
-        const stackMessage = stackFirstLine.replace(/^(?:Error|TypeError|ApiError):\\s*/, "");
+        const stackMessage = stackFirstLine.replace(/^(?:Error|TypeError|ApiError):\s*/, "");
         const reason =
           (errorMessage || stackMessage || "Vapi could not complete the browser call setup.")
-            .replace(/[\\r\\n]+/g, " ")
+            .replace(/[\r\n]+/g, " ")
             .slice(0, 240);
 
         callStartFailureRef.current = `Vapi failed during ${stage}: ${reason}`;

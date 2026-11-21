@@ -4,6 +4,7 @@ import {
   buildBusinessFirstMessage,
   buildBusinessReceptionistPrompt,
 } from "@/lib/vapi-assistant-prompt";
+import { buildCalendarFunctionDefinitions } from "@/lib/vapi-calendar-tools";
 
 const RESPONSE_HEADERS = { "cache-control": "no-store" };
 const VAPI_API_BASE = "https://api.vapi.ai";
@@ -182,9 +183,45 @@ export const Route = createFileRoute("/api/vapi/sync-profile")({
             }, 409);
           }
 
-          // Prompt-only synchronization: preserve the existing, ownership-checked
-          // Vapi tools, server URLs, tool IDs, and credentials exactly as they are.
-          // Never replace or detach an assistant's working calendar connection here.
+          // Refresh only the three known Febily function schemas. Keep each
+          // existing tool wrapper, server URL, credentialId, and any tool IDs
+          // intact so a profile sync cannot detach the business calendar.
+          const latestDefinitions = buildCalendarFunctionDefinitions();
+          const latestFunctions = new Map<string, JsonRecord>();
+          for (const definition of latestDefinitions) {
+            const definitionFunction = isRecord(definition["function"])
+              ? definition["function"]
+              : null;
+            const definitionName = typeof definitionFunction?.["name"] === "string"
+              ? definitionFunction["name"]
+              : "";
+            if (definitionName && definitionFunction) {
+              latestFunctions.set(definitionName, definitionFunction);
+            }
+          }
+
+          const updatedTools = modelTools.map((tool) => {
+            if (!isRecord(tool) || !isRecord(tool["function"])) {
+              throw new Error("An existing calendar tool has an invalid function schema. No assistant settings were changed.");
+            }
+            const existingFunction = tool["function"];
+            const functionName = typeof existingFunction["name"] === "string"
+              ? existingFunction["name"]
+              : "";
+            const latestFunction = latestFunctions.get(functionName);
+            if (!latestFunction) {
+              throw new Error("An existing calendar tool could not be matched to the current Febily schema. No assistant settings were changed.");
+            }
+            return {
+              ...tool,
+              function: {
+                ...existingFunction,
+                description: latestFunction["description"],
+                parameters: latestFunction["parameters"],
+              },
+            };
+          });
+
           const updatedModel: JsonRecord = {
             ...model,
             messages: [
@@ -193,6 +230,7 @@ export const Route = createFileRoute("/api/vapi/sync-profile")({
                 content: buildBusinessReceptionistPrompt(business, true),
               },
             ],
+            tools: updatedTools,
           };
 
           const currentServerMessages = Array.isArray(assistant.serverMessages)
@@ -225,7 +263,7 @@ export const Route = createFileRoute("/api/vapi/sync-profile")({
 
           return json({
             success: true,
-            message: "Your receptionist profile is synchronized. Existing calendar tools and credentials were preserved.",
+            message: "Your receptionist profile and current booking tool schemas are synchronized. Existing calendar connections and credentials were preserved.",
           });
         } catch (error) {
           console.error(

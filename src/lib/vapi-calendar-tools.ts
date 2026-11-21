@@ -478,15 +478,7 @@ export function calendarToolConfiguration() {
   }
 }
 
-export function buildCalendarFunctionTools() {
-  const config = calendarToolConfiguration();
-  if (!config) return null;
-
-  const server = {
-    url: config.webhookUrl,
-    credentialId: config.credentialId,
-  };
-
+export function buildCalendarFunctionDefinitions(): JsonRecord[] {
   return [
     {
       type: "function",
@@ -504,7 +496,6 @@ export function buildCalendarFunctionTools() {
           required: ["date", "time", "service_name"],
         },
       },
-      server,
     },
     {
       type: "function",
@@ -521,13 +512,12 @@ export function buildCalendarFunctionTools() {
           required: ["date", "service_name"],
         },
       },
-      server,
     },
     {
       type: "function",
       function: {
         name: "calendar_set_appointment",
-        description: "Book a confirmed appointment in the business's selected Google Calendar. Only call after the caller has agreed to the exact service, date, time, name, and callback phone number. Accept a US 10-digit phone number with or without common punctuation, or with an optional +1 prefix; the server normalizes it to E.164. Use an exact configured service name. The function rechecks availability and may refuse a time that has just been taken.",
+        description: "Book a confirmed appointment in the business's selected Google Calendar. Only call after the caller has agreed to the exact service, date, time, name, callback phone number, and explicitly consented to saving that number for appointment-related contact. Accept a US 10-digit phone number with or without common punctuation, or with an optional +1 prefix; the server normalizes it to E.164. Use an exact configured service name. The function rechecks availability and may refuse a time that has just been taken.",
         parameters: {
           type: "object",
           additionalProperties: false,
@@ -537,13 +527,30 @@ export function buildCalendarFunctionTools() {
             service_name: { type: "string", description: "Exact service name as configured by the business." },
             customer_name: { type: "string", description: "Customer name to identify the calendar appointment." },
             customer_phone: { type: "string", description: "Caller-confirmed US 10-digit phone number, optionally with +1 and common punctuation. Never require the caller to say +1 or dictate digits one at a time. Do not use reserved fictional 555-0100 through 555-0199 numbers." },
+            customer_contact_consent: { type: "boolean", description: "Must be true only after the caller clearly says yes to saving this callback number for appointment-related contact. Never assume consent." },
           },
-          required: ["date", "time", "service_name", "customer_name", "customer_phone"],
+          required: ["date", "time", "service_name", "customer_name", "customer_phone", "customer_contact_consent"],
         },
       },
-      server,
     },
+
   ] as JsonRecord[];
+}
+
+export function buildCalendarFunctionTools() {
+  const config = calendarToolConfiguration();
+  if (!config) return null;
+
+  const server = {
+    url: config.webhookUrl,
+    credentialId: config.credentialId,
+  };
+
+  // Reuse the pure schemas for both initial provisioning and safe profile sync.
+  return buildCalendarFunctionDefinitions().map((tool) => ({
+    ...tool,
+    server,
+  }));
 }
 
 function sameSecret(received: string, expected: string) {
@@ -735,6 +742,10 @@ export async function dispatchCalendarTool(
   const customerName = safeString(args["customer_name"], 100);
   if (!customerName) return jsonError("A customer name is required before booking.");
 
+  if (args["customer_contact_consent"] !== true) {
+    return jsonError("The caller has not explicitly consented to saving the callback number. Ask once for clear permission; do not book unless the caller agrees.");
+  }
+
   const phoneValidation = normalizeCustomerPhone(args["customer_phone"]);
   if (!phoneValidation.ok) {
     return jsonError(
@@ -820,6 +831,7 @@ export async function dispatchCalendarTool(
       p_booking_id: bookingId,
       p_customer_name: customerName,
       p_customer_phone_e164: customerPhone,
+      p_customer_contact_consent: true,
     },
   );
 
