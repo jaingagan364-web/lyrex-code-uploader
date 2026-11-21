@@ -56,6 +56,28 @@ function jsonError(message: string) {
   return { ok: false as const, message };
 }
 
+/**
+ * Normalize a caller-confirmed callback number to E.164.
+ * Ten-digit and eleven-digit NANP numbers are normalized to +1; an explicitly
+ * supplied international country code is preserved and validated.
+ */
+function normalizeCustomerPhone(value: unknown): string | null {
+  const raw = safeString(value, 40);
+  if (!raw) return null;
+
+  const compact = raw.replace(/[().\\s-]/g, "");
+  if (!/^\\+?\\d+$/.test(compact)) return null;
+
+  let normalized = compact;
+  if (!normalized.startsWith("+")) {
+    if (normalized.length === 10) normalized = "+1" + normalized;
+    else if (normalized.length === 11 && normalized.startsWith("1")) normalized = "+" + normalized;
+    else return null;
+  }
+
+  return /^\\+[1-9]\\d{7,14}$/.test(normalized) ? normalized : null;
+}
+
 function localParts(instant: Date, timeZone: string) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone,
@@ -479,7 +501,7 @@ export function buildCalendarFunctionTools() {
       type: "function",
       function: {
         name: "calendar_set_appointment",
-        description: "Book a confirmed appointment in the business's selected Google Calendar. Only call after the caller has agreed to the exact date and time and supplied their name. Use an exact configured service name. The function rechecks availability and may refuse a time that has just been taken.",
+        description: "Book a confirmed appointment in the business's selected Google Calendar. Only call after the caller has agreed to the exact service, date, time, name, and callback phone number. Pass the confirmed phone number in E.164 format. Use an exact configured service name. The function rechecks availability and may refuse a time that has just been taken.",
         parameters: {
           type: "object",
           additionalProperties: false,
@@ -488,8 +510,9 @@ export function buildCalendarFunctionTools() {
             time: { type: "string", description: "Agreed business-local start time, HH:mm in 24-hour format." },
             service_name: { type: "string", description: "Exact service name as configured by the business." },
             customer_name: { type: "string", description: "Customer name to identify the calendar appointment." },
+            customer_phone: { type: "string", description: "Caller-confirmed callback phone number in E.164 format, for example +12125550194." },
           },
-          required: ["date", "time", "service_name", "customer_name"],
+          required: ["date", "time", "service_name", "customer_name", "customer_phone"],
         },
       },
       server,
@@ -686,6 +709,11 @@ export async function dispatchCalendarTool(
   const customerName = safeString(args["customer_name"], 100);
   if (!customerName) return jsonError("A customer name is required before booking.");
 
+  const customerPhone = normalizeCustomerPhone(args["customer_phone"]);
+  if (!customerPhone) {
+    return jsonError("A valid customer callback phone number is required. Ask for the full number, read it back, and get the caller's confirmation before booking.");
+  }
+
   const idempotencyKey = createHash("sha256")
     .update(callId + ":" + callToolId)
     .digest("hex");
@@ -751,6 +779,27 @@ export async function dispatchCalendarTool(
 
   const bookingId = reservation["bookingId"];
 
+  // Persist the caller-confirmed contact details in the server-only booking
+  // ledger before creating the external calendar event. Never create an event
+  // when the customer contact record could not be saved.
+  const { data: contactSaved, error: contactSaveError } = await supabase.rpc(
+    "set_business_calendar_booking_contact",
+    {
+      p_business_id: business.id,
+      p_booking_id: bookingId,
+      p_customer_name: customerName,
+      p_customer_phone_e164: customerPhone,
+    },
+  );
+
+  if (contactSaveError || contactSaved !== true) {
+    await supabase.rpc("release_business_calendar_booking", {
+      p_business_id: business.id,
+      p_booking_id: bookingId,
+    });
+    return jsonError("Customer contact details could not be saved securely. No appointment was created.");
+  }
+
   // Re-read Google Calendar after the database hold is secured. This narrows
   // the race with appointments created outside Febily.
   const latestEvents = await listEvents(calendarAccess.accessToken, calendarAccess.calendarId, day.start, day.end).catch(() => null);
@@ -771,7 +820,9 @@ export async function dispatchCalendarTool(
 
   const event = {
     summary: service.name + " appointment — " + customerName,
-    description: "Appointment booked through the business's Febily receptionist.",
+    description:
+      "Appointment booked through the business's Febily receptionist.\\n" +
+      "Customer phone: " + customerPhone,
     start: { dateTime: start.toISOString(), timeZone: business.timezone },
     end: { dateTime: end.toISOString(), timeZone: business.timezone },
     extendedProperties: {
@@ -779,6 +830,8 @@ export async function dispatchCalendarTool(
         febilyBookingKey: idempotencyKey,
         febilyBusinessId: business.id,
         febilyBookingId: bookingId,
+        customerName,
+        customerPhoneE164: customerPhone,
       },
     },
   };
