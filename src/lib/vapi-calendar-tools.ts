@@ -57,25 +57,31 @@ function jsonError(message: string) {
 }
 
 /**
- * Normalize a caller-confirmed callback number to E.164.
- * Ten-digit and eleven-digit NANP numbers are normalized to +1; an explicitly
- * supplied international country code is preserved and validated.
+ * Validate a caller-confirmed international callback number in E.164 format.
+ * The country code must be explicit; never infer +1 from the business location.
+ * NANP numbers also receive structural area-code and exchange-code checks.
  */
 function normalizeCustomerPhone(value: unknown): string | null {
   const raw = safeString(value, 40);
   if (!raw) return null;
 
   const compact = raw.replace(/[().\s-]/g, "");
-  if (!/^\+?\d+$/.test(compact)) return null;
+  if (!/^\+[1-9]\d{7,14}$/.test(compact)) return null;
 
-  let normalized = compact;
-  if (!normalized.startsWith("+")) {
-    if (normalized.length === 10) normalized = "+1" + normalized;
-    else if (normalized.length === 11 && normalized.startsWith("1")) normalized = "+" + normalized;
-    else return null;
+  if (compact.startsWith("+1")) {
+    const nationalNumber = compact.slice(2);
+    if (nationalNumber.length !== 10) return null;
+
+    const areaCode = nationalNumber.slice(0, 3);
+    const exchangeCode = nationalNumber.slice(3, 6);
+    const isValidNanpCode = (code: string) => /^[2-9](?!11)\d$/.test(code);
+
+    if (!isValidNanpCode(areaCode) || !isValidNanpCode(exchangeCode)) {
+      return null;
+    }
   }
 
-  return /^\+[1-9]\d{7,14}$/.test(normalized) ? normalized : null;
+  return compact;
 }
 
 function localParts(instant: Date, timeZone: string) {
