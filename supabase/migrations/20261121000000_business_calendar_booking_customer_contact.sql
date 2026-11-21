@@ -32,7 +32,7 @@ begin
       add constraint business_calendar_booking_holds_customer_phone_valid
       check (
         customer_phone_e164 is null
-        or customer_phone_e164 ~ '^\\+[1-9][0-9]{7,14}$'
+        or customer_phone_e164 ~ '^\+[1-9][0-9]{7,14}$'
       );
   end if;
 end;
@@ -58,7 +58,7 @@ begin
     or length(btrim(p_customer_name)) < 1
     or length(btrim(p_customer_name)) > 100
     or p_customer_phone_e164 is null
-    or p_customer_phone_e164 !~ '^\\+[1-9][0-9]{7,14}$'
+    or p_customer_phone_e164 !~ '^\+[1-9][0-9]{7,14}$'
   then
     return false;
   end if;
