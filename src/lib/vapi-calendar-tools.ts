@@ -65,8 +65,8 @@ function normalizeCustomerPhone(value: unknown): string | null {
   const raw = safeString(value, 40);
   if (!raw) return null;
 
-  const compact = raw.replace(/[().\\s-]/g, "");
-  if (!/^\\+?\\d+$/.test(compact)) return null;
+  const compact = raw.replace(/[().\s-]/g, "");
+  if (!/^\+?\d+$/.test(compact)) return null;
 
   let normalized = compact;
   if (!normalized.startsWith("+")) {
@@ -75,7 +75,7 @@ function normalizeCustomerPhone(value: unknown): string | null {
     else return null;
   }
 
-  return /^\\+[1-9]\\d{7,14}$/.test(normalized) ? normalized : null;
+  return /^\+[1-9]\d{7,14}$/.test(normalized) ? normalized : null;
 }
 
 function localParts(instant: Date, timeZone: string) {
@@ -821,7 +821,7 @@ export async function dispatchCalendarTool(
   const event = {
     summary: service.name + " appointment — " + customerName,
     description:
-      "Appointment booked through the business's Febily receptionist.\\n" +
+      "Appointment booked through the business's Febily receptionist.\n" +
       "Customer phone: " + customerPhone,
     start: { dateTime: start.toISOString(), timeZone: business.timezone },
     end: { dateTime: end.toISOString(), timeZone: business.timezone },
