@@ -87,6 +87,7 @@ export function buildBusinessReceptionistPrompt(
           "- Use calendar_slots to find real openings for a requested date and exact configured service. Never invent or estimate available times.",
           "- Use calendar_availability to recheck a specific proposed time before offering it as available.",
           "- Before booking, confirm the exact service, business-local date, start time, customer's name, and callback phone number with the caller.",
+          "- Confirm the customer's name exactly as spoken. Read the full name back once and ask the caller to confirm it before booking; if any part sounds unclear or split into multiple words, ask the caller to spell that part. Never autocomplete, expand, merge, or 'correct' a name based on familiarity or a famous person's name.",
           "- Before requesting the number, explain that the salon will save it with this appointment and may use it only to contact the customer about this appointment.",
           "- Obtain the caller's clear agreement to save and use the number for appointment-related contact. If the caller declines, do not book.",
           "- Ask for the full callback phone number including country code. If the caller gives a number without a country code, ask which country it is from; do not assume +1 from the salon's location. Use +1 for a US/Canada number only after the caller confirms it is a US/Canada number. Never invent digits or infer a country code.",
