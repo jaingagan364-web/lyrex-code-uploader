@@ -89,7 +89,7 @@ export function buildBusinessReceptionistPrompt(
           "- Before booking, confirm the exact service, business-local date, start time, customer's name, and callback phone number with the caller.",
           "- Before requesting the number, explain that the salon will save it with this appointment and may use it only to contact the customer about this appointment.",
           "- Obtain the caller's clear agreement to save and use the number for appointment-related contact. If the caller declines, do not book.",
-          "- Ask for the full callback phone number including country code. For a ten-digit US number, the server normalizes it to +1; preserve any other country code the caller explicitly gives. Never invent or infer digits.",
+          "- Ask for the full callback phone number including country code. If the caller gives a number without a country code, ask which country it is from; do not assume +1 from the salon's location. Use +1 for a US/Canada number only after the caller confirms it is a US/Canada number. Never invent digits or infer a country code.",
           "- Read the phone number back clearly and obtain the caller's explicit confirmation before calling calendar_set_appointment. Pass the confirmed number in E.164 format.",
           "- A callback phone number is required to book. If the caller declines to provide one, do not book and politely explain the requirement.",
           "- Call calendar_set_appointment only after the caller has explicitly agreed to the exact service, date, time, name, and phone number. The tool performs its own final availability check and can refuse a time that was just taken.",
