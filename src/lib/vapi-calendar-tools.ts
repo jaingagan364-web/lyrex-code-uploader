@@ -56,6 +56,54 @@ function jsonError(message: string) {
   return { ok: false as const, message };
 }
 
+/**
+ * Validate a caller-confirmed US/NANP callback number and normalize it to E.164.
+ * Numeric JSON values are accepted defensively, although the Vapi schema is string.
+ * This checks numbering-plan structure and known reserved fictional ranges, not
+ * whether a subscriber has actually been assigned the number.
+ */
+function normalizeCustomerPhone(
+  value: unknown,
+): { ok: true; phone: string } | { ok: false; reason: "invalid" | "reserved_example" } {
+  const raw = typeof value === "string"
+    ? value.trim()
+    : typeof value === "number" && Number.isSafeInteger(value) && value >= 0
+      ? String(value)
+      : "";
+  if (!raw || raw.length > 40) return { ok: false, reason: "invalid" };
+
+  const compact = raw.replace(/[().\s-]/g, "");
+  if (!/^\+?\d+$/.test(compact)) return { ok: false, reason: "invalid" };
+
+  let nationalNumber: string;
+  if (compact.startsWith("+")) {
+    if (!compact.startsWith("+1")) return { ok: false, reason: "invalid" };
+    nationalNumber = compact.slice(2);
+  } else if (compact.length === 11 && compact.startsWith("1")) {
+    nationalNumber = compact.slice(1);
+  } else {
+    nationalNumber = compact;
+  }
+
+  if (nationalNumber.length !== 10) return { ok: false, reason: "invalid" };
+
+  const areaCode = nationalNumber.slice(0, 3);
+  const exchangeCode = nationalNumber.slice(3, 6);
+  const lineNumber = nationalNumber.slice(6);
+  const isValidNanpCode = (code: string) => /^[2-9](?!11)\d{2}$/.test(code);
+
+  if (!isValidNanpCode(areaCode) || !isValidNanpCode(exchangeCode) || areaCode === "555") {
+    return { ok: false, reason: "invalid" };
+  }
+
+  // NANPA reserves 555-0100 through 555-0199 as non-working fictional numbers.
+  if (exchangeCode === "555" && lineNumber >= "0100" && lineNumber <= "0199") {
+    return { ok: false, reason: "reserved_example" };
+  }
+
+  return { ok: true, phone: "+1" + nationalNumber };
+}
+
 function localParts(instant: Date, timeZone: string) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone,
@@ -246,8 +294,11 @@ function serviceFromText(value: string): ServiceInfo | null {
   if (!Number.isInteger(durationMinutes) || durationMinutes < 5 || durationMinutes > 480) {
     return null;
   }
+  // Business owners commonly paste service lists using typographic
+  // dashes (en/em dashes) as separators. Normalize those as separators too,
+  // so "Haircut — $25 — 30 minutes" resolves to the configured name "Haircut".
   const name = value
-    .split(/\s*[-|]\s*/)
+    .split(/\s*[-‐‑‒–—―|]\s*/u)
     .map((item) => item.trim())
     .find(Boolean);
   if (!name) return null;
@@ -430,15 +481,7 @@ export function calendarToolConfiguration() {
   }
 }
 
-export function buildCalendarFunctionTools() {
-  const config = calendarToolConfiguration();
-  if (!config) return null;
-
-  const server = {
-    url: config.webhookUrl,
-    credentialId: config.credentialId,
-  };
-
+export function buildCalendarFunctionDefinitions(): JsonRecord[] {
   return [
     {
       type: "function",
@@ -456,7 +499,6 @@ export function buildCalendarFunctionTools() {
           required: ["date", "time", "service_name"],
         },
       },
-      server,
     },
     {
       type: "function",
@@ -473,13 +515,12 @@ export function buildCalendarFunctionTools() {
           required: ["date", "service_name"],
         },
       },
-      server,
     },
     {
       type: "function",
       function: {
         name: "calendar_set_appointment",
-        description: "Book a confirmed appointment in the business's selected Google Calendar. Only call after the caller has agreed to the exact date and time and supplied their name. Use an exact configured service name. The function rechecks availability and may refuse a time that has just been taken.",
+        description: "Book a confirmed appointment in the business's selected Google Calendar. Only call after the caller has agreed to the exact service, date, time, name, callback phone number, and explicitly consented to saving that number for appointment-related contact. Accept a US 10-digit phone number with or without common punctuation, or with an optional +1 prefix; the server normalizes it to E.164. Use an exact configured service name. The function rechecks availability and may refuse a time that has just been taken.",
         parameters: {
           type: "object",
           additionalProperties: false,
@@ -488,13 +529,31 @@ export function buildCalendarFunctionTools() {
             time: { type: "string", description: "Agreed business-local start time, HH:mm in 24-hour format." },
             service_name: { type: "string", description: "Exact service name as configured by the business." },
             customer_name: { type: "string", description: "Customer name to identify the calendar appointment." },
+            customer_phone: { type: "string", description: "Caller-confirmed US 10-digit phone number, optionally with +1 and common punctuation. Never require the caller to say +1 or dictate digits one at a time. Do not use reserved fictional 555-0100 through 555-0199 numbers." },
+            customer_contact_consent: { type: "boolean", description: "Must be true only after the caller clearly says yes to saving this callback number for appointment-related contact. Never assume consent." },
           },
-          required: ["date", "time", "service_name", "customer_name"],
+          required: ["date", "time", "service_name", "customer_name", "customer_phone", "customer_contact_consent"],
         },
       },
-      server,
     },
+
   ] as JsonRecord[];
+}
+
+export function buildCalendarFunctionTools() {
+  const config = calendarToolConfiguration();
+  if (!config) return null;
+
+  const server = {
+    url: config.webhookUrl,
+    credentialId: config.credentialId,
+  };
+
+  // Reuse the pure schemas for both initial provisioning and safe profile sync.
+  return buildCalendarFunctionDefinitions().map((tool) => ({
+    ...tool,
+    server,
+  }));
 }
 
 function sameSecret(received: string, expected: string) {
@@ -686,6 +745,20 @@ export async function dispatchCalendarTool(
   const customerName = safeString(args["customer_name"], 100);
   if (!customerName) return jsonError("A customer name is required before booking.");
 
+  if (args["customer_contact_consent"] !== true) {
+    return jsonError("The caller has not explicitly consented to saving the callback number. Ask once for clear permission; do not book unless the caller agrees.");
+  }
+
+  const phoneValidation = normalizeCustomerPhone(args["customer_phone"]);
+  if (!phoneValidation.ok) {
+    return jsonError(
+      phoneValidation.reason === "reserved_example"
+        ? "That is a reserved fictional example number and cannot receive calls. Kindly ask the caller for a real 10-digit US callback number they control. Do not ask for +1 or dictate digits one at a time."
+        : "I may have misheard the callback number. Kindly ask the caller to repeat their 10-digit US number once in their usual way. Do not ask for +1 or dictate digits one at a time. If it is still invalid, stop and offer human assistance.",
+    );
+  }
+  const customerPhone = phoneValidation.phone;
+
   const idempotencyKey = createHash("sha256")
     .update(callId + ":" + callToolId)
     .digest("hex");
@@ -751,6 +824,28 @@ export async function dispatchCalendarTool(
 
   const bookingId = reservation["bookingId"];
 
+  // Persist the caller-confirmed contact details in the server-only booking
+  // ledger before creating the external calendar event. Never create an event
+  // when the customer contact record could not be saved.
+  const { data: contactSaved, error: contactSaveError } = await supabase.rpc(
+    "set_business_calendar_booking_contact",
+    {
+      p_business_id: business.id,
+      p_booking_id: bookingId,
+      p_customer_name: customerName,
+      p_customer_phone_e164: customerPhone,
+      p_customer_contact_consent: true,
+    },
+  );
+
+  if (contactSaveError || contactSaved !== true) {
+    await supabase.rpc("release_business_calendar_booking", {
+      p_business_id: business.id,
+      p_booking_id: bookingId,
+    });
+    return jsonError("Customer contact details could not be saved securely. No appointment was created.");
+  }
+
   // Re-read Google Calendar after the database hold is secured. This narrows
   // the race with appointments created outside Febily.
   const latestEvents = await listEvents(calendarAccess.accessToken, calendarAccess.calendarId, day.start, day.end).catch(() => null);
@@ -771,7 +866,9 @@ export async function dispatchCalendarTool(
 
   const event = {
     summary: service.name + " appointment — " + customerName,
-    description: "Appointment booked through the business's Febily receptionist.",
+    description:
+      "Appointment booked through the business's Febily receptionist.\n" +
+      "Customer phone: " + customerPhone,
     start: { dateTime: start.toISOString(), timeZone: business.timezone },
     end: { dateTime: end.toISOString(), timeZone: business.timezone },
     extendedProperties: {
@@ -779,6 +876,8 @@ export async function dispatchCalendarTool(
         febilyBookingKey: idempotencyKey,
         febilyBusinessId: business.id,
         febilyBookingId: bookingId,
+        customerName,
+        customerPhoneE164: customerPhone,
       },
     },
   };

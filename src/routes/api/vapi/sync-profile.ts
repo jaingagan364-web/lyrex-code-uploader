@@ -5,7 +5,10 @@ import {
   buildBusinessReceptionistPrompt,
 } from "@/lib/vapi-assistant-prompt";
 import { getBusinessCalendarAccess } from "@/lib/google-calendar-server";
-import { buildCalendarFunctionTools } from "@/lib/vapi-calendar-tools";
+import {
+  buildCalendarFunctionDefinitions,
+  buildCalendarFunctionTools,
+} from "@/lib/vapi-calendar-tools";
 
 const RESPONSE_HEADERS = { "cache-control": "no-store" };
 const VAPI_API_BASE = "https://api.vapi.ai";
@@ -165,36 +168,91 @@ export const Route = createFileRoute("/api/vapi/sync-profile")({
           }
 
           const modelTools = Array.isArray(model.tools) ? model.tools : [];
-          const modelToolIds = Array.isArray(model.toolIds) ? model.toolIds : [];
-          const server = assistant.server;
-          const credentialIds = Array.isArray(assistant.credentialIds) ? assistant.credentialIds : [];
           const febilyCalendarToolNames = new Set([
             "calendar_availability",
             "calendar_slots",
             "calendar_set_appointment",
           ]);
-          const unexpectedTools = modelTools.filter((tool) => {
-            if (!isRecord(tool) || !isRecord(tool.function)) return true;
-            return !febilyCalendarToolNames.has(String(tool.function.name ?? ""));
-          });
-          if (
-            unexpectedTools.length > 0 ||
-            modelToolIds.length > 0 ||
-            (server !== null && server !== undefined) ||
-            credentialIds.length > 0
-          ) {
-            return json({
-              error: "This assistant has an unrecognized tool or server credential attached. Automatic synchronization was stopped to protect calendar and business isolation.",
-            }, 409);
-          }
 
-          let calendarTools = buildCalendarFunctionTools();
-          if (calendarTools) {
+          let updatedTools: JsonRecord[];
+          let attachedCalendarTools = false;
+
+          if (modelTools.length === 0) {
+            // A business assistant may have been provisioned before the
+            // calendar webhook credential and Google Calendar connection
+            // were ready. In that case, Sync is responsible for attaching
+            // the three Febily tools for the first time.
+            const configuredTools = buildCalendarFunctionTools();
+            if (!configuredTools?.length) {
+              return json({
+                error: "Calendar tools are not configured on this Preview. Configure the Vapi calendar webhook credential and Preview server settings, then redeploy before syncing again.",
+              }, 503);
+            }
+
             try {
+              // Fail closed: never attach live booking tools until this
+              // business's own encrypted Google Calendar connection works.
               await getBusinessCalendarAccess(supabase, business.id);
             } catch {
-              calendarTools = null;
+              return json({
+                error: "This business's Google Calendar connection is not ready. Reconnect and select its calendar in Business Setup before syncing.",
+              }, 409);
             }
+
+            updatedTools = configuredTools;
+            attachedCalendarTools = true;
+          } else {
+            const existingToolNames = modelTools.map((tool) => {
+              if (!isRecord(tool) || !isRecord(tool.function)) return "";
+              return typeof tool.function.name === "string" ? tool.function.name : "";
+            });
+            const hasOnlyFebilyCalendarTools =
+              modelTools.length === 3 &&
+              existingToolNames.every((name) => febilyCalendarToolNames.has(name)) &&
+              febilyCalendarToolNames.size === new Set(existingToolNames).size;
+            if (!hasOnlyFebilyCalendarTools) {
+              return json({
+                error: "The assistant has tools that Febily cannot safely modify. No assistant settings were changed.",
+              }, 409);
+            }
+
+            // Refresh only the three known Febily function schemas. Keep
+            // each existing server URL, credentialId, and tool ID intact.
+            const latestDefinitions = buildCalendarFunctionDefinitions();
+            const latestFunctions = new Map<string, JsonRecord>();
+            for (const definition of latestDefinitions) {
+              const definitionFunction = isRecord(definition["function"])
+                ? definition["function"]
+                : null;
+              const definitionName = typeof definitionFunction?.["name"] === "string"
+                ? definitionFunction["name"]
+                : "";
+              if (definitionName && definitionFunction) {
+                latestFunctions.set(definitionName, definitionFunction);
+              }
+            }
+
+            updatedTools = modelTools.map((tool) => {
+              if (!isRecord(tool) || !isRecord(tool["function"])) {
+                throw new Error("An existing calendar tool has an invalid function schema. No assistant settings were changed.");
+              }
+              const existingFunction = tool["function"];
+              const functionName = typeof existingFunction["name"] === "string"
+                ? existingFunction["name"]
+                : "";
+              const latestFunction = latestFunctions.get(functionName);
+              if (!latestFunction) {
+                throw new Error("An existing calendar tool could not be matched to the current Febily schema. No assistant settings were changed.");
+              }
+              return {
+                ...tool,
+                function: {
+                  ...existingFunction,
+                  description: latestFunction["description"],
+                  parameters: latestFunction["parameters"],
+                },
+              };
+            });
           }
 
           const updatedModel: JsonRecord = {
@@ -202,10 +260,10 @@ export const Route = createFileRoute("/api/vapi/sync-profile")({
             messages: [
               {
                 role: "system",
-                content: buildBusinessReceptionistPrompt(business, Boolean(calendarTools?.length)),
+                content: buildBusinessReceptionistPrompt(business, true),
               },
             ],
-            tools: calendarTools ?? [],
+            tools: updatedTools,
           };
 
           const currentServerMessages = Array.isArray(assistant.serverMessages)
@@ -238,9 +296,9 @@ export const Route = createFileRoute("/api/vapi/sync-profile")({
 
           return json({
             success: true,
-            message: calendarTools?.length
-              ? "Your receptionist profile and live business calendar tools are synchronized."
-              : "Your receptionist profile is synchronized. Booking remains disabled until the Google Calendar connection and Vapi tool credential are both ready.",
+            message: attachedCalendarTools
+              ? "Your receptionist profile is synchronized and the three Febily Google Calendar tools are now attached to this business assistant."
+              : "Your receptionist profile and existing Febily booking tool schemas are synchronized. Existing calendar connections and credentials were preserved.",
           });
         } catch (error) {
           console.error(
