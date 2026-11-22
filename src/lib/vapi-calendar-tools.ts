@@ -294,8 +294,11 @@ function serviceFromText(value: string): ServiceInfo | null {
   if (!Number.isInteger(durationMinutes) || durationMinutes < 5 || durationMinutes > 480) {
     return null;
   }
+  // Business owners commonly paste service lists using typographic
+  // dashes (en/em dashes) as separators. Normalize those as separators too,
+  // so "Haircut — $25 — 30 minutes" resolves to the configured name "Haircut".
   const name = value
-    .split(/\s*[-|]\s*/)
+    .split(/\s*[-‐‑‒–—―|]\s*/u)
     .map((item) => item.trim())
     .find(Boolean);
   if (!name) return null;
